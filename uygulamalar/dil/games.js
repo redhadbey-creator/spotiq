@@ -6,14 +6,14 @@
   let keyH = null;
 
   function open(title, hud, body) {
-    const ov = $('#overlay'); ov.hidden = false; document.body.style.overflow = 'hidden';
+    const ov = $('#overlay'); ov.hidden = false; ov.onclick = null; document.body.style.overflow = 'hidden';
     ov.innerHTML = `<div class="les-top"><button class="x" data-g="x" aria-label="Kapat">✕</button><b style="flex:1">${title}</b><div class="game-hud" id="hud">${hud || ''}</div></div><div class="game-wrap" id="gw">${body || ''}</div>`;
     ov.querySelector('[data-g=x]').onclick = () => close();
   }
   function close(silent) {
     timers.forEach(clearInterval); timers = [];
     if (keyH) { document.removeEventListener('keydown', keyH); keyH = null; }
-    const ov = $('#overlay'); ov.hidden = true; ov.innerHTML = ''; document.body.style.overflow = '';
+    const ov = $('#overlay'); ov.hidden = true; ov.innerHTML = ''; ov.onclick = null; document.body.style.overflow = '';
     if (!silent) { App.render(); Q.flushNotices(); }
   }
   function onKeys(fn) { if (keyH) document.removeEventListener('keydown', keyH); keyH = fn; document.addEventListener('keydown', fn); }
@@ -173,7 +173,7 @@
         <div class="diff-boards">${sceneSVG(sc.left, 'dA')}${sceneSVG(sc.right, 'dB')}</div>
         <div style="display:flex;gap:10px;justify-content:center"><button class="btn ghost sm" id="dhint">💡 İpucu · 💎 10</button></div>`);
       const svgs = [$('#dA'), $('#dB')];
-      const mark = (d, cls) => svgs.forEach(s => s.querySelector('.marks').insertAdjacentHTML('beforeend', `<circle cx="${d.x}" cy="${d.y}" r="${d.r}" fill="none" stroke="${cls === 'hint' ? '#7b4bc4' : '#e0482f'}" stroke-width="4" ${cls === 'hint' ? 'stroke-dasharray="6 6"' : ''}/>`));
+      const mark = (d, cls) => svgs.forEach(s => s.querySelector('.marks').insertAdjacentHTML('beforeend', `<circle cx="${d.x}" cy="${d.y}" r="${d.r}" fill="none" stroke="${cls === 'hint' ? '#7c5ce0' : '#2f6fde'}" stroke-width="4" ${cls === 'hint' ? 'stroke-dasharray="6 6"' : ''}/>`));
       svgs.forEach(svg => svg.addEventListener('click', e => {
         const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
         const p = pt.matrixTransform(svg.getScreenCTM().inverse());

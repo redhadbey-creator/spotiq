@@ -27,7 +27,7 @@
   /* ---------- Kurs dizini ---------- */
   const C = window.COURSE;
   const LEVELS = 3;
-  const UNIT_COLORS = { coral: ['var(--brand)', 'var(--brand-d)'], teal: ['var(--teal)', 'var(--teal-d)'], gold: ['var(--gold)', 'var(--gold-d)'], plum: ['var(--plum)', 'var(--plum-d)'], navy: ['var(--navy)', 'var(--navy-d)'] };
+  const UNIT_COLORS = { blue: ['var(--brand)', 'var(--brand-d)'], green: ['var(--ok)', 'var(--ok-d)'], teal: ['var(--teal)', 'var(--teal-d)'], indigo: ['var(--navy)', 'var(--navy-d)'], amber: ['var(--gold)', 'var(--gold-d)'] };
   const NODES = [];
   const ALL_WORDS = [];
   const ALL_SENTS = [];
@@ -35,16 +35,24 @@
     u.lessons.forEach((l, li) => {
       const id = 'u' + ui + 'l' + li;
       l.id = id;
-      l.words.forEach((w, wi) => ALL_WORDS.push({ en: w[0], tr: w[1], em: w[2], lesson: id, unit: ui, id: id + 'w' + wi }));
+      l.words.forEach((w, wi) => ALL_WORDS.push({ en: w[0], tr: w[1], em: w[2] || '', lesson: id, unit: ui, id: id + 'w' + wi }));
       l.sentences.forEach((s, si) => ALL_SENTS.push({ en: s[0], tr: s[1], enAlt: s[2] || [], trAlt: s[3] || [], lesson: id, unit: ui, id: id + 's' + si }));
       NODES.push({ type: 'lesson', id, unit: ui, lesson: li, title: l.title, icon: l.icon });
       if (li === 1) NODES.push({ type: 'chest', id: 'u' + ui + 'c', unit: ui });
+      if (li === 2 && u.story) NODES.push({ type: 'story', id: 'u' + ui + 's', unit: ui, title: u.story.title, icon: '📖' });
     });
+    if (u.extra && u.extra.length) {
+      const xid = 'u' + ui + 'x';
+      u.extra.forEach((w, wi) => ALL_WORDS.push({ en: w[0], tr: w[1], em: w[2] || '', lesson: xid, unit: ui, id: xid + 'w' + wi, extra: true }));
+      NODES.push({ type: 'vocab', id: xid, unit: ui, title: 'Kelime Paketi · ' + u.extra.length + ' kelime', icon: '🔤' });
+    }
     NODES.push({ type: 'test', id: 'u' + ui + 't', unit: ui, title: u.title + ' · Ünite Testi', icon: '🏆' });
   });
   const wordById = Object.fromEntries(ALL_WORDS.map(w => [w.id, w]));
   const sentById = Object.fromEntries(ALL_SENTS.map(s => [s.id, s]));
-  const wordByEn = Object.fromEntries(ALL_WORDS.map(w => [w.en.toLowerCase(), w]));
+  const wordByEn = {};
+  ALL_WORDS.forEach(w => { const k = w.en.toLowerCase(); if (!wordByEn[k]) wordByEn[k] = w; });
+  NODES.forEach(n => { n.section = C.units[n.unit].section || 0; });
 
   /* ---------- Durum ---------- */
   const KEY = 'spotiq-dil-v1';
@@ -58,10 +66,10 @@
       doubleUntil: 0, unlimitedUntil: 0,
       progress: {}, history: {}, mistakes: {}, words: {},
       quests: null, ach: {}, goalDay: null,
-      stats: { lessons: 0, perfect: 0, maxCombo: 0, puzzles: 0, games: 0, diffs: 0, cards: 0, tests: 0, mathBest: 0, rushBest: 0, diffBest: 0, night: 0, early: 0 },
+      cert: {}, stats: { stories: 0, lessons: 0, perfect: 0, maxCombo: 0, puzzles: 0, games: 0, diffs: 0, cards: 0, tests: 0, mathBest: 0, rushBest: 0, diffBest: 0, night: 0, early: 0 },
       league: { tier: 0, week: weekKey(), xp: 0 }, leagueResult: null,
       puzzle: { day: null, solved: false, streak: 0, lastSolved: null },
-      settings: { sound: true, tts: true, speak: true, theme: 'auto', motivate: true }
+      settings: { sound: true, tts: true, speak: true, hearts: true, theme: 'auto', motivate: true }
     };
   }
   function merge(d, s) { for (const k in d) { if (s[k] === undefined) s[k] = d[k]; else if (d[k] && typeof d[k] === 'object' && !Array.isArray(d[k]) && s[k] && typeof s[k] === 'object') merge(d[k], s[k]); } return s; }
@@ -106,7 +114,7 @@
   let pendingNotices = [];
   function notice(t) { pendingNotices.push(t); }
 
-  function heartsUnlimited() { return S.unlimitedUntil > Date.now(); }
+  function heartsUnlimited() { return !S.settings.hearts || S.unlimitedUntil > Date.now(); }
   function nextHeartIn() { return Math.max(0, S.heartAt + HEART_MS - Date.now()); }
   function loseHeart() {
     if (heartsUnlimited()) return;
@@ -236,7 +244,15 @@
     { id: 'df', ic: '👁️', n: 'Keskin Göz', d: 'Farkı Bul\'da 25 fark', v: () => S.stats.diffs, g: 25 },
     { id: 'night', ic: '🌙', n: 'Gece Kuşu', d: 'Gece 23\'ten sonra ders', v: () => S.stats.night, g: 1 },
     { id: 'early', ic: '🌅', n: 'Erkenci', d: 'Sabah 7\'den önce ders', v: () => S.stats.early, g: 1 },
-    { id: 'lg', ic: '👑', n: 'Yükselen', d: 'Dedektif ligine çık', v: () => S.league.tier, g: 3 }
+    { id: 'lg', ic: '👑', n: 'Yükselen', d: 'Dedektif ligine çık', v: () => S.league.tier, g: 3 },
+    { id: 'story1', ic: '📖', n: 'Kitap Kurdu', d: 'İlk hikâyeni oku', v: () => S.stats.stories, g: 1 },
+    { id: 'story10', ic: '📚', n: 'Hikâye Avcısı', d: '10 hikâye oku', v: () => S.stats.stories, g: 10 },
+    { id: 'wd1k', ic: '🗝️', n: 'Kelime Ustası', d: '1000 kelime öğren', v: () => Object.keys(S.words).length, g: 1000 },
+    { id: 'cA1', ic: '🌱', n: 'A1 Sertifikası', d: 'A1 seviyesini bitir', v: () => S.cert.A1 ? 1 : 0, g: 1 },
+    { id: 'cA2', ic: '🌿', n: 'A2 Sertifikası', d: 'A2 seviyesini bitir', v: () => S.cert.A2 ? 1 : 0, g: 1 },
+    { id: 'cB1', ic: '🌳', n: 'B1 Sertifikası', d: 'B1 seviyesini bitir', v: () => S.cert.B1 ? 1 : 0, g: 1 },
+    { id: 'cB2', ic: '🏔️', n: 'B2 Sertifikası', d: 'B2 seviyesini bitir', v: () => S.cert.B2 ? 1 : 0, g: 1 },
+    { id: 'cC1', ic: '🚀', n: 'C1 Sertifikası', d: 'C1 seviyesini bitir', v: () => S.cert.C1 ? 1 : 0, g: 1 }
   ];
   function checkAchievements() {
     ACH.forEach(a => { if (!S.ach[a.id] && a.v() >= a.g) { S.ach[a.id] = dayKey(); notice(a.ic + ' Başarım açıldı: ' + a.n); } });
@@ -244,6 +260,19 @@
 
   /* ---------- İlerleme ---------- */
   function nodeDone(n) { const p = S.progress[n.id] || 0; return n.type === 'lesson' ? p >= LEVELS : p >= 1; }
+  function sectionDone(si) { return NODES.every(n => n.section !== si || nodeDone(n)); }
+  function currentSection() { const i = currentIndex(); return i >= NODES.length ? C.sections.length - 1 : NODES[i].section; }
+  /* Bölüm tamamlandıysa sertifikayı kaydeder; yeni sertifika varsa seviye kimliğini döner */
+  function checkCerts() {
+    let fresh = null;
+    C.sections.forEach((sec, si) => { if (!S.cert[sec.id] && sectionDone(si)) { S.cert[sec.id] = dayKey(); fresh = sec.id; } });
+    if (fresh) { checkAchievements(); save(); }
+    return fresh;
+  }
+  function completeSection(si) {
+    NODES.forEach(n => { if (n.section === si) { S.progress[n.id] = n.type === 'lesson' ? LEVELS : 1; if (n.type === 'lesson' || n.type === 'vocab') learnWords(n.id); } });
+    save();
+  }
   function currentIndex() { const i = NODES.findIndex(n => !nodeDone(n)); return i === -1 ? NODES.length : i; }
   function learnWords(lessonId) {
     ALL_WORDS.filter(w => w.lesson === lessonId).forEach(w => { if (!S.words[w.id]) S.words[w.id] = { box: 0, due: dayKey(), seen: 0, ok: 0 }; });
@@ -343,16 +372,16 @@
     }[mood] || '';
     const mouth = mood === 'sad' ? '<path d="M42 72 Q50 66 58 72" stroke="#1d1b16" stroke-width="4" fill="none" stroke-linecap="round"/>'
       : mood === 'wow' ? '<ellipse cx="50" cy="72" rx="5" ry="6" fill="#1d1b16"/>'
-        : '<path d="M40 66 Q50 78 60 66" stroke="#1d1b16" stroke-width="4" fill="#f27d6a" stroke-linecap="round"/>';
+        : '<path d="M40 66 Q50 78 60 66" stroke="#1d1b16" stroke-width="4" fill="#f59ab0" stroke-linecap="round"/>';
     return `<svg class="mascot ${extra}" width="${size}" height="${size}" viewBox="0 0 120 120" aria-hidden="true">
       <ellipse cx="60" cy="114" rx="34" ry="4" fill="rgba(0,0,0,.08)"/>
-      <g transform="rotate(42 86 86)"><rect x="78" y="78" width="16" height="40" rx="8" fill="#b5321c"/><rect x="78" y="78" width="16" height="10" rx="4" fill="#f2a516"/></g>
-      <circle cx="50" cy="52" r="40" fill="#fff" stroke="#e0482f" stroke-width="10"/>
+      <g transform="rotate(42 86 86)"><rect x="78" y="78" width="16" height="40" rx="8" fill="#1f4fae"/><rect x="78" y="78" width="16" height="10" rx="4" fill="#f5b100"/></g>
+      <circle cx="50" cy="52" r="40" fill="#fff" stroke="#2f6fde" stroke-width="10"/>
       <path d="M22 40 A30 30 0 0 1 40 20" stroke="#cfe7ff" stroke-width="5" fill="none" stroke-linecap="round"/>
       ${eye}
       <circle cx="30" cy="64" r="5" fill="#f9b4a6"/><circle cx="70" cy="64" r="5" fill="#f9b4a6"/>
       ${mouth}
-      <path d="M12 70 q-10 6 -6 16" stroke="#e0482f" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path d="M12 70 q-10 6 -6 16" stroke="#2f6fde" stroke-width="6" fill="none" stroke-linecap="round"/>
     </svg>`;
   }
 
@@ -372,7 +401,7 @@
   }
   function confetti(n = 80) {
     const box = document.createElement('div'); box.className = 'confetti';
-    const cols = ['#e0482f', '#f2a516', '#119c84', '#7b4bc4', '#2d5b88', '#f27d4a'];
+    const cols = ['#2f6fde', '#f5b100', '#1aa060', '#7c5ce0', '#0e9f9a', '#ff9f43'];
     for (let i = 0; i < n; i++) {
       const p = document.createElement('i');
       p.style.left = Math.random() * 100 + 'vw';
@@ -394,7 +423,7 @@
     get S() { return S; }, load, save, reset, tick, notice, flushNotices, MAX_HEARTS, HEART_MS,
     heartsUnlimited, nextHeartIn, loseHeart, addXP, todayXP, extendStreak, streakActiveToday,
     TIERS, leagueBoard, weekFrac, ensureQuests, questInfo, bump, questsReady, ACH, checkAchievements,
-    nodeDone, currentIndex, learnWords, unlockedSentences,
+    nodeDone, currentIndex, sectionDone, currentSection, checkCerts, completeSection, learnWords, unlockedSentences,
     norm, judge, lev, sfx, speak, ttsOK, SR, canListen, canSpeak, mascot, toast, modal, confetti, fmtTime
   };
 })();

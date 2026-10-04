@@ -32,9 +32,13 @@
 
   /* ---------- Soru üretimi ---------- */
   function mk(type, data) { return Object.assign({ type, tries: 0 }, data); }
-  function exPick(w, pool) { return mk('pick', { word: w, options: shuffle([w].concat(sample(pool.filter(x => x.id !== w.id && x.tr !== w.tr), 3))), key: 'w:' + w.id }); }
-  function exPickTr(w, pool) { return mk('pickTr', { word: w, options: shuffle([w].concat(sample(pool.filter(x => x.id !== w.id && x.tr !== w.tr), 3))), key: 'w:' + w.id }); }
-  function exMatch(words) { return mk('match', { words: sample(words, Math.min(5, words.length)) }); }
+  function exPick(w, pool) {
+    const cand = pool.filter(x => x.id !== w.id && x.tr !== w.tr && x.en !== w.en && (!w.em || x.em));
+    return mk('pick', { word: w, options: shuffle([w].concat(sample(uniqBy(cand, 'en'), 3))), key: 'w:' + w.id });
+  }
+  function uniqBy(arr, k) { const seen = new Set(); return arr.filter(x => !seen.has(x[k]) && seen.add(x[k])); }
+  function exPickTr(w, pool) { return mk('pickTr', { word: w, options: shuffle([w].concat(sample(uniqBy(pool.filter(x => x.id !== w.id && x.tr !== w.tr && x.en !== w.en), 'tr'), 3))), key: 'w:' + w.id }); }
+  function exMatch(words) { return mk('match', { words: sample(uniqBy(uniqBy(words, 'en'), 'tr'), Math.min(5, words.length)) }); }
   function exBank(s, dir, spool) {
     const lang = dir === 'en' ? 'en' : 'tr';
     const ans = tokens(lang === 'en' ? s.en : s.tr, lang);
@@ -91,6 +95,22 @@
       const S = shuffle(ALL_SENTS.filter(s => s.unit === unit));
       out = [exType(S[0]), exType(S[1]), exType(S[2]), exBank(S[3], 'en', spool), exBank(S[4], 'en', spool), exBank(S[5], 'tr', spool), exBank(S[6], 'tr', spool), exListen(S[7], spool), exListenType(S[8]), exFill(S[9], W) || exType(S[9]), exFill(S[10], W) || exBank(S[10], 'en', spool), exMatch(W), exSpeak(S[11]), exPickTr(pick(W), W)];
       out = shuffle(out);
+    } else if (opts.mode === 'vocab') {
+      const W = shuffle(ALL_WORDS.filter(w => w.lesson === opts.node.id));
+      const pool = W.concat(wp);
+      W.slice(0, 4).forEach(w => { const e = exPick(w, pool); e.isNew = true; out.push(e); });
+      out.push(exMatch(W.slice(0, 5)), exMatch(W.slice(5, 10)));
+      W.slice(10, 14).forEach(w => out.push(exPickTr(w, pool)));
+      out.push(exMatch(W.slice(14, 19)), exMatch(W.slice(19, 24)));
+      W.slice(24, 27).forEach(w => out.push(exPick(w, pool)));
+      out.push(exMatch(W.slice(25, 30).length >= 3 ? W.slice(25, 30) : W.slice(0, 5)));
+    } else if (opts.mode === 'jump') {
+      const sec = opts.section;
+      const SS = shuffle(ALL_SENTS.filter(s => C.units[s.unit].section === sec));
+      const WW = ALL_WORDS.filter(w => C.units[w.unit].section === sec);
+      const jp = SS.slice(0, 40);
+      out = [exBank(SS[0], 'en', jp), exBank(SS[1], 'tr', jp), exType(SS[2]), exFill(SS[3], WW) || exType(SS[3]), exPickTr(pick(WW), WW), exBank(SS[4], 'en', jp), exListen(SS[5], jp), exType(SS[6]), exBank(SS[7], 'tr', jp), exFill(SS[8], WW) || exBank(SS[8], 'en', jp), exMatch(sample(WW, 5)), exType(SS[9]), exBank(SS[10], 'en', jp), exPickTr(pick(WW), WW), exType(SS[11])];
+      return adapt(out, jp);
     } else if (opts.mode === 'mistakes') {
       const keys = Object.entries(Q.S.mistakes).sort((a, b) => b[1] - a[1]).slice(0, 10).map(x => x[0]);
       keys.forEach(k => {
@@ -125,13 +145,13 @@
     if (HEART_MODES.has(opts.mode) && Q.S.hearts <= 0 && !Q.heartsUnlimited()) { App.noHearts(); return; }
     const queue = build(opts);
     if (!queue.length) { Q.toast('Burada çalışacak bir şey yok, harika!'); return; }
-    st = { opts, queue, i: 0, total: queue.length, resolved: 0, combo: 0, maxCombo: 0, wrong: 0, firstTry: 0, startT: Date.now(), xpBonus: 0 };
+    st = { opts, queue, i: 0, lives: opts.mode === 'jump' ? 3 : 0, total: queue.length, resolved: 0, combo: 0, maxCombo: 0, wrong: 0, firstTry: 0, startT: Date.now(), xpBonus: 0 };
     const ov = $('#overlay'); ov.hidden = false; document.body.style.overflow = 'hidden';
     document.addEventListener('keydown', onKey);
     show();
   }
   function close(silent) {
-    const ov = $('#overlay'); ov.hidden = true; ov.innerHTML = ''; document.body.style.overflow = '';
+    const ov = $('#overlay'); ov.hidden = true; ov.innerHTML = ''; ov.onclick = null; document.body.style.overflow = '';
     document.removeEventListener('keydown', onKey);
     if (Q.ttsOK) speechSynthesis.cancel();
     if (st && st.rec) try { st.rec.abort(); } catch (e) { }
@@ -147,8 +167,9 @@
   }
 
   function heartsHTML() {
+    if (st.opts.mode === 'jump') return `<span class="hearts" title="Atlama testi hakkı">${'💙'.repeat(st.lives)}${'🤍'.repeat(3 - st.lives)}</span>`;
     if (!HEART_MODES.has(st.opts.mode)) return '<span class="hearts" title="Pratikte can kaybetmezsin">♾️</span>';
-    return `<span class="hearts">❤️ ${Q.heartsUnlimited() ? '∞' : Q.S.hearts}</span>`;
+    return `<span class="hearts">💙 ${Q.heartsUnlimited() ? '∞' : Q.S.hearts}</span>`;
   }
   function topHTML() {
     const pct = Math.min(100, Math.round(st.resolved / st.total * 100));
@@ -173,6 +194,8 @@
     const keys = i => `<span class="kn">${i + 1}</span>`;
     switch (ex.type) {
       case 'pick':
+        if (!ex.options.every(o => o.em)) return `${ex.isNew ? '<div class="new-word">✨ Yeni kelime</div>' : ''}<h2>“${esc(ex.word.tr)}” İngilizcede hangisi?</h2>
+          <div class="choices list">${ex.options.map((o, i) => `<button class="choice" data-i="${i}">${keys(i)}${esc(o.en)}</button>`).join('')}</div>`;
         return `${ex.isNew ? '<div class="new-word">✨ Yeni kelime</div>' : ''}<h2>“${esc(ex.word.tr)}” hangisi?</h2>
           <div class="choices">${ex.options.map((o, i) => `<button class="choice" data-i="${i}">${keys(i)}<span class="em">${o.em}</span>${esc(o.en)}</button>`).join('')}</div>`;
       case 'pickTr':
@@ -411,6 +434,7 @@
       Q.sfx('bad'); st.combo = 0; st.wrong++;
       if (ex.key) Q.S.mistakes[ex.key] = (Q.S.mistakes[ex.key] || 0) + 1;
       if (HEART_MODES.has(st.opts.mode)) Q.loseHeart();
+      if (st.opts.mode === 'jump') st.lives--;
       const max = HEART_MODES.has(st.opts.mode) ? 3 : 2;
       if (ex.tries < max) st.queue.push(rebuild(ex)); else st.resolved++;
     }
@@ -428,6 +452,7 @@
     return copy;
   }
   function next() {
+    if (st.opts.mode === 'jump' && st.lives <= 0) return failJump();
     if (HEART_MODES.has(st.opts.mode) && Q.S.hearts <= 0 && !Q.heartsUnlimited()) return outOfHearts();
     st.i++;
     if (st.i >= st.queue.length) return finish();
@@ -445,6 +470,12 @@
       m.querySelector('[data-a=quit]').onclick = () => { c(); if (st.opts.mode === 'test') failTest(); else close(); };
     });
   }
+  function failJump() {
+    Q.sfx('fail');
+    const ov = $('#overlay'), sec = C.sections[st.opts.section];
+    ov.innerHTML = `<div class="finish">${Q.mascot('sad', 150)}<h1 style="color:var(--bad)">Bu sefer olmadı</h1><p class="soft">${sec.id} atlama testi için 3 hakkın bitti. Sorun değil, ${sec.id} derslerinden başlamak sağlam bir temel kurar.</p><button class="btn block" data-a="ok">Tamam</button></div>`;
+    ov.querySelector('[data-a=ok]').onclick = () => { const cb = st.opts.onFail; close(); if (cb) cb(); };
+  }
   function failTest() {
     const ov = $('#overlay');
     ov.innerHTML = `<div class="finish">${Q.mascot('sad', 150)}<h1 style="color:var(--bad)">Bu sefer olmadı</h1><p class="soft">Ünite testini geçmek için canların bitmeden tamamlaman gerekiyor. Biraz pratik yapıp tekrar dene!</p><button class="btn block" data-a="ok">Tamam</button></div>`;
@@ -458,16 +489,19 @@
     const answered = st.firstTry + st.wrong;
     const acc = answered ? Math.round(st.firstTry / answered * 100) : 100;
     const perfect = st.wrong === 0;
-    let base = o.mode === 'test' ? 25 : o.mode === 'lesson' ? 10 : 8;
+    let base = o.mode === 'test' ? 25 : o.mode === 'jump' ? 40 : o.mode === 'lesson' || o.mode === 'vocab' ? 10 : 8;
     let bonus = Math.min(5, Math.floor(st.maxCombo / 5)) + (perfect && (o.mode === 'lesson' || o.mode === 'test') ? 5 : 0);
     const xp = Q.addXP(base + bonus);
     S.stats.lessons++; if (perfect) S.stats.perfect++; S.stats.maxCombo = Math.max(S.stats.maxCombo, st.maxCombo);
     Q.bump('lessons'); if (perfect) Q.bump('perfect');
     let reward = '';
     if (o.mode === 'lesson') { S.progress[o.node.id] = Math.min(Q.LEVELS, (S.progress[o.node.id] || 0) + (o.review ? 0 : 1)); Q.learnWords(o.node.id); }
-    if (o.mode === 'test') { if (!S.progress[o.node.id]) { S.stats.tests++; S.gems += 50; reward = '<p class="soft">🏆 Ünite tamamlandı! +50 💎</p>'; } S.progress[o.node.id] = 1; C.units[o.node.unit].lessons.forEach(l => Q.learnWords(l.id)); }
+    if (o.mode === 'vocab') { S.progress[o.node.id] = 1; Q.learnWords(o.node.id); }
+    if (o.mode === 'jump') { for (let k = 0; k <= o.section; k++) Q.completeSection(k); reward = `<p class="soft">🚀 ${C.sections[o.section].id} seviyesini atladın! Tüm kelimeleri kelime kartlarına eklendi.</p>`; }
+    if (o.mode === 'test') { if (!S.progress[o.node.id]) { S.stats.tests++; S.gems += 50; reward = '<p class="soft">🏆 Ünite tamamlandı! +50 💎</p>'; } S.progress[o.node.id] = 1; C.units[o.node.unit].lessons.forEach(l => Q.learnWords(l.id)); Q.learnWords('u' + o.node.unit + 'x'); }
     if (!HEART_MODES.has(o.mode) && S.hearts < Q.MAX_HEARTS) { S.hearts++; reward += '<p class="soft">❤️ Pratik için +1 can kazandın</p>'; }
     const extended = Q.extendStreak();
+    st.cert = Q.checkCerts();
     Q.checkAchievements(); Q.save();
     Q.sfx('done'); Q.confetti();
     const title = o.mode === 'test' ? 'Ünite testini geçtin!' : perfect ? 'Kusursuz ders!' : o.mode === 'lesson' ? 'Ders tamamlandı!' : 'Pratik tamamlandı!';
@@ -479,7 +513,14 @@
         <div class="fcard" style="--c:var(--navy)"><b>Süre</b><div>⏱️ ${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}</div></div>
       </div>${reward}
       <button class="btn block" data-a="go" style="margin-top:12px">Devam</button></div>`;
-    ov.querySelector('[data-a=go]').onclick = () => extended ? streakScreen() : done();
+    ov.querySelector('[data-a=go]').onclick = () => extended ? streakScreen() : afterStreak();
+  }
+  function afterStreak() { if (st.cert) certScreen(st.cert); else done(); }
+  function certScreen(id) {
+    Q.sfx('fire'); Q.confetti(140);
+    const sec = C.sections.find(x => x.id === id);
+    $('#overlay').innerHTML = `<div class="finish">${App.certHTML(id)}<p class="soft">${sec.icon} ${esc(sec.name)} seviyesini tamamladın! Sertifikan Profil sayfanda duruyor.</p><button class="btn block" data-a="go">Harika!</button></div>`;
+    $('#overlay [data-a=go]').onclick = done;
   }
   function streakScreen() {
     const S = Q.S, ov = $('#overlay');
@@ -494,9 +535,91 @@
     ov.innerHTML = `<div class="finish"><div class="streak-big">🔥</div><div class="streak-num">${S.streak}</div><h1 style="color:var(--brand)">günlük seri!</h1>
       <div class="week-dots">${dots}</div><p class="soft">${S.streak === 1 ? 'Harika bir başlangıç! Yarın da gel, serini büyüt.' : 'Her gün biraz pratik, büyük fark yaratır. Böyle devam!'}</p>
       <button class="btn block" data-a="go">Devam</button></div>`;
-    ov.querySelector('[data-a=go]').onclick = done;
+    ov.querySelector('[data-a=go]').onclick = afterStreak;
   }
   function done() { const cb = st && st.opts.onDone; close(); if (cb) cb(); Q.flushNotices(); }
 
-  window.Lesson = { start, close, tokens };
+  /* ---------- Hikâye oynatıcı ---------- */
+  const CAST = { 'Deniz': '🧑‍💻', 'Lina': '👩‍🍳', 'Emma': '👩‍💼', 'Mr. Walker': '👨‍💼', 'Can': '🧔', 'Priya': '👩🏽‍💼', 'Anlatıcı': '📖', 'Narrator': '📖' };
+  function story(node) {
+    const u = C.units[node.unit], sto = u.story;
+    const ov = $('#overlay'); ov.hidden = false; document.body.style.overflow = 'hidden';
+    let i = 0, qi = 0, right = 0, wrongs = 0, showTr = false;
+    const qs = sto.questions.slice().sort((a, b) => a.after - b.after);
+    const t0 = Date.now();
+    ov.innerHTML = `<div class="les-top"><button class="x" data-s="x" aria-label="Kapat">✕</button><div class="bar"><i id="sbar" style="width:0%"></i></div><button class="btn ghost sm" data-s="tr">TR</button></div>
+      <div class="les-body story"><div class="story-head"><span class="sicon">${sto.icon || '📖'}</span><h2>${esc(sto.title)}</h2><p class="muted">${esc(u.title)} · ${esc(u.cefr)}</p></div><div id="sl"></div></div>
+      <div class="les-foot" id="sf"><div class="in"><span></span><button class="btn" data-s="next">Devam</button></div></div>`;
+    const sl = $('#sl');
+    const total = sto.lines.length + qs.length;
+    function bar() { $('#sbar').style.width = Math.round((i + qi) / total * 100) + '%'; }
+    function line() {
+      const [who, en, tr] = sto.lines[i];
+      const av = CAST[who] || '🙂';
+      const narr = /Anlatıcı|Narrator/.test(who);
+      sl.insertAdjacentHTML('beforeend', `<div class="sline ${narr ? 'narr' : ''}"><span class="sav" title="${esc(who)}">${av}</span><div class="sbub">${narr ? '' : `<b>${esc(who)}</b>`}<p>${hinted(en, 'en')}</p><p class="str-tr" ${showTr ? '' : 'hidden'}>${esc(tr)}</p></div>${Q.canListen() ? `<button class="play sm-play" data-say="${esc(en)}" aria-label="Dinle">🔊</button>` : ''}</div>`);
+      Q.speak(en);
+      i++; bar();
+      sl.lastElementChild.scrollIntoView({ block: 'end', behavior: 'smooth' });
+    }
+    function question() {
+      const q = qs[qi];
+      const id = 'sq' + qi;
+      sl.insertAdjacentHTML('beforeend', `<div class="squest" id="${id}"><b>❓ ${esc(q.q)}</b><div class="choices list">${q.options.map((o, j) => `<button class="choice" data-j="${j}"><span class="kn">${j + 1}</span>${esc(o)}</button>`).join('')}</div></div>`);
+      $('#sf').innerHTML = '<div class="in"><span class="muted">Doğru cevabı seç</span><span></span></div>';
+      const box = $('#' + id); box.scrollIntoView({ block: 'end', behavior: 'smooth' });
+      let tries = 0;
+      box.onclick = e => {
+        const b = e.target.closest('.choice'); if (!b || b.disabled) return;
+        const j = +b.dataset.j; tries++;
+        if (j === q.answer) {
+          Q.sfx('ok'); b.classList.add('right'); box.querySelectorAll('.choice').forEach(c => c.disabled = true);
+          if (tries === 1) right++; qi++; bar();
+          $('#sf').innerHTML = '<div class="in"><span></span><button class="btn ok" data-s="next">Devam</button></div>';
+        } else { Q.sfx('bad'); wrongs++; b.classList.add('wrong', 'shake'); b.disabled = true; }
+      };
+    }
+    function step() {
+      if (qi < qs.length && qs[qi].after < i && !$('#sq' + qi)) return question();
+      if (qi < qs.length && $('#sq' + qi)) return;
+      if (i < sto.lines.length) return line();
+      finishStory();
+    }
+    function finishStory() {
+      const S = Q.S;
+      const first = !S.progress[node.id];
+      S.progress[node.id] = 1; S.stats.stories++;
+      const xp = Q.addXP(first ? 15 : 8);
+      const extended = Q.extendStreak();
+      Q.bump('lessons'); Q.checkAchievements(); const cert = Q.checkCerts(); Q.save();
+      Q.sfx('done'); Q.confetti();
+      st = { opts: {}, cert };
+      const secs = Math.round((Date.now() - t0) / 1000);
+      ov.innerHTML = `<div class="finish">${Q.mascot('wow', 150)}<h1>Hikâye bitti!</h1><div class="cards">
+        <div class="fcard" style="--c:var(--gold)"><b>XP</b><div>⚡ ${xp}</div></div>
+        <div class="fcard" style="--c:var(--ok)"><b>Anlama</b><div>🎯 ${right}/${qs.length}</div></div>
+        <div class="fcard" style="--c:var(--navy)"><b>Süre</b><div>⏱️ ${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}</div></div></div>
+        <button class="btn block" data-a="go">Devam</button></div>`;
+      ov.querySelector('[data-a=go]').onclick = () => extended ? streakScreen() : afterStreak();
+    }
+    ov.onclick = e => {
+      const b = e.target.closest('[data-s],[data-say]'); if (!b) { if (e.target.closest('.sline .sbub')) return; return; }
+      if (b.dataset.say) return Q.speak(b.dataset.say);
+      const k = b.dataset.s;
+      if (k === 'x') { ov.onclick = null; st = null; return close(); }
+      if (k === 'tr') { showTr = !showTr; b.classList.toggle('on', showTr); ov.querySelectorAll('.str-tr').forEach(x => x.hidden = !showTr); return; }
+      if (k === 'next') step();
+    };
+    sl.addEventListener('mouseover', tipOn); sl.addEventListener('mouseout', tipOff);
+    st = { opts: {}, story: true };
+    document.addEventListener('keydown', onStoryKey);
+    function onStoryKey(e) {
+      if ($('#overlay').hidden) return document.removeEventListener('keydown', onStoryKey);
+      if (e.key === 'Enter') { const n = $('#sf [data-s=next]'); if (n) { e.preventDefault(); n.click(); } }
+      if (/^[1-4]$/.test(e.key)) { const q = $('#sq' + qi); if (q) { const c = q.querySelectorAll('.choice')[+e.key - 1]; if (c) c.click(); } }
+    }
+    step();
+  }
+
+  window.Lesson = { start, close, tokens, story };
 })();

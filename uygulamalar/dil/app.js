@@ -26,10 +26,11 @@
   function statsHTML() {
     const fire = Q.streakActiveToday();
     const hearts = Q.heartsUnlimited() ? '∞' : S.hearts;
-    return `<button class="chip flag" data-go="learn" title="${esc(C.name)} kursu">${C.flag}</button>
+    const lvl = C.sections[Q.currentSection()];
+    return `<button class="chip flag" data-go="learn" title="${esc(C.name)} · ${lvl.id}">${C.flag}<small class="lvl">${lvl.id}</small></button>
       <button class="chip fire ${fire ? '' : 'cold'}" data-pop="streak" title="Seri">🔥 ${S.streak}</button>
       <button class="chip gem" data-go="shop" title="Mücevher">💎 ${S.gems}</button>
-      <button class="chip heart" data-pop="hearts" title="Can">❤️ ${hearts}</button>`;
+      <button class="chip heart" data-pop="hearts" title="Can">💙 ${hearts}</button>`;
   }
   function renderNav() {
     const ready = Q.questsReady();
@@ -53,6 +54,7 @@
     const dbl = S.doubleUntil > Date.now();
     $('#rail').innerHTML = `<div class="stats-row">${statsHTML()}</div>
       ${dbl ? `<div class="box" style="border-color:var(--gold)"><b>⚡ Çift XP aktif</b><p class="soft small">${Q.fmtTime(S.doubleUntil - Date.now())} kaldı</p></div>` : ''}
+      <div class="box"><h3>Seviye yolculuğun <a data-go="learn">Yol</a></h3><div class="journey sm">${C.sections.map((sec, si) => `<span class="${S.cert[sec.id] ? 'done' : si === Q.currentSection() ? 'cur' : ''}">${sec.id}</span>`).join('<i></i>')}</div><p class="soft small">${Object.keys(S.words).length} / ${Q.ALL_WORDS.length} kelime öğrenildi</p><div class="bar ok" style="margin-top:6px"><i style="width:${Object.keys(S.words).length / Q.ALL_WORDS.length * 100}%"></i></div></div>
       <div class="box"><h3>${tier.i} ${tier.n} Ligi <a data-go="league">Ligi gör</a></h3><p class="soft">${S.league.xp ? `Bu hafta <b>${me}.</b> sıradasın · ${S.league.xp} XP` : 'Bu hafta yarışmaya katılmak için bir ders bitir!'}</p></div>
       <div class="box"><h3>Günlük hedef <a data-pop="goal">Düzenle</a></h3><div style="display:flex;gap:14px;align-items:center">${goalRing()}<div style="flex:1"><b>${Math.min(Q.todayXP(), S.dailyGoal)} / ${S.dailyGoal} XP</b><div class="bar" style="margin-top:8px"><i style="width:${Math.min(100, Q.todayXP() / S.dailyGoal * 100)}%"></i></div></div></div></div>
       <div class="box"><h3>Günlük görevler <a data-go="quests">Tümü</a></h3>${questsHTML(3)}</div>
@@ -62,57 +64,119 @@
 
   /* ---------- Öğren (yol) ---------- */
   const OFFS = [0, 52, 78, 52, 0, -52, -78, -52];
+  const NODE_ICON = { chest: '🎁', story: '📖', vocab: '🔤', test: '🏆' };
+  let expanded = null;
   function nodeState(n, i, ci) { if (Q.nodeDone(n)) return 'done'; if (i === ci) return 'current'; return i < ci ? 'done' : 'locked'; }
+  function sectionPct(si) { const ns = NODES.filter(n => n.section === si); return Math.round(ns.filter(Q.nodeDone).length / ns.length * 100); }
+  function sectionCard(sec, si, cs) {
+    const pct = sectionPct(si), done = !!S.cert[sec.id];
+    const ahead = si > cs;
+    const open = si === cs ? expanded !== -1 - si : expanded === si;
+    const words = Q.ALL_WORDS.filter(w => C.units[w.unit].section === si).length;
+    return `<div class="sec-card ${done ? 'done' : ''} ${ahead ? 'ahead' : ''}">
+      <div class="sec-top"><span class="sec-ic">${sec.icon}</span><div style="flex:1;min-width:0"><span class="cefr">${sec.id}</span><h2>${esc(sec.name)}</h2><p>${esc(sec.desc)}</p><p class="small muted">${sec.units.length} ünite · ${words} kelime ve ifade</p></div></div>
+      <div class="bar ok" style="margin:12px 0"><i style="width:${pct}%"></i></div>
+      <div class="sec-btns">${done ? `<button class="btn ok sm" data-cert="${sec.id}">🎓 Sertifikayı gör</button>` : ''}
+        ${!ahead ? `<button class="btn ghost sm" data-expand="${si}">${open ? 'Üniteleri gizle' : (done ? 'Üniteleri göster' : 'Üniteleri göster')}</button>` : ''}
+        ${ahead && !done ? `<button class="btn sm" data-jump="${si}">⏩ ${sec.id}'e atla</button>` : ''}</div></div>`;
+  }
   function renderLearn() {
-    const ci = Q.currentIndex();
+    const ci = Q.currentIndex(), cs = Q.currentSection();
     let html = '';
-    if (S.lostStreak && S.lostStreak.value > 1) html += `<div class="daily-hero" style="background:linear-gradient(135deg,#5d574b,#2b2924)"><div style="font-size:3rem">💔</div><div><h2>${S.lostStreak.value} günlük serin bitti</h2><p>Bugün onarırsan kaldığın yerden devam edersin.</p><button class="btn sm" data-act="repair">Seriyi onar · 💎 400</button></div></div>`;
+    if (S.lostStreak && S.lostStreak.value > 1) html += `<div class="daily-hero" style="background:linear-gradient(135deg,#4a5878,#26324d)"><div style="font-size:3rem">💔</div><div><h2>${S.lostStreak.value} günlük serin bitti</h2><p>Bugün onarırsan kaldığın yerden devam edersin.</p><button class="btn sm" data-act="repair">Seriyi onar · 💎 400</button></div></div>`;
     if (S.leagueResult) html += leagueResultBanner();
-    C.units.forEach((u, ui) => {
-      const col = UNIT_COLORS[u.color];
-      const unitNodes = NODES.map((n, i) => ({ n, i })).filter(x => x.n.unit === ui);
-      const firstLesson = unitNodes.find(x => x.n.type === 'lesson');
-      html += `<section class="unit" style="--uc:${col[0]};--ucd:${col[1]}"><div class="unit-head c-${u.color}"><div><p>ÜNİTE ${ui + 1}</p><h2>${esc(u.title)}</h2><p>${esc(u.desc)}</p></div><button class="btn sm" data-guide="${ui}">📖 Rehber</button></div><div class="path">`;
-      unitNodes.forEach(({ n, i }, k) => {
-        const s = nodeState(n, i, ci);
-        const off = OFFS[k % OFFS.length];
-        const lv = S.progress[n.id] || 0;
-        let inner = n.type === 'chest' ? (s === 'done' ? '📭' : '🎁') : n.type === 'test' ? '🏆' : s === 'done' ? '⭐' : n.icon;
-        let ring = '';
-        if (n.type === 'lesson' && s === 'current' && lv > 0) {
-          const r = 44, c = 2 * Math.PI * r;
-          ring = `<svg class="ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="${r}" stroke="var(--line)"/><circle cx="50" cy="50" r="${r}" stroke="var(--uc)" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - lv / Q.LEVELS)}" transform="rotate(-90 50 50)"/></svg>`;
-        }
-        html += `<div class="node-wrap ${openNode === i ? 'open' : ''}" style="transform:translateX(${off}px)">${s === 'current' ? `<div class="start-bubble">${lv ? 'DEVAM' : 'BAŞLA'}</div>` : ''}
-          <button class="node ${n.type !== 'lesson' ? n.type : ''} ${s === 'locked' ? 'locked' : ''} ${s === 'done' && n.type === 'lesson' ? 'done' : ''}" data-node="${i}" aria-label="${esc(n.title || (n.type === 'chest' ? 'Sandık' : ''))}">${ring}${inner}</button>
-          ${openNode === i ? popHTML(n, s) : ''}</div>`;
-        if (k === 2) html += `<div style="position:relative;align-self:stretch;height:0"><div class="path-mascot" style="left:2%;top:-200px">${Q.mascot(ui % 2 ? 'wink' : 'happy', 110)}</div></div>`;
-      });
-      html += '</div></section>';
-      if (ui < C.units.length - 1) html += `<div class="unit-gap">Sıradaki: ${esc(C.units[ui + 1].title)}</div>`;
+    html += `<div class="journey">${C.sections.map((sec, si) => `<span class="${S.cert[sec.id] ? 'done' : si === cs ? 'cur' : ''}">${sec.id}</span>`).join('<i></i>')}</div>`;
+    C.sections.forEach((sec, si) => {
+      const open = si === cs ? expanded !== -1 - si : expanded === si;
+      html += sectionCard(sec, si, cs);
+      if (!open) return;
+      sec.units.forEach((ui, uIdx) => html += unitHTML(ui, ci));
+      if (si < C.sections.length - 1) html += `<div class="unit-gap">Sıradaki seviye: ${esc(C.sections[si + 1].id)} · ${esc(C.sections[si + 1].name)}</div>`;
     });
-    html += `<div class="box" style="text-align:center;margin-top:10px">${Q.mascot('think', 90)}<h3 style="justify-content:center">Daha fazla ünite yolda!</h3><p class="soft">Yeni üniteler eklendikçe yolun uzayacak.</p></div>`;
+    html += `<p class="footer-note">Seviyeler Avrupa Ortak Dil Çerçevesi'ne (CEFR) göre düzenlendi.</p>`;
     return html;
   }
+  function unitHTML(ui, ci) {
+    const u = C.units[ui], col = UNIT_COLORS[u.color];
+    const unitNodes = NODES.map((n, i) => ({ n, i })).filter(x => x.n.unit === ui);
+    let html = `<section class="unit" style="--uc:${col[0]};--ucd:${col[1]}"><div class="unit-head c-${u.color}"><div><p>${esc(u.cefr)} · ÜNİTE ${ui + 1}</p><h2>${esc(u.title)}</h2><p>${esc(u.desc)}</p></div><button class="btn sm" data-guide="${ui}">📖 Rehber</button></div><div class="path">`;
+    unitNodes.forEach(({ n, i }, k) => {
+      const s = nodeState(n, i, ci);
+      const off = OFFS[k % OFFS.length];
+      const lv = S.progress[n.id] || 0;
+      const special = n.type === 'chest' || n.type === 'test';
+      let inner = n.type === 'chest' ? (s === 'done' ? '📭' : '🎁') : n.type === 'lesson' ? (s === 'done' ? '⭐' : n.icon) : NODE_ICON[n.type];
+      let ring = '';
+      if (n.type === 'lesson' && s === 'current' && lv > 0) {
+        const r = 44, c = 2 * Math.PI * r;
+        ring = `<svg class="ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="${r}" stroke="var(--line)"/><circle cx="50" cy="50" r="${r}" stroke="var(--uc)" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - lv / Q.LEVELS)}" transform="rotate(-90 50 50)"/></svg>`;
+      }
+      const cls = ['node', special ? n.type : '', n.type === 'story' || n.type === 'vocab' ? 'alt' : '', s === 'locked' ? 'locked' : '', s === 'done' && !special ? 'done' : ''].join(' ');
+      html += `<div class="node-wrap ${openNode === i ? 'open' : ''}" style="transform:translateX(${off}px)">${s === 'current' ? `<div class="start-bubble">${lv ? 'DEVAM' : 'BAŞLA'}</div>` : ''}
+        <button class="${cls}" data-node="${i}" aria-label="${esc(n.title || 'Sandık')}">${ring}${inner}</button>
+        ${openNode === i ? popHTML(n, s) : ''}</div>`;
+      if (k === 2) html += `<div style="position:relative;align-self:stretch;height:0"><div class="path-mascot" style="left:2%;top:-200px">${Q.mascot(ui % 2 ? 'wink' : 'happy', 110)}</div></div>`;
+    });
+    return html + '</div></section>';
+  }
   function popHTML(n, s) {
-    if (s === 'locked') return `<div class="pop locked"><h3>${esc(n.title || 'Sandık')}</h3><p>Bunu açmak için önceki tüm seviyeleri tamamla!</p><button class="btn" disabled style="background:var(--lock);color:var(--muted)">Kilitli</button></div>`;
+    if (s === 'locked') return `<div class="pop locked"><h3>${esc(n.title || 'Sandık')}</h3><p>Bunu açmak için önceki tüm adımları tamamla!</p><button class="btn" disabled style="background:var(--lock);color:var(--muted)">Kilitli</button></div>`;
     if (n.type === 'chest') return `<div class="pop"><h3>Hazine sandığı</h3><p>${s === 'done' ? 'Bu sandığı zaten açtın.' : 'İçinde mücevherler ve sürprizler var!'}</p>${s === 'done' ? '' : '<button class="btn" data-act="chest">Aç</button>'}</div>`;
     if (n.type === 'test') return `<div class="pop"><h3>${esc(n.title)}</h3><p>${s === 'done' ? 'Testi geçtin! İstersen tekrar çöz.' : 'Ünitedeki her şeyi kanıtla. Canların bitmeden tamamla!'}</p><button class="btn" data-act="test">${s === 'done' ? 'Tekrar · +25 XP' : 'Teste başla · +25 XP'}</button></div>`;
+    if (n.type === 'story') return `<div class="pop"><h3>📖 Hikâye: ${esc(n.title)}</h3><p>${s === 'done' ? 'Okudun! Tekrar okuyabilirsin.' : 'Deniz\'in Londra maceraları devam ediyor. Oku, dinle, soruları cevapla.'}</p><button class="btn" data-act="story">${s === 'done' ? 'Tekrar oku · +8 XP' : 'Oku · +15 XP'}</button></div>`;
+    if (n.type === 'vocab') return `<div class="pop"><h3>${esc(n.title)}</h3><p>${s === 'done' ? 'Bu kelimeleri öğrendin. Tekrar etmek ister misin?' : 'Ünitenin ek kelimelerini eşleştirme ve seçme ile öğren.'}</p><button class="btn" data-act="vocab">${s === 'done' ? 'Tekrar · +10 XP' : 'Başla · +10 XP'}</button></div>`;
     const lv = S.progress[n.id] || 0;
     if (s === 'done') return `<div class="pop"><h3>${esc(n.title)}</h3><p>Tamamlandı! Tekrar ederek pekiştir.</p><div class="row"><button class="btn" data-act="review">Tekrar · +10 XP</button></div></div>`;
     return `<div class="pop"><h3>${esc(n.title)}</h3><p>Ders ${lv + 1} / ${Q.LEVELS}</p><button class="btn" data-act="lesson">Başla · +10 XP</button></div>`;
   }
   function guide(ui) {
     const u = C.units[ui];
-    const words = Q.ALL_WORDS.filter(w => w.unit === ui);
+    const words = Q.ALL_WORDS.filter(w => w.unit === ui && !w.extra);
+    const extra = Q.ALL_WORDS.filter(w => w.unit === ui && w.extra);
     const sents = Q.ALL_SENTS.filter(s => s.unit === ui);
-    Q.modal(`<h2>📖 ${esc(u.title)} · Rehber</h2><p>${esc(u.desc)}</p>
-      <div style="text-align:left"><h3 class="section-h" style="margin-top:6px">Anahtar kelimeler</h3><div class="wordlist">${words.map(w => `<div class="wl"><span class="em">${w.em}</span><div class="w"><b>${esc(w.en)}</b><small>${esc(w.tr)}</small></div>${Q.ttsOK ? `<button class="play" style="width:36px;height:36px;font-size:1rem" data-say="${esc(w.en)}">🔊</button>` : ''}</div>`).join('')}</div>
-      <h3 class="section-h">Örnek cümleler</h3><div class="wordlist">${sents.slice(0, 8).map(s => `<div class="wl"><div class="w"><b>${esc(s.en)}</b><small>${esc(s.tr)}</small></div>${Q.ttsOK ? `<button class="play" style="width:36px;height:36px;font-size:1rem" data-say="${esc(s.en)}">🔊</button>` : ''}</div>`).join('')}</div></div>
+    const say = t => Q.ttsOK ? `<button class="play" style="width:36px;height:36px;font-size:1rem;flex:none" data-say="${esc(t)}" aria-label="Dinle">🔊</button>` : '';
+    const wl = list => `<div class="wordlist">${list.map(w => `<div class="wl"><span class="em">${w.em || '•'}</span><div class="w"><b>${esc(w.en)}</b><small>${esc(w.tr)}</small></div>${say(w.en)}</div>`).join('')}</div>`;
+    Q.modal(`<h2>📖 ${esc(u.title)}</h2><p>${esc(u.cefr)} · ${esc(u.desc)}</p>
+      <div style="text-align:left">${(u.guide || []).map(g => `<div class="gtip"><h3>💡 ${esc(g.h)}</h3><p>${esc(g.p)}</p>${g.ex.map(e => `<div class="gex"><div><b>${esc(e[0])}</b><small>${esc(e[1])}</small></div>${say(e[0])}</div>`).join('')}</div>`).join('')}
+      <h3 class="section-h" style="margin-top:6px">Ders kelimeleri (${words.length})</h3>${wl(words)}
+      ${extra.length ? `<h3 class="section-h">Kelime paketi (${extra.length})</h3>${wl(extra)}` : ''}
+      <h3 class="section-h">Örnek cümleler</h3><div class="wordlist">${sents.slice(0, 10).map(s => `<div class="wl"><div class="w"><b>${esc(s.en)}</b><small>${esc(s.tr)}</small></div>${say(s.en)}</div>`).join('')}</div></div>
       <button class="btn block" data-a="ok">Anladım</button>`, (m, c) => {
       m.onclick = e => { const b = e.target.closest('[data-say]'); if (b) Q.speak(b.dataset.say); };
       m.querySelector('[data-a=ok]').onclick = c;
     });
+  }
+  function certHTML(id) {
+    const sec = C.sections.find(x => x.id === id);
+    const d = S.cert[id] ? Q.parseDay(S.cert[id]).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+    return `<div class="cert"><div class="cert-in"><div class="cert-logo">${Q.mascot('happy', 56)}<b>SPOTIQ Dil</b></div><p class="cert-k">BAŞARI SERTİFİKASI</p><h2>${esc(S.name || 'Öğrenci')}</h2><p>İngilizce <b>${sec.id} · ${esc(sec.name)}</b> seviyesinin tüm ünitelerini başarıyla tamamlamıştır.</p><div class="cert-big">${sec.id}</div><p class="small muted">${d}</p></div></div>`;
+  }
+  function showCert(id) {
+    Q.modal(`${certHTML(id)}<button class="btn block" data-a="print">🖨️ Yazdır / PDF</button><button class="btn ghost block" data-a="ok">Kapat</button>`, (m, c) => {
+      m.querySelector('[data-a=ok]').onclick = c;
+      m.querySelector('[data-a=print]').onclick = () => { document.body.classList.add('printing'); window.print(); setTimeout(() => document.body.classList.remove('printing'), 500); };
+    });
+  }
+  function jumpAsk(si) {
+    const sec = C.sections[si];
+    Q.modal(`<div class="em">${sec.icon}</div><h2>${sec.id} seviyesine atla</h2><p>${C.sections[si - 1].id} seviyesinden 15 soruluk bir testle ${sec.id} öncesindeki her şeyi bildiğini kanıtla. 3 hata hakkın var. Geçersen önceki seviyeler tamamlanmış sayılır ve sertifikaları açılır.</p>
+      <button class="btn block" data-a="go">Teste başla</button><button class="btn ghost block" data-a="no">Vazgeç</button>`, (m, c) => {
+      m.querySelector('[data-a=no]').onclick = c;
+      m.querySelector('[data-a=go]').onclick = () => { c(); runJump(si - 1, si, false); };
+    });
+  }
+  /* Bir bölümün testini çözer; geçerse o bölümü tamamlar. chain=true ise seviye tespitinde bir sonrakine sorar */
+  function runJump(si, target, chain) {
+    const sec = C.sections[si];
+    Lesson.start({ mode: 'jump', section: si, onDone: () => {
+      if (chain && si + 1 < C.sections.length - 1) {
+        const nx = C.sections[si + 1];
+        Q.modal(`<div class="em">🎉</div><h2>${sec.id} geçildi!</h2><p>Seviyen en az ${nx.id}. ${nx.id} testini de denemek ister misin?</p><button class="btn block" data-a="go">${nx.id} testine geç</button><button class="btn ghost block" data-a="no">Burada başlayayım</button>`, (m, c) => {
+          m.querySelector('[data-a=no]').onclick = () => { c(); render(); };
+          m.querySelector('[data-a=go]').onclick = () => { c(); runJump(si + 1, si + 2, true); };
+        });
+      }
+    } });
   }
   function openChest(n) {
     const f = Q.rng(n.id + S.created);
@@ -126,9 +190,8 @@
   function leagueResultBanner() {
     const r = S.leagueResult, t = Q.TIERS[r.to];
     const txt = r.msg === 'up' ? `Tebrikler! ${r.rank}. oldun ve <b>${t.n}</b> ligine yükseldin!` : r.msg === 'down' ? `${r.rank}. oldun ve <b>${t.n}</b> ligine düştün. Bu hafta geri dön!` : `Geçen hafta ${r.rank}. oldun, <b>${t.n}</b> liginde kaldın.`;
-    return `<div class="daily-hero" style="background:linear-gradient(135deg,var(--plum),#a36be0)"><div style="font-size:3rem">${t.i}</div><div><h2>Haftalık lig sonucu</h2><p>${txt}</p><button class="btn sm" data-act="lgok">Tamam</button></div></div>`;
+    return `<div class="daily-hero" style="background:linear-gradient(135deg,var(--plum),#a48bff)"><div style="font-size:3rem">${t.i}</div><div><h2>Haftalık lig sonucu</h2><p>${txt}</p><button class="btn sm" data-act="lgok">Tamam</button></div></div>`;
   }
-
   /* ---------- Pratik ---------- */
   function renderPractice() {
     const mist = Object.keys(S.mistakes).length, due = Games.dueWords().length, wc = Object.keys(S.words).length;
@@ -242,16 +305,19 @@
       </div>
       <h2 class="section-h">Bu hafta</h2><div class="box"><div class="week-bars">${bars}</div></div>
       <h2 class="section-h">Çalışma takvimi</h2><div class="box"><div class="heat">${heat}</div><p class="small muted" style="margin-top:8px">Her kare bir gün. Koyu renk = daha çok XP. ❄ mavi = seri dondurucu kullanılan gün.</p></div>
+      <h2 class="section-h">Sertifikalar</h2><div class="badges">${C.sections.map(sec => `<button class="badge ${S.cert[sec.id] ? '' : 'off'}" ${S.cert[sec.id] ? `data-cert="${sec.id}"` : 'disabled'}><span class="bi">${sec.icon}</span><b>${sec.id}</b><small>${esc(sec.name)}</small></button>`).join('')}</div>
       <h2 class="section-h">Başarımlar</h2><div class="badges">${Q.ACH.map(a => { const v = a.v(), on = !!S.ach[a.id]; return `<div class="badge ${on ? '' : 'off'}"><span class="bi">${a.ic}</span><b>${a.n}</b><small>${a.d}</small>${on ? '' : `<div class="bar" style="height:8px;margin-top:6px"><i style="width:${Math.min(100, v / a.g * 100)}%"></i></div>`}</div>`; }).join('')}</div>
       <h2 class="section-h">Ayarlar</h2><div class="box settings">
         ${sw('sound', 'Ses efektleri', 'Doğru/yanlış sesleri')}
         ${sw('tts', 'Dinleme ve seslendirme', Q.ttsOK ? 'Kelimeleri sesli okut, dinleme soruları' : 'Tarayıcın desteklemiyor')}
         ${sw('speak', 'Konuşma soruları', Q.SR ? 'Mikrofonla telaffuz alıştırması' : 'Tarayıcın desteklemiyor')}
+        ${sw('hearts', 'Can sistemi', 'Kapalıyken hata yapsan da sınırsız devam edersin')}
         <div class="set"><div><b>Tema</b></div><div class="seg">${[['auto', 'Otomatik'], ['light', 'Açık'], ['dark', 'Koyu']].map(([k, t]) => `<button class="${S.settings.theme === k ? 'on' : ''}" data-theme="${k}">${t}</button>`).join('')}</div></div>
         <div class="set"><div><b>Günlük hedef</b><p class="small muted">${S.dailyGoal} XP / gün</p></div><button class="btn ghost sm" data-pop="goal">Değiştir</button></div>
         <div class="set"><div><b>İlerlemeni yedekle</b><p class="small muted">Başka bir cihaza taşımak için dosya olarak indir</p></div><div class="seg"><button data-data="export">İndir</button><button data-data="import">Yükle</button></div></div>
         <div class="set"><div><b>Sıfırla</b><p class="small muted">Tüm ilerlemeyi siler</p></div><button class="btn bad sm" data-data="reset">Sıfırla</button></div>
       </div>
+      <h2 class="section-h">Neden bu renkler?</h2><div class="box"><p class="soft small" style="line-height:1.6">SPOTIQ Dil'in renkleri öğrenme araştırmalarına göre seçildi: <b style="color:var(--brand)">Mavi</b> odaklanmayı ve "yaklaşma" motivasyonunu destekler (Mehta ve Zhu, 2009, <i>Science</i>). <b style="color:var(--ok)">Yeşil</b> gelişme ve ustalaşma isteğini çağrıştırır (Lichtenfeld ve ark., 2012); bu yüzden doğru cevaplar ve ilerleme yeşil. Test öncesi görülen <b>kırmızının</b> performansı düşürdüğü gösterildiği için (Elliot ve ark., 2007) hatalarda kırmızı yerine yumuşak <b style="color:var(--bad)">turuncu</b> kullanıyoruz. Ödüller için dikkat çeken <b style="color:var(--gold-d)">sarı</b>. Her renk her yerde aynı anlamı taşır; tutarlı renk kodlaması hatırlamayı kolaylaştırır.</p></div>
       <p class="footer-note">SPOTIQ Dil · İlerlemen yalnızca bu cihazda saklanır. <a href="../../gizlilik.html">Gizlilik</a></p>`;
   }
   function sw(k, t, d) { return `<div class="set"><div><b>${t}</b><p class="small muted">${d}</p></div><button class="switch ${S.settings[k] ? 'on' : ''}" data-sw="${k}" role="switch" aria-checked="${S.settings[k]}" aria-label="${t}"></button></div>`; }
@@ -325,6 +391,8 @@
     else if (a === 'review') Lesson.start({ mode: 'lesson', node: n, level: Math.floor(Math.random() * Q.LEVELS), review: true });
     else if (a === 'test') Lesson.start({ mode: 'test', node: n });
     else if (a === 'chest') { openNode = NODES.indexOf(n); openChest(n); }
+    else if (a === 'story') Lesson.story(n);
+    else if (a === 'vocab') Lesson.start({ mode: 'vocab', node: n });
   }
 
   /* ---------- Render ---------- */
@@ -344,15 +412,18 @@
 
   document.addEventListener('click', e => {
     if (!$('#overlay').hidden) return;
-    const t = e.target.closest('[data-go],[data-pop],[data-node],[data-act],[data-claim],[data-buy],[data-prac],[data-game],[data-sw],[data-theme],[data-data],[data-guide]');
+    const t = e.target.closest('[data-expand],[data-jump],[data-cert],[data-go],[data-pop],[data-node],[data-act],[data-claim],[data-buy],[data-prac],[data-game],[data-sw],[data-theme],[data-data],[data-guide]');
     if (!t) { if (openNode !== null && !e.target.closest('.pop')) { openNode = null; render(); } return; }
     const d = t.dataset;
+    if (d.expand !== undefined) { const si = +d.expand, cs = Q.currentSection(); if (si === cs) expanded = expanded === -1 - si ? null : -1 - si; else expanded = expanded === si ? null : si; openNode = null; return render(); }
+    if (d.jump !== undefined) return jumpAsk(+d.jump);
+    if (d.cert) return showCert(d.cert);
     if (d.go) return go(d.go);
     if (d.pop) return pop(d.pop);
     if (d.guide !== undefined) return guide(+d.guide);
     if (d.node !== undefined) { const i = +d.node; openNode = openNode === i ? null : i; Q.sfx('tap'); render(); return; }
     if (d.act) {
-      if (['lesson', 'review', 'test', 'chest'].includes(d.act)) return nodeAction(d.act);
+      if (['lesson', 'review', 'test', 'chest', 'story', 'vocab'].includes(d.act)) return nodeAction(d.act);
       if (d.act === 'lgok') { S.leagueResult = null; Q.save(); return render(); }
       if (d.act === 'repair') {
         if (S.gems < 400) return Q.toast('Yeterli mücevherin yok (400 💎 gerekli)');
@@ -383,25 +454,30 @@
     const ov = $('#overlay'); ov.hidden = false;
     let step = 0; const data = { goal: 20, name: '' };
     function draw() {
-      const steps = `<div class="steps">${[0, 1, 2].map(i => `<i class="${i <= step ? 'on' : ''}"></i>`).join('')}</div>`;
+      const steps = `<div class="steps">${[0, 1, 2, 3].map(i => `<i class="${i <= step ? 'on' : ''}"></i>`).join('')}</div>`;
       if (step === 0) ov.innerHTML = `<div class="onb">${Q.mascot('happy', 170)}<h1>spotiq<span>.</span>dil</h1><p class="soft" style="font-size:1.1rem">Ücretsiz, eğlenceli ve etkili İngilizce. Günde 5 dakika ile başla!</p>
         <ul style="text-align:left;color:var(--soft);line-height:1.9;padding-left:20px;margin:0"><li>🔥 Seri, XP, lig ve günlük görevler</li><li>🎧 Dinleme, 🎙️ konuşma ve yazma alıştırmaları</li><li>🧩 SPOTIQ'e özel: günün bulmacası & farkı bul</li><li>🃏 Aralıklı tekrar ile kelime kartları</li></ul>
         <button class="btn block" data-n="1">Başlayalım</button></div>`;
       if (step === 1) ov.innerHTML = `<div class="onb">${steps}${Q.mascot('think', 120)}<h1>Günlük hedefin ne olsun?</h1><div class="opts">${[[10, 'Rahat', '5 dk'], [20, 'Normal', '10 dk'], [30, 'Ciddi', '15 dk'], [50, 'Yoğun', '20 dk']].map(([x, t, m]) => `<button class="opt ${data.goal === x ? 'on' : ''}" data-g="${x}"><span>${t}</span><span class="muted">${m} / gün</span></button>`).join('')}</div><button class="btn block" data-n="2">Devam</button></div>`;
-      if (step === 2) ov.innerHTML = `<div class="onb">${steps}${Q.mascot('wink', 120)}<h1>Sana nasıl seslenelim?</h1><input id="onm" maxlength="24" placeholder="Adın (isteğe bağlı)" value="${esc(data.name)}"><button class="btn block" data-n="3">İlk derse başla</button><button class="btn text" data-n="skip">Önce etrafa bakayım</button></div>`;
+      if (step === 2) ov.innerHTML = `<div class="onb">${steps}${Q.mascot('wink', 120)}<h1>Sana nasıl seslenelim?</h1><input id="onm" maxlength="24" placeholder="Adın (sertifikanda yazacak)" value="${esc(data.name)}"><button class="btn block" data-n="3">Devam</button></div>`;
+      if (step === 3) ov.innerHTML = `<div class="onb">${steps}${Q.mascot('think', 120)}<h1>İngilizcen ne durumda?</h1><div class="opts">
+        <button class="opt" data-lv="zero"><span>🌱 Sıfırdan başlıyorum</span><span class="muted">A1</span></button>
+        <button class="opt" data-lv="test"><span>🧭 Biraz biliyorum, seviyemi bul</span><span class="muted">Test</span></button></div>
+        <p class="small muted">Seviye testi her seviyeden 15 soru sorar. Geçtiğin seviyeler tamamlanmış sayılır.</p><button class="btn text" data-lv="skip">Önce etrafa bakayım</button></div>`;
       const i = $('#onm'); if (i) { i.focus(); i.onkeydown = e => { if (e.key === 'Enter') ov.querySelector('[data-n="3"]').click(); }; }
     }
     ov.onclick = e => {
       const g = e.target.closest('[data-g]'); if (g) { data.goal = +g.dataset.g; Q.sfx('tap'); draw(); return; }
-      const n = e.target.closest('[data-n]'); if (!n) return;
-      if (n.dataset.n === '3' || n.dataset.n === 'skip') {
-        const i = $('#onm'); data.name = i ? i.value.trim() : '';
+      const lv = e.target.closest('[data-lv]');
+      if (lv) {
         S.name = data.name; S.dailyGoal = data.goal; S.onboarded = true; Q.save();
         ov.onclick = null; ov.hidden = true; ov.innerHTML = ''; $('#app').hidden = false;
         render();
-        if (n.dataset.n === '3') Lesson.start({ mode: 'lesson', node: NODES[0], level: 0 });
+        if (lv.dataset.lv === 'zero') Lesson.start({ mode: 'lesson', node: NODES[0], level: 0 });
+        if (lv.dataset.lv === 'test') runJump(0, 1, true);
         return;
       }
+      const n = e.target.closest('[data-n]'); if (!n) return;
       if (step === 2) { const i = $('#onm'); data.name = i ? i.value.trim() : ''; }
       step = +n.dataset.n; Q.sfx('tap'); draw();
     };
@@ -419,7 +495,7 @@
   setInterval(() => { if ($('#overlay').hidden && $('#modal').hidden) { Q.tick(); renderNav(); renderRail(); } }, 60000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden && $('#overlay').hidden && S.onboarded) render(); });
 
-  window.App = { render, noHearts };
+  window.App = { render, noHearts, certHTML };
   Q.tick();
   boot();
 })();
