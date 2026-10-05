@@ -425,3 +425,5 @@ main{padding:24px 24px 120px;outline:none}
 .cert h2{font-size:1.7rem;margin-bottom:8px}
 .cert-big{font-size:3.4rem;font-weight:900;color:var(--brand);line-height:1.1;margin:10px 0}
 @media print{body.printing>*:not(#modal){display:none!important}body.printing #modal{position:static;background:none;padding:0}body.printing .modal .btn{display:none}}
+
+.sel{width:100%;max-width:100%;margin-top:8px;border:2px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--card);color:var(--ink);font-weight:700}

@@ -69,7 +69,7 @@
       cert: {}, stats: { stories: 0, lessons: 0, perfect: 0, maxCombo: 0, puzzles: 0, games: 0, diffs: 0, cards: 0, tests: 0, mathBest: 0, rushBest: 0, diffBest: 0, night: 0, early: 0 },
       league: { tier: 0, week: weekKey(), xp: 0 }, leagueResult: null,
       puzzle: { day: null, solved: false, streak: 0, lastSolved: null },
-      settings: { sound: true, tts: true, speak: true, hearts: true, theme: 'auto', motivate: true }
+      settings: { voice: '', rate: 0.95, sound: true, tts: true, speak: true, hearts: true, theme: 'auto', motivate: true }
     };
   }
   function merge(d, s) { for (const k in d) { if (s[k] === undefined) s[k] = d[k]; else if (d[k] && typeof d[k] === 'object' && !Array.isArray(d[k]) && s[k] && typeof s[k] === 'object') merge(d[k], s[k]); } return s; }
@@ -340,19 +340,40 @@
   /* ---------- Seslendirme ---------- */
   const ttsOK = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
   let voice = null;
-  function pickVoice() {
-    if (!ttsOK) return;
-    const vs = speechSynthesis.getVoices().filter(v => /^en(-|_|$)/i.test(v.lang));
-    voice = vs.find(v => /en-US/i.test(v.lang) && /Google|Samantha|Aria|Jenny|Natural/i.test(v.name)) || vs.find(v => /en-US/i.test(v.lang)) || vs.find(v => /en-GB/i.test(v.lang)) || vs[0] || null;
+  /* Ses seçimi: kaliteli (doğal/nöral) kadın seslerini öne alır, erkek ve "eğlence" seslerini geri iter */
+  const FEMALE = /samantha|ava|allison|susan|victoria|karen|moira|tessa|serena|fiona|kate|zira|aria|jenny|michelle|emma|libby|sonia|natasha|sara|joanna|salli|kimberly|ivy|kendra|nicky|hazel|female|google us english|google uk english female|clara|ana\b|nora|sonia|jane|aurora|amy|olivia|ashley|cora|elizabeth|ella|evelyn/i;
+  const MALE = /david|mark|guy|daniel|alex\b|fred|tom\b|oliver|arthur|ryan|eric|christopher|roger|steffan|brian|george|james|william|male|thomas|aaron|rishi|gordon|lee\b|liam|andrew|brandon|davis|jason|tony/i;
+  const NOVELTY = /albert|bad news|bells|boing|bubbles|cellos|jester|organ|trinoids|whisper|zarvox|wobble|superstar|bahh|junior|ralph|good news|hysterical|deranged|pipe organ|grandma|grandpa|eddy|flo|reed|rocko|sandy|shelley/i;
+  function voiceScore(v) {
+    let sc = 0;
+    if (/natural|neural|online|premium|enhanced/i.test(v.name)) sc += 40;
+    if (/google/i.test(v.name)) sc += 25;
+    if (FEMALE.test(v.name)) sc += 30;
+    if (MALE.test(v.name) && !/female/i.test(v.name)) sc -= 60;
+    if (NOVELTY.test(v.name)) sc -= 200;
+    if (/en[-_]US/i.test(v.lang)) sc += 6; else if (/en[-_]GB/i.test(v.lang)) sc += 4;
+    if (!v.localService) sc += 5;
+    return sc;
   }
-  if (ttsOK) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+  function englishVoices() {
+    if (!ttsOK) return [];
+    return speechSynthesis.getVoices().filter(v => /^en(-|_|$)/i.test(v.lang)).sort((a, b) => voiceScore(b) - voiceScore(a));
+  }
+  function pickVoice() {
+    const vs = englishVoices();
+    const want = S && S.settings && S.settings.voice;
+    voice = (want && vs.find(v => v.name === want)) || vs[0] || null;
+  }
+  if (ttsOK) { speechSynthesis.onvoiceschanged = pickVoice; }
   function speak(text, slow) {
     if (!ttsOK || !S.settings.tts) return false;
+    if (!voice || (S.settings.voice && voice.name !== S.settings.voice)) pickVoice();
     try {
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
       u.lang = voice ? voice.lang : 'en-US'; if (voice) u.voice = voice;
-      u.rate = slow ? 0.55 : 0.92;
+      const base = (S.settings.rate || 0.95);
+      u.rate = slow ? base * 0.6 : base; u.pitch = 1.05;
       speechSynthesis.speak(u);
       return true;
     } catch (e) { return false; }
@@ -424,6 +445,6 @@
     heartsUnlimited, nextHeartIn, loseHeart, addXP, todayXP, extendStreak, streakActiveToday,
     TIERS, leagueBoard, weekFrac, ensureQuests, questInfo, bump, questsReady, ACH, checkAchievements,
     nodeDone, currentIndex, sectionDone, currentSection, checkCerts, completeSection, learnWords, unlockedSentences,
-    norm, judge, lev, sfx, speak, ttsOK, SR, canListen, canSpeak, mascot, toast, modal, confetti, fmtTime
+    norm, judge, lev, sfx, speak, englishVoices, pickVoice, currentVoice: () => voice, ttsOK, SR, canListen, canSpeak, mascot, toast, modal, confetti, fmtTime
   };
 })();

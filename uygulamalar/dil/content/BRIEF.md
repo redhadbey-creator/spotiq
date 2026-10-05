@@ -1,6 +1,6 @@
 # SPOTIQ Dil — içerik yazım kılavuzu (ajanlar için)
 
-Türkçe konuşan yetişkinlere (hedef kitle: ~25 yaş) İngilizce öğreten, Duolingo tarzı bir uygulamanın kurs içeriğini yazıyorsun.
+Türkçe konuşan yetişkinlere (hedef kitle: ~25 yaş) İngilizce öğreten, oyunlaştırılmış bir dil uygulamasının kurs içeriğini yazıyorsun.
 Hedef: Kurs bittiğinde öğrenci C1 seviyesine ulaşmış olmalı. İçerik yetişkinlere hitap etmeli (iş, kariyer, ilişkiler, para, teknoloji, seyahat, haber, kültür), sıkıcı olmamalı, esprili ve doğal olmalı.
 Tüm içerik ÖZGÜN olmalı: hiçbir ders kitabından, şarkıdan, filmden veya yayından metin kopyalama.
 
@@ -43,7 +43,7 @@ Tek bir JS dosyası yaz: `/home/user/spotiq/uygulamalar/dil/content/<ANAHTAR>.js
 5. İngilizce cümle en fazla 18 kelime, Türkçe en fazla 14 kelime. Seviye yükseldikçe cümleler uzasın ve zenginleşsin (A1: 3-7 kelime; C1: 10-18).
 6. TÜRKÇE ALTERNATİFLER HAYATİ: Kullanıcı Türkçe kelime kartlarını dizerek ya da İngilizce yazarak cevap veriyor. Doğru bir çeviriyi yanlış saymamak için 4. alana makul tüm Türkçe varyantları yaz: zamirli/zamirsiz ("Ben yorgunum" / "Yorgunum"), -iyor/-ir ("içiyorum"/"içerim"), sen/siz, eş anlamlılar ("hızlı/çabuk"). İngilizce alternatifleri 3. alana yaz (eş anlamlı ifade, farklı kelime sırası). Kısaltmalar (I'm, don't) otomatik eşleşir, onları alternatif olarak yazmana gerek yok.
 7. Türkçe doğal, akıcı ve doğru olsun (makine çevirisi gibi değil). Türkçe karakterleri doğru kullan (ç ğ ı İ ö ş ü).
-8. Rehber (guide) Duolingo'nun eleştirilen eksiğini kapatıyor: dilbilgisini açıkça, Türkçe ve Türkler için anlat (ör. "Türkçede 'olmak' fiili gizlidir, İngilizcede am/is/are şarttır").
+8. Rehber (guide) birçok dil uygulamasında eksik olan bir şeyi kapatıyor: dilbilgisini açıkça, Türkçe ve Türkler için anlat (ör. "Türkçede 'olmak' fiili gizlidir, İngilizcede am/is/are şarttır").
 9. Hikâyeler eğlenceli, esprili ve süreklilik içinde olsun (aşağıdaki hikâye evrenine uy). Sorular anlamayı ölçsün. A1-A2'de sorular Türkçe; B1 ve üstünde İngilizce olabilir.
 10. Bittikten sonra doğrula: `cd /home/user/spotiq/uygulamalar/dil/content && node validate.js <ANAHTAR>.js` — 0 hata olana kadar düzelt. `node --check <ANAHTAR>.js` de geçmeli.
 11. Dosya büyük olacak; Write ile bir kerede yazamıyorsan üniteleri sırayla ekleyerek (Edit ile) yaz. Başka dosyaya dokunma.

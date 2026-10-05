@@ -310,6 +310,7 @@
       <h2 class="section-h">Ayarlar</h2><div class="box settings">
         ${sw('sound', 'Ses efektleri', 'Doğru/yanlış sesleri')}
         ${sw('tts', 'Dinleme ve seslendirme', Q.ttsOK ? 'Kelimeleri sesli okut, dinleme soruları' : 'Tarayıcın desteklemiyor')}
+        ${Q.ttsOK ? voiceSettings() : ''}
         ${sw('speak', 'Konuşma soruları', Q.SR ? 'Mikrofonla telaffuz alıştırması' : 'Tarayıcın desteklemiyor')}
         ${sw('hearts', 'Can sistemi', 'Kapalıyken hata yapsan da sınırsız devam edersin')}
         <div class="set"><div><b>Tema</b></div><div class="seg">${[['auto', 'Otomatik'], ['light', 'Açık'], ['dark', 'Koyu']].map(([k, t]) => `<button class="${S.settings.theme === k ? 'on' : ''}" data-theme="${k}">${t}</button>`).join('')}</div></div>
@@ -319,6 +320,12 @@
       </div>
       <h2 class="section-h">Neden bu renkler?</h2><div class="box"><p class="soft small" style="line-height:1.6">SPOTIQ Dil'in renkleri öğrenme araştırmalarına göre seçildi: <b style="color:var(--brand)">Mavi</b> odaklanmayı ve "yaklaşma" motivasyonunu destekler (Mehta ve Zhu, 2009, <i>Science</i>). <b style="color:var(--ok)">Yeşil</b> gelişme ve ustalaşma isteğini çağrıştırır (Lichtenfeld ve ark., 2012); bu yüzden doğru cevaplar ve ilerleme yeşil. Test öncesi görülen <b>kırmızının</b> performansı düşürdüğü gösterildiği için (Elliot ve ark., 2007) hatalarda kırmızı yerine yumuşak <b style="color:var(--bad)">turuncu</b> kullanıyoruz. Ödüller için dikkat çeken <b style="color:var(--gold-d)">sarı</b>. Her renk her yerde aynı anlamı taşır; tutarlı renk kodlaması hatırlamayı kolaylaştırır.</p></div>
       <p class="footer-note">SPOTIQ Dil · İlerlemen yalnızca bu cihazda saklanır. <a href="../../gizlilik.html">Gizlilik</a></p>`;
+  }
+  function voiceSettings() {
+    const vs = Q.englishVoices(), cur = Q.currentVoice();
+    const opts = `<option value="">Otomatik · en iyi kadın sesi${cur && !S.settings.voice ? ' (' + esc(cur.name) + ')' : ''}</option>` + vs.map(v => `<option value="${esc(v.name)}" ${S.settings.voice === v.name ? 'selected' : ''}>${esc(v.name)} · ${esc(v.lang)}</option>`).join('');
+    return `<div class="set"><div style="min-width:0;flex:1"><b>Seslendirme sesi</b><p class="small muted">${vs.length ? 'Cihazındaki İngilizce sesler, en doğal kadın sesleri üstte' : 'Sesler yükleniyor…'}</p><select id="voice-sel" class="sel">${opts}</select></div><button class="btn ghost sm" data-voicetest="1">🔊 Dene</button></div>
+      <div class="set"><div><b>Konuşma hızı</b></div><div class="seg">${[[0.8, 'Yavaş'], [0.95, 'Normal'], [1.1, 'Hızlı']].map(([r, t]) => `<button class="${Math.abs((S.settings.rate || 0.95) - r) < 0.01 ? 'on' : ''}" data-rate="${r}">${t}</button>`).join('')}</div></div>`;
   }
   function sw(k, t, d) { return `<div class="set"><div><b>${t}</b><p class="small muted">${d}</p></div><button class="switch ${S.settings[k] ? 'on' : ''}" data-sw="${k}" role="switch" aria-checked="${S.settings[k]}" aria-label="${t}"></button></div>`; }
 
@@ -412,9 +419,11 @@
 
   document.addEventListener('click', e => {
     if (!$('#overlay').hidden) return;
-    const t = e.target.closest('[data-expand],[data-jump],[data-cert],[data-go],[data-pop],[data-node],[data-act],[data-claim],[data-buy],[data-prac],[data-game],[data-sw],[data-theme],[data-data],[data-guide]');
+    const t = e.target.closest('[data-voicetest],[data-rate],[data-expand],[data-jump],[data-cert],[data-go],[data-pop],[data-node],[data-act],[data-claim],[data-buy],[data-prac],[data-game],[data-sw],[data-theme],[data-data],[data-guide]');
     if (!t) { if (openNode !== null && !e.target.closest('.pop')) { openNode = null; render(); } return; }
     const d = t.dataset;
+    if (d.voicetest) return Q.speak('Hello! Nice to meet you. Let\'s learn English together.');
+    if (d.rate) { S.settings.rate = +d.rate; Q.save(); Q.speak('This is my speaking speed.'); return render(); }
     if (d.expand !== undefined) { const si = +d.expand, cs = Q.currentSection(); if (si === cs) expanded = expanded === -1 - si ? null : -1 - si; else expanded = expanded === si ? null : si; openNode = null; return render(); }
     if (d.jump !== undefined) return jumpAsk(+d.jump);
     if (d.cert) return showCert(d.cert);
@@ -446,6 +455,10 @@
     if (d.theme) { S.settings.theme = d.theme; Q.save(); applyTheme(); return render(); }
     if (d.data) return dataAction(d.data);
   });
+  document.addEventListener('change', e => {
+    if (e.target.id === 'voice-sel') { S.settings.voice = e.target.value; Q.save(); Q.pickVoice(); Q.speak('Hello! This is my voice.'); }
+  });
+  if (Q.ttsOK) speechSynthesis.addEventListener && speechSynthesis.addEventListener('voiceschanged', () => { if (view === 'profile' && $('#overlay').hidden) render(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#modal').hidden) { $('#modal').hidden = true; $('#modal').innerHTML = ''; } });
 
   /* ---------- Karşılama ---------- */
