@@ -524,7 +524,7 @@
     S = Q.S; applyTheme();
     const ov = $('#overlay');
     if (!ov.hidden && ov.querySelector('.onb') && S.onboarded) { ov.onclick = null; ov.hidden = true; ov.innerHTML = ''; $('#app').hidden = false; }
-    if (ov.hidden) render();
+    if (ov.hidden) { if (!S.onboarded) { view = 'learn'; return boot(); } render(); }
   }
   window.App = { render, noHearts, badgeHTML, afterAuth };
   Q.tick();

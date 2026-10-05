@@ -74,7 +74,7 @@
   const MAX_HEARTS = 5;
   function defaults() {
     return {
-      v: 1, onboarded: false, name: '', avatar: '🦊', created: dayKey(), dailyGoal: 20,
+      v: 1, owner: null, onboarded: false, name: '', avatar: '🦊', created: dayKey(), dailyGoal: 20,
       xp: 0, gems: 500, hearts: MAX_HEARTS, heartAt: Date.now(),
       streak: 0, bestStreak: 0, lastDay: null, freezes: 1, frozen: [], lostStreak: null,
       doubleUntil: 0, unlimitedUntil: 0,

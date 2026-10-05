@@ -36,12 +36,12 @@
       if (acc[email]) throw new Error('Bu e-posta ile zaten bir hesap var. Giriş yapmayı dene.');
       acc[email] = { email, created: new Date().toISOString(), pw: await digest(email + ':' + password), consents, progress: null };
       write(DKEY, acc); write(SKEY, { email });
-      return { email, created: acc[email].created };
+      return { email, uid: email, created: acc[email].created };
     },
     async signIn({ email, password }) {
       const a = read(DKEY, {})[email];
       if (!a || a.pw !== await digest(email + ':' + password)) throw new Error('E-posta veya şifre hatalı.');
-      write(SKEY, { email }); return { email, created: a.created };
+      write(SKEY, { email }); return { email, uid: email, created: a.created };
     },
     async signOut() { try { localStorage.removeItem(SKEY); } catch (e) { } },
     async resetPassword() { return { demo: true }; },
@@ -49,7 +49,7 @@
     async exportData() { const s = read(SKEY, null); const a = s && read(DKEY, {})[s.email]; if (!a) return null; const { pw, ...rest } = a; return rest; },
     async saveProgress(state) { const s = read(SKEY, null); if (!s) return; const acc = read(DKEY, {}); if (acc[s.email]) { acc[s.email].progress = state; write(DKEY, acc); } },
     async loadProgress() { const s = read(SKEY, null); const a = s && read(DKEY, {})[s.email]; return a ? a.progress : null; },
-    session() { const s = read(SKEY, null); const a = s && read(DKEY, {})[s.email]; return a ? { email: a.email, created: a.created } : null; }
+    session() { const s = read(SKEY, null); const a = s && read(DKEY, {})[s.email]; return a ? { email: a.email, uid: a.email, created: a.created } : null; }
   };
   const B = window.ASI_AUTH_BACKEND || Demo;
 
@@ -57,27 +57,42 @@
   const MINPW = B.minPassword || 8;
   let current = null;
   try { current = B.ready ? null : B.session(); } catch (e) { current = null; }
-  /* Gecikmeli oturum (ör. Firebase): hazır olunca oturumu al, hesaptaki ilerlemeyle eşitle */
+  /* Cihazdaki ilerleme hangi hesaba ait? (S.owner) Ortak cihazda hesaplar birbirine karışmasın. */
+  const idOf = c => c ? (c.uid || c.email) : null;
+  function adopt(remote, owner) {
+    const base = remote && remote.v ? remote : null;
+    if (base) { try { localStorage.setItem('spotiq-dil-v1', JSON.stringify(Object.assign({}, base, { owner }))); } catch (e) { } Q.load(); }
+    else { Q.reset(); Q.S.owner = owner; Q.save(); }
+  }
+  /* Giriş yapılınca: hesaptaki ilerlemeyle cihazdakini birleştir */
+  async function syncFor(c) {
+    const id = idOf(c), local = Q.S;
+    let remote = null; try { remote = await B.loadProgress(); } catch (e) { }
+    if (local.owner && local.owner !== id) return adopt(remote, id);          // başka hesabın verisi: karıştırma
+    if (remote && remote.v && (!local.onboarded || (remote.xp || 0) > (local.xp || 0))) return adopt(remote, id);
+    local.owner = id; Q.save();                                              // misafir ilerlemesi hesaba taşınır
+    try { await B.saveProgress(local); } catch (e) { }
+  }
+  /* Çıkışta: ilerleme hesapta güvende, cihazda başkası görmesin diye cihazdaki kopya temizlenir */
+  function clearLocal() { Q.reset(); }
   if (B.ready) Promise.resolve(B.ready).then(async () => {
     try { current = await B.session(); } catch (e) { current = null; }
-    if (!current) return;
-    try {
-      const remote = await B.loadProgress();
-      const local = Q.S;
-      if (remote && remote.v && (!local.onboarded || (remote.xp || 0) >= (local.xp || 0))) {
-        try { localStorage.setItem('spotiq-dil-v1', JSON.stringify(remote)); } catch (er) { }
-        Q.load();
-      } else await B.saveProgress(local);
-    } catch (e) { }
+    if (current) await syncFor(current);
+    else if (Q.S.owner) clearLocal();                                         // hesaptan başka yerde çıkılmış
     if (window.App) App.afterAuth();
   });
+  else if (current) { if (Q.S.owner && Q.S.owner !== idOf(current)) adopt(null, idOf(current)); }
+  else if (Q.S.owner) clearLocal();
+  /* Sayfa kapanırken bekleyen kaydı hemen gönder */
+  window.addEventListener('pagehide', () => { if (current && saveT) { clearTimeout(saveT); saveT = null; Promise.resolve(B.saveProgress(Q.S)).catch(() => { }); } });
 
   /* İlerleme değiştikçe hesaba kaydet (yalnızca giriş yapılmışsa) */
   let saveT = null;
   function onSave(state) {
     if (!current) return;
     clearTimeout(saveT);
-    saveT = setTimeout(() => { Promise.resolve(B.saveProgress(state)).catch(() => { }); }, 1500);
+    if (state.owner && state.owner !== idOf(current)) return;
+    saveT = setTimeout(() => { saveT = null; Promise.resolve(B.saveProgress(state)).catch(() => { }); }, 1500);
   }
 
   /* ---------- Ekranlar ---------- */
@@ -134,11 +149,7 @@
           const now = new Date().toISOString();
           const consents = { aydinlatma: now, kosullar: now, yas: now, metinSurumu: (window.ASI_LEGAL || {}).updated || '' };
           current = signup ? await B.signUp({ email, password, consents }) : await B.signIn({ email, password });
-          if (signup) await B.saveProgress(Q.S);
-          else {
-            const remote = await B.loadProgress();
-            if (remote && remote.v) { try { localStorage.setItem('spotiq-dil-v1', JSON.stringify(remote)); } catch (er) { } Q.load(); }
-          }
+          await syncFor(current);
           close(); Q.sfx('coin'); Q.toast(signup ? '🎉 Hesabın oluşturuldu!' : '👋 Tekrar hoş geldin!'); App.afterAuth();
         } catch (ex) { btn.disabled = false; fail(ex && ex.message ? ex.message : 'Bir sorun oldu, tekrar dene.'); }
       };
@@ -154,7 +165,8 @@
     }).catch(() => Q.toast('Veriler alınamadı, tekrar dene.'));
   }
   function signOut() {
-    Promise.resolve(B.signOut()).finally(() => { current = null; Q.toast(B.signOutNote || 'Çıkış yaptın. İlerlemen bu cihazda kalmaya devam ediyor.'); App.render(); });
+    const flush = current ? Promise.resolve(B.saveProgress(Q.S)).catch(() => { }) : Promise.resolve();
+    flush.then(() => B.signOut()).finally(() => { current = null; clearLocal(); Q.toast(B.signOutNote || 'Çıkış yaptın. İlerlemen hesabında güvende; tekrar giriş yapınca geri gelir.'); App.afterAuth(); });
   }
   function deleteAsk() {
     Q.modal(`<div class="em">⚠️</div><h2>Hesabını sil</h2><p>Hesabın ve hesabına kayıtlı bütün ilerleme verilerin kalıcı olarak silinir. Bu işlem geri alınamaz.</p>
@@ -171,7 +183,7 @@
           const pwEl = m.querySelector('#del-pw');
           await B.deleteAccount(pwEl ? pwEl.value : undefined);
           current = null;
-          if (m.querySelector('#del-local').checked) { Q.reset(); }
+          if (m.querySelector('#del-local').checked) { Q.reset(); } else { Q.S.owner = null; Q.save(); }
           close(); Q.toast('Hesabın silindi.'); App.render();
         } catch (e) { del.disabled = false; Q.toast(e && e.message ? e.message : 'Hesap silinemedi, tekrar dene ya da bize yaz.'); }
       };
