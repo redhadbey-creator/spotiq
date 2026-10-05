@@ -8,6 +8,18 @@
   const units = [];
   ORDER.forEach(k => (P[k] || []).forEach(u => units.push(u)));
   units.forEach((u, i) => { u.color = COLORS[i % COLORS.length]; });
+  /* Dosyalar arası tekrar eden kelimeler: ilk geçtiği yerde kalır. Ek pakette tekrarlar atılır;
+     derste en az 6 kelime kalacak şekilde atılır (kalmazsa ders kelimesi korunur). */
+  const seen = new Set();
+  const key = w => String(w[0]).toLowerCase().trim();
+  units.forEach(u => {
+    (u.lessons || []).forEach(l => {
+      const fresh = l.words.filter(w => !seen.has(key(w)));
+      if (fresh.length >= 6) l.words = fresh;
+      l.words.forEach(w => seen.add(key(w)));
+    });
+    u.extra = (u.extra || []).filter(w => { const k = key(w); if (seen.has(k)) return false; seen.add(k); return true; });
+  });
   const LEVELS = [
     { id: 'A1', name: 'Başlangıç', desc: 'Kendini tanıt, günlük ihtiyaçlarını karşıla', icon: '🌱' },
     { id: 'A2', name: 'Temel', desc: 'Geçmişi anlat, seyahat et, iş hayatına adım at', icon: '🌿' },

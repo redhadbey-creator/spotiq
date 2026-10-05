@@ -1,7 +1,7 @@
 // Kullanım: node validate.js a1_1.js [a1_2.js ...]  — içerik dosyalarını kontrol eder
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const ctx = { window: {} }; vm.createContext(ctx);
-let errors = 0, words = 0, sents = 0;
+let errors = 0, words = 0, sents = 0, warns = 0;
 const err = m => { errors++; console.log('HATA: ' + m); };
 const seen = new Map();
 for (const f of process.argv.slice(2)) {
@@ -28,7 +28,7 @@ for (const [key, units] of Object.entries(parts)) {
     const chkWord = (w, where) => {
       if (!Array.isArray(w) || w.length !== 3 || typeof w[0] !== 'string' || typeof w[1] !== 'string' || typeof w[2] !== 'string' || !w[0] || !w[1]) return err(where + ' kelime biçimi ' + JSON.stringify(w));
       const k = w[0].toLowerCase().trim();
-      if (seen.has(k)) err(where + ' tekrar eden kelime "' + w[0] + '" (ilk: ' + seen.get(k) + ')'); else seen.set(k, where);
+      if (seen.has(k)) { const first = seen.get(k); if (first.startsWith(key + ' ')) err(where + ' tekrar eden kelime "' + w[0] + '" (ilk: ' + first + ')'); else warns++; } else seen.set(k, where);
       words++;
     };
     (u.extra || []).forEach(w => chkWord(w, at + ' extra'));
@@ -52,5 +52,5 @@ for (const [key, units] of Object.entries(parts)) {
     });
   });
 }
-console.log(`\n${Object.keys(parts).join(', ')} → ${words} kelime, ${sents} cümle, ${errors} hata`);
+console.log(`\n${Object.keys(parts).join(', ')} → ${words} kelime, ${sents} cümle, ${errors} hata, ${warns} dosyalar arası tekrar (derleyicide ayıklanır)`);
 process.exit(errors ? 1 : 0);
