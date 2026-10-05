@@ -11,12 +11,15 @@
  *   saveProgress(state)                 → ilerlemeyi hesaba kaydeder (eşitleme)
  *   loadProgress()                      → hesaptaki ilerleme (yoksa null)
  *   session()                           → açık oturum {email, created} ya da null
+ * İsteğe bağlı alanlar: ready (Promise, oturum hazır olunca çözülür), idField ('email' | 'name'),
+ *   minPassword (sayı), noReset (true ise "şifremi unuttum" gizlenir), resetHint (metin),
+ *   deleteNeedsPassword (true ise silmeden önce şifre sorulur), signOutNote (metin).
  * Tanımlı değilse DEMO bağlantı kullanılır: hiçbir şey sunucuya gitmez, hesap yalnızca bu cihazda tutulur.
  */
 (function () {
   'use strict';
   const { $, esc } = Q;
-  const LEGAL = 'yasal/';
+  const LEGAL = window.ASI_LEGAL_PATH || 'yasal/';
 
   /* ---------- DEMO bağlantı (sunucusuz) ---------- */
   const DKEY = 'asi-dil-demo-accounts', SKEY = 'asi-dil-demo-session';
@@ -50,8 +53,24 @@
   };
   const B = window.ASI_AUTH_BACKEND || Demo;
 
+  const byName = B.idField === 'name';
+  const MINPW = B.minPassword || 8;
   let current = null;
-  try { current = B.session(); } catch (e) { current = null; }
+  try { current = B.ready ? null : B.session(); } catch (e) { current = null; }
+  /* Gecikmeli oturum (ör. Firebase): hazır olunca oturumu al, hesaptaki ilerlemeyle eşitle */
+  if (B.ready) Promise.resolve(B.ready).then(async () => {
+    try { current = await B.session(); } catch (e) { current = null; }
+    if (!current) return;
+    try {
+      const remote = await B.loadProgress();
+      const local = Q.S;
+      if (remote && remote.v && (!local.onboarded || (remote.xp || 0) >= (local.xp || 0))) {
+        try { localStorage.setItem('spotiq-dil-v1', JSON.stringify(remote)); } catch (er) { }
+        Q.load();
+      } else await B.saveProgress(local);
+    } catch (e) { }
+    if (window.App) App.afterAuth();
+  });
 
   /* İlerleme değiştikçe hesaba kaydet (yalnızca giriş yapılmışsa) */
   let saveT = null;
@@ -63,6 +82,8 @@
 
   /* ---------- Ekranlar ---------- */
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  const validId = v => byName ? v.replace(/[^a-z0-9]/gi, '').length >= 2 : EMAIL_RE.test(v);
+  const ID_LABEL = byName ? 'Kullanıcı adı' : 'E-posta';
   function legalLinks() {
     return `<a href="${LEGAL}aydinlatma.html" target="_blank" rel="noopener">Aydınlatma Metni</a>`;
   }
@@ -72,16 +93,17 @@
       <p class="small">${signup ? 'Hesap isteğe bağlıdır. İlerlemen hesabına kaydedilir ve başka cihazlarda da devam edebilirsin.' : 'Hesabına giriş yap, ilerlemen geri gelsin.'}</p>
       ${B.demo ? '<p class="demo-note">Önizleme modu: Hesap henüz bir sunucuya bağlı değil, yalnızca bu cihazda tutulur.</p>' : ''}
       <form id="auth-f" class="auth-f" novalidate>
-        <label for="auth-email">E-posta</label><input id="auth-email" type="email" autocomplete="email" required>
-        <label for="auth-pw">Şifre</label><input id="auth-pw" type="password" autocomplete="${signup ? 'new-password' : 'current-password'}" minlength="8" required>
-        ${signup ? `<p class="small muted" style="text-align:left;margin:-4px 0 6px">En az 8 karakter; harf ve rakam içersin.</p>
+        <label for="auth-email">${ID_LABEL}</label><input id="auth-email" type="${byName ? 'text' : 'email'}" autocomplete="${byName ? 'username' : 'email'}" required>
+        ${byName && signup ? '<p class="small muted" style="text-align:left;margin:-4px 0 6px">Gerçek adını yazmak zorunda değilsin; bir takma ad yeterli. Adın ve puanın sıralamada diğer kullanıcılara görünür.</p>' : ''}
+        <label for="auth-pw">Şifre</label><input id="auth-pw" type="password" autocomplete="${signup ? 'new-password' : 'current-password'}" minlength="${MINPW}" required>
+        ${signup ? `<p class="small muted" style="text-align:left;margin:-4px 0 6px">En az ${MINPW} karakter; harf ve rakam içersin.</p>
         <label class="chk"><input type="checkbox" id="c-kvkk"> <span>${legalLinks()}'ni okudum, kişisel verilerimin nasıl işleneceği hakkında bilgilendirildim.</span></label>
         <label class="chk"><input type="checkbox" id="c-terms"> <span><a href="${LEGAL}kosullar.html" target="_blank" rel="noopener">Kullanım Koşulları</a>'nı kabul ediyorum.</span></label>
         <label class="chk"><input type="checkbox" id="c-age"> <span>18 yaşından büyüğüm ya da velimin/vasimin onayı var.</span></label>` : ''}
         <p class="auth-err" id="auth-err" role="alert" hidden></p>
         <button class="btn block" type="submit">${signup ? 'Hesabı oluştur' : 'Giriş yap'}</button>
       </form>
-      ${signup ? '<button class="btn text" data-a="swap">Zaten hesabım var, giriş yap</button>' : '<button class="btn text" data-a="forgot">Şifremi unuttum</button><button class="btn text" data-a="swap">Hesabım yok, oluştur</button>'}
+      ${signup ? '<button class="btn text" data-a="swap">Zaten hesabım var, giriş yap</button>' : `${B.noReset ? (B.resetHint ? `<p class="small muted">${esc(B.resetHint)}</p>` : '') : '<button class="btn text" data-a="forgot">Şifremi unuttum</button>'}<button class="btn text" data-a="swap">Hesabım yok, oluştur</button>`}
       <button class="btn ghost block" data-a="guest">Misafir olarak devam et</button>`, (m, close) => {
       const f = m.querySelector('#auth-f'), err = m.querySelector('#auth-err');
       const fail = t => { err.textContent = t; err.hidden = false; };
@@ -97,11 +119,12 @@
       };
       f.onsubmit = async e => {
         e.preventDefault(); err.hidden = true;
-        const email = m.querySelector('#auth-email').value.trim().toLowerCase();
+        const raw = m.querySelector('#auth-email').value.trim();
+        const email = byName ? raw : raw.toLowerCase();
         const password = m.querySelector('#auth-pw').value;
-        if (!EMAIL_RE.test(email)) return fail('Geçerli bir e-posta adresi yaz.');
+        if (!validId(email)) return fail(byName ? 'Kullanıcı adı en az 2 harf veya rakam içermeli.' : 'Geçerli bir e-posta adresi yaz.');
         if (signup) {
-          if (password.length < 8 || !/[a-zA-ZçğıöşüÇĞİÖŞÜ]/.test(password) || !/\d/.test(password)) return fail('Şifre en az 8 karakter olmalı, harf ve rakam içermeli.');
+          if (password.length < MINPW || !/[a-zA-ZçğıöşüÇĞİÖŞÜ]/.test(password) || !/\d/.test(password)) return fail('Şifre en az ' + MINPW + ' karakter olmalı, harf ve rakam içermeli.');
           if (!m.querySelector('#c-kvkk').checked) return fail('Devam etmek için Aydınlatma Metni\'ni okuduğunu onayla.');
           if (!m.querySelector('#c-terms').checked) return fail('Devam etmek için Kullanım Koşulları\'nı kabul et.');
           if (!m.querySelector('#c-age').checked) return fail('Hesap açmak için 18 yaşından büyük olmalı ya da velinin onayını almalısın. Dilersen misafir olarak devam edebilirsin.');
@@ -131,11 +154,12 @@
     }).catch(() => Q.toast('Veriler alınamadı, tekrar dene.'));
   }
   function signOut() {
-    Promise.resolve(B.signOut()).finally(() => { current = null; Q.toast('Çıkış yaptın. İlerlemen bu cihazda kalmaya devam ediyor.'); App.render(); });
+    Promise.resolve(B.signOut()).finally(() => { current = null; Q.toast(B.signOutNote || 'Çıkış yaptın. İlerlemen bu cihazda kalmaya devam ediyor.'); App.render(); });
   }
   function deleteAsk() {
     Q.modal(`<div class="em">⚠️</div><h2>Hesabını sil</h2><p>Hesabın ve hesabına kayıtlı bütün ilerleme verilerin kalıcı olarak silinir. Bu işlem geri alınamaz.</p>
       <label class="chk" style="justify-content:center"><input type="checkbox" id="del-local"> <span>Bu cihazdaki ilerlemeyi de sil</span></label>
+      ${B.deleteNeedsPassword ? '<label for="del-pw" class="small">Güvenlik için şifren</label><input id="del-pw" type="password" class="auth-in" autocomplete="current-password">' : ''}
       <label for="del-confirm" class="small">Onaylamak için <b>SİL</b> yaz</label><input id="del-confirm" class="auth-in" autocomplete="off">
       <button class="btn bad block" data-a="del" disabled>Hesabımı kalıcı olarak sil</button><button class="btn ghost block" data-a="no">Vazgeç</button>`, (m, close) => {
       const inp = m.querySelector('#del-confirm'), del = m.querySelector('[data-a=del]');
@@ -144,11 +168,12 @@
       del.onclick = async () => {
         del.disabled = true;
         try {
-          await B.deleteAccount();
+          const pwEl = m.querySelector('#del-pw');
+          await B.deleteAccount(pwEl ? pwEl.value : undefined);
           current = null;
           if (m.querySelector('#del-local').checked) { Q.reset(); }
           close(); Q.toast('Hesabın silindi.'); App.render();
-        } catch (e) { del.disabled = false; Q.toast('Hesap silinemedi, tekrar dene ya da bize yaz.'); }
+        } catch (e) { del.disabled = false; Q.toast(e && e.message ? e.message : 'Hesap silinemedi, tekrar dene ya da bize yaz.'); }
       };
     });
   }
@@ -158,7 +183,7 @@
     if (!current) return `<div class="box acct"><div class="acct-top"><span class="acct-ic">👤</span><div><b>Misafir olarak kullanıyorsun</b><p class="small soft">İlerlemen yalnızca bu cihazda. Hesap açarsan telefon ve bilgisayar arasında devam edebilirsin. Hesap isteğe bağlıdır.</p></div></div>
       <div class="acct-btns"><button class="btn sm" data-acct="signup">Hesap oluştur</button><button class="btn ghost sm" data-acct="login">Giriş yap</button></div></div>`;
     const d = current.created ? new Date(current.created).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
-    return `<div class="box acct"><div class="acct-top"><span class="acct-ic">✅</span><div style="min-width:0"><b class="acct-mail">${esc(current.email)}</b><p class="small soft">${d ? d + ' tarihinde oluşturuldu · ' : ''}İlerlemen hesabına kaydediliyor.${B.demo ? ' (Önizleme modu)' : ''}</p></div></div>
+    return `<div class="box acct"><div class="acct-top"><span class="acct-ic">✅</span><div style="min-width:0"><b class="acct-mail">${esc(current.email)}</b>${B.signOutNote ? `<p class="small muted">${esc(B.accountNote || '')}</p>` : ''}<p class="small soft">${d ? d + ' tarihinde oluşturuldu · ' : ''}İlerlemen hesabına kaydediliyor.${B.demo ? ' (Önizleme modu)' : ''}</p></div></div>
       <div class="acct-btns"><button class="btn ghost sm" data-acct="export">📥 Verilerimi indir</button><button class="btn ghost sm" data-acct="logout">Çıkış yap</button><button class="btn bad sm" data-acct="delete">Hesabımı sil</button></div>
       <p class="small muted" style="margin-top:10px">KVKK kapsamındaki hakların için <a href="${LEGAL}aydinlatma.html" target="_blank" rel="noopener">Aydınlatma Metni</a>'ne bakabilirsin.</p></div>`;
   }
