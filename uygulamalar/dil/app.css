@@ -507,3 +507,17 @@ main{padding:24px 24px 120px;outline:none}
 .station .pop{position:static;transform:none;width:auto;margin:6px 4px 12px 68px;animation:popin2 .18s ease-out;box-shadow:0 6px 18px rgba(0,0,0,.12)}
 .station .pop:before{display:none}
 .station.open{z-index:2}
+
+/* ---------- Hesap ---------- */
+.auth-f{display:flex;flex-direction:column;gap:6px;text-align:left}
+.auth-f label{font-weight:800;font-size:.9rem}
+.auth-f input[type=email],.auth-f input[type=password],.auth-in{width:100%;border:2px solid var(--line);border-radius:12px;padding:11px 12px;background:var(--bg);color:var(--ink);font-weight:700;margin-bottom:6px}
+.auth-f input:focus,.auth-in:focus{outline:none;border-color:var(--brand)}
+.chk{display:flex!important;gap:10px;align-items:flex-start;font-weight:700!important;font-size:.88rem!important;color:var(--soft);text-align:left;margin:4px 0}
+.chk input{width:20px;height:20px;flex:none;accent-color:var(--brand);margin-top:1px}
+.auth-err{background:var(--bad-bg);color:var(--bad-d);border-radius:10px;padding:8px 10px;font-size:.88rem;font-weight:800;margin:4px 0}
+.demo-note{background:var(--gold-l);color:var(--soft);border-radius:10px;padding:8px 10px;font-size:.82rem;font-weight:700}
+.acct-top{display:flex;gap:12px;align-items:flex-start}
+.acct-ic{font-size:1.8rem;flex:none}
+.acct-mail{display:block;overflow-wrap:anywhere}
+.acct-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}

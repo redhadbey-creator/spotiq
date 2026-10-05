@@ -1,0 +1,173 @@
+/* ASİ Dil — isteğe bağlı hesap (KVKK uyumlu akış)
+ *
+ * Ekranlar, onaylar, veri indirme ve hesap silme burada hazırdır. Gerçek sunucuya bağlamak için
+ * sayfada bu dosyadan ÖNCE window.ASI_AUTH_BACKEND tanımlanır; aynı yöntemleri sağlaması yeterlidir:
+ *   signUp({email, password, consents}) → {email, created}
+ *   signIn({email, password})           → {email, created}
+ *   signOut()
+ *   resetPassword(email)
+ *   deleteAccount()                     → sunucudaki hesap ve ilerleme verisini siler
+ *   exportData()                        → sunucuda tutulan bütün veriler (KVKK md. 11)
+ *   saveProgress(state)                 → ilerlemeyi hesaba kaydeder (eşitleme)
+ *   loadProgress()                      → hesaptaki ilerleme (yoksa null)
+ *   session()                           → açık oturum {email, created} ya da null
+ * Tanımlı değilse DEMO bağlantı kullanılır: hiçbir şey sunucuya gitmez, hesap yalnızca bu cihazda tutulur.
+ */
+(function () {
+  'use strict';
+  const { $, esc } = Q;
+  const LEGAL = 'yasal/';
+
+  /* ---------- DEMO bağlantı (sunucusuz) ---------- */
+  const DKEY = 'asi-dil-demo-accounts', SKEY = 'asi-dil-demo-session';
+  const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } };
+  const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } };
+  async function digest(s) {
+    try { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2, '0')).join(''); }
+    catch (e) { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) | 0; return 'x' + h; }
+  }
+  const Demo = {
+    demo: true,
+    async signUp({ email, password, consents }) {
+      const acc = read(DKEY, {});
+      if (acc[email]) throw new Error('Bu e-posta ile zaten bir hesap var. Giriş yapmayı dene.');
+      acc[email] = { email, created: new Date().toISOString(), pw: await digest(email + ':' + password), consents, progress: null };
+      write(DKEY, acc); write(SKEY, { email });
+      return { email, created: acc[email].created };
+    },
+    async signIn({ email, password }) {
+      const a = read(DKEY, {})[email];
+      if (!a || a.pw !== await digest(email + ':' + password)) throw new Error('E-posta veya şifre hatalı.');
+      write(SKEY, { email }); return { email, created: a.created };
+    },
+    async signOut() { try { localStorage.removeItem(SKEY); } catch (e) { } },
+    async resetPassword() { return { demo: true }; },
+    async deleteAccount() { const s = read(SKEY, null); const acc = read(DKEY, {}); if (s) delete acc[s.email]; write(DKEY, acc); await this.signOut(); },
+    async exportData() { const s = read(SKEY, null); const a = s && read(DKEY, {})[s.email]; if (!a) return null; const { pw, ...rest } = a; return rest; },
+    async saveProgress(state) { const s = read(SKEY, null); if (!s) return; const acc = read(DKEY, {}); if (acc[s.email]) { acc[s.email].progress = state; write(DKEY, acc); } },
+    async loadProgress() { const s = read(SKEY, null); const a = s && read(DKEY, {})[s.email]; return a ? a.progress : null; },
+    session() { const s = read(SKEY, null); const a = s && read(DKEY, {})[s.email]; return a ? { email: a.email, created: a.created } : null; }
+  };
+  const B = window.ASI_AUTH_BACKEND || Demo;
+
+  let current = null;
+  try { current = B.session(); } catch (e) { current = null; }
+
+  /* İlerleme değiştikçe hesaba kaydet (yalnızca giriş yapılmışsa) */
+  let saveT = null;
+  function onSave(state) {
+    if (!current) return;
+    clearTimeout(saveT);
+    saveT = setTimeout(() => { Promise.resolve(B.saveProgress(state)).catch(() => { }); }, 1500);
+  }
+
+  /* ---------- Ekranlar ---------- */
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  function legalLinks() {
+    return `<a href="${LEGAL}aydinlatma.html" target="_blank" rel="noopener">Aydınlatma Metni</a>`;
+  }
+  function open(mode) {
+    const signup = mode !== 'login';
+    Q.modal(`<div class="em">${signup ? '🗝️' : '👋'}</div><h2>${signup ? 'Hesap oluştur' : 'Giriş yap'}</h2>
+      <p class="small">${signup ? 'Hesap isteğe bağlıdır. İlerlemen hesabına kaydedilir ve başka cihazlarda da devam edebilirsin.' : 'Hesabına giriş yap, ilerlemen geri gelsin.'}</p>
+      ${B.demo ? '<p class="demo-note">Önizleme modu: Hesap henüz bir sunucuya bağlı değil, yalnızca bu cihazda tutulur.</p>' : ''}
+      <form id="auth-f" class="auth-f" novalidate>
+        <label for="auth-email">E-posta</label><input id="auth-email" type="email" autocomplete="email" required>
+        <label for="auth-pw">Şifre</label><input id="auth-pw" type="password" autocomplete="${signup ? 'new-password' : 'current-password'}" minlength="8" required>
+        ${signup ? `<p class="small muted" style="text-align:left;margin:-4px 0 6px">En az 8 karakter; harf ve rakam içersin.</p>
+        <label class="chk"><input type="checkbox" id="c-kvkk"> <span>${legalLinks()}'ni okudum, kişisel verilerimin nasıl işleneceği hakkında bilgilendirildim.</span></label>
+        <label class="chk"><input type="checkbox" id="c-terms"> <span><a href="${LEGAL}kosullar.html" target="_blank" rel="noopener">Kullanım Koşulları</a>'nı kabul ediyorum.</span></label>
+        <label class="chk"><input type="checkbox" id="c-age"> <span>18 yaşından büyüğüm ya da velimin/vasimin onayı var.</span></label>` : ''}
+        <p class="auth-err" id="auth-err" role="alert" hidden></p>
+        <button class="btn block" type="submit">${signup ? 'Hesabı oluştur' : 'Giriş yap'}</button>
+      </form>
+      ${signup ? '<button class="btn text" data-a="swap">Zaten hesabım var, giriş yap</button>' : '<button class="btn text" data-a="forgot">Şifremi unuttum</button><button class="btn text" data-a="swap">Hesabım yok, oluştur</button>'}
+      <button class="btn ghost block" data-a="guest">Misafir olarak devam et</button>`, (m, close) => {
+      const f = m.querySelector('#auth-f'), err = m.querySelector('#auth-err');
+      const fail = t => { err.textContent = t; err.hidden = false; };
+      m.querySelector('#auth-email').focus();
+      m.querySelector('[data-a=guest]').onclick = close;
+      m.querySelector('[data-a=swap]').onclick = () => { close(); open(signup ? 'login' : 'signup'); };
+      const fg = m.querySelector('[data-a=forgot]');
+      if (fg) fg.onclick = async () => {
+        const email = m.querySelector('#auth-email').value.trim().toLowerCase();
+        if (!EMAIL_RE.test(email)) return fail('Şifre sıfırlama bağlantısı için önce e-posta adresini yaz.');
+        const r = await Promise.resolve(B.resetPassword(email)).catch(() => null);
+        Q.toast(r && r.demo ? 'Önizleme modunda e-posta gönderilmez.' : 'Hesap varsa sıfırlama bağlantısı e-postana gönderildi.');
+      };
+      f.onsubmit = async e => {
+        e.preventDefault(); err.hidden = true;
+        const email = m.querySelector('#auth-email').value.trim().toLowerCase();
+        const password = m.querySelector('#auth-pw').value;
+        if (!EMAIL_RE.test(email)) return fail('Geçerli bir e-posta adresi yaz.');
+        if (signup) {
+          if (password.length < 8 || !/[a-zA-ZçğıöşüÇĞİÖŞÜ]/.test(password) || !/\d/.test(password)) return fail('Şifre en az 8 karakter olmalı, harf ve rakam içermeli.');
+          if (!m.querySelector('#c-kvkk').checked) return fail('Devam etmek için Aydınlatma Metni\'ni okuduğunu onayla.');
+          if (!m.querySelector('#c-terms').checked) return fail('Devam etmek için Kullanım Koşulları\'nı kabul et.');
+          if (!m.querySelector('#c-age').checked) return fail('Hesap açmak için 18 yaşından büyük olmalı ya da velinin onayını almalısın. Dilersen misafir olarak devam edebilirsin.');
+        } else if (!password) return fail('Şifreni yaz.');
+        const btn = f.querySelector('[type=submit]'); btn.disabled = true;
+        try {
+          const now = new Date().toISOString();
+          const consents = { aydinlatma: now, kosullar: now, yas: now, metinSurumu: (window.ASI_LEGAL || {}).updated || '' };
+          current = signup ? await B.signUp({ email, password, consents }) : await B.signIn({ email, password });
+          if (signup) await B.saveProgress(Q.S);
+          else {
+            const remote = await B.loadProgress();
+            if (remote && remote.v) { try { localStorage.setItem('spotiq-dil-v1', JSON.stringify(remote)); } catch (er) { } Q.load(); }
+          }
+          close(); Q.sfx('coin'); Q.toast(signup ? '🎉 Hesabın oluşturuldu!' : '👋 Tekrar hoş geldin!'); App.afterAuth();
+        } catch (ex) { btn.disabled = false; fail(ex && ex.message ? ex.message : 'Bir sorun oldu, tekrar dene.'); }
+      };
+    });
+  }
+
+  function exportData() {
+    Promise.resolve(B.exportData()).then(server => {
+      const data = { aciklama: 'ASİ Dil hesabında ve bu cihazda tutulan verilerin kopyası (KVKK md. 11).', olusturma: new Date().toISOString(), hesap: server, cihazdakiIlerleme: Q.S };
+      const blob = new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'asi-dil-verilerim-' + Q.dayKey() + '.json'; a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    }).catch(() => Q.toast('Veriler alınamadı, tekrar dene.'));
+  }
+  function signOut() {
+    Promise.resolve(B.signOut()).finally(() => { current = null; Q.toast('Çıkış yaptın. İlerlemen bu cihazda kalmaya devam ediyor.'); App.render(); });
+  }
+  function deleteAsk() {
+    Q.modal(`<div class="em">⚠️</div><h2>Hesabını sil</h2><p>Hesabın ve hesabına kayıtlı bütün ilerleme verilerin kalıcı olarak silinir. Bu işlem geri alınamaz.</p>
+      <label class="chk" style="justify-content:center"><input type="checkbox" id="del-local"> <span>Bu cihazdaki ilerlemeyi de sil</span></label>
+      <label for="del-confirm" class="small">Onaylamak için <b>SİL</b> yaz</label><input id="del-confirm" class="auth-in" autocomplete="off">
+      <button class="btn bad block" data-a="del" disabled>Hesabımı kalıcı olarak sil</button><button class="btn ghost block" data-a="no">Vazgeç</button>`, (m, close) => {
+      const inp = m.querySelector('#del-confirm'), del = m.querySelector('[data-a=del]');
+      inp.oninput = () => { del.disabled = inp.value.trim().toLocaleUpperCase('tr') !== 'SİL'; };
+      m.querySelector('[data-a=no]').onclick = close;
+      del.onclick = async () => {
+        del.disabled = true;
+        try {
+          await B.deleteAccount();
+          current = null;
+          if (m.querySelector('#del-local').checked) { Q.reset(); }
+          close(); Q.toast('Hesabın silindi.'); App.render();
+        } catch (e) { del.disabled = false; Q.toast('Hesap silinemedi, tekrar dene ya da bize yaz.'); }
+      };
+    });
+  }
+
+  /* Profil sayfasındaki hesap kutusu */
+  function box() {
+    if (!current) return `<div class="box acct"><div class="acct-top"><span class="acct-ic">👤</span><div><b>Misafir olarak kullanıyorsun</b><p class="small soft">İlerlemen yalnızca bu cihazda. Hesap açarsan telefon ve bilgisayar arasında devam edebilirsin. Hesap isteğe bağlıdır.</p></div></div>
+      <div class="acct-btns"><button class="btn sm" data-acct="signup">Hesap oluştur</button><button class="btn ghost sm" data-acct="login">Giriş yap</button></div></div>`;
+    const d = current.created ? new Date(current.created).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+    return `<div class="box acct"><div class="acct-top"><span class="acct-ic">✅</span><div style="min-width:0"><b class="acct-mail">${esc(current.email)}</b><p class="small soft">${d ? d + ' tarihinde oluşturuldu · ' : ''}İlerlemen hesabına kaydediliyor.${B.demo ? ' (Önizleme modu)' : ''}</p></div></div>
+      <div class="acct-btns"><button class="btn ghost sm" data-acct="export">📥 Verilerimi indir</button><button class="btn ghost sm" data-acct="logout">Çıkış yap</button><button class="btn bad sm" data-acct="delete">Hesabımı sil</button></div>
+      <p class="small muted" style="margin-top:10px">KVKK kapsamındaki hakların için <a href="${LEGAL}aydinlatma.html" target="_blank" rel="noopener">Aydınlatma Metni</a>'ne bakabilirsin.</p></div>`;
+  }
+  function click(k) {
+    if (k === 'signup' || k === 'login') return open(k);
+    if (k === 'export') return exportData();
+    if (k === 'logout') return signOut();
+    if (k === 'delete') return deleteAsk();
+  }
+
+  window.Account = { open, box, click, onSave, get current() { return current; }, get demo() { return !!B.demo; } };
+})();

@@ -60,7 +60,7 @@
       <div class="box"><h3>Günlük hedef <a data-pop="goal">Düzenle</a></h3><div style="display:flex;gap:14px;align-items:center">${goalRing()}<div style="flex:1"><b>${Math.min(Q.todayXP(), S.dailyGoal)} / ${S.dailyGoal} XP</b><div class="bar" style="margin-top:8px"><i style="width:${Math.min(100, Q.todayXP() / S.dailyGoal * 100)}%"></i></div></div></div></div>
       <div class="box"><h3>Günlük görevler <a data-go="quests">Tümü</a></h3>${questsHTML(3)}</div>
       <div class="box" style="background:var(--brand-l);border-color:var(--brand)"><h3>🧩 Günün bulmacası</h3><p class="soft small" style="margin-bottom:10px">${S.puzzle.day === Q.dayKey() && S.puzzle.solved ? 'Bugünkünü çözdün! Yarın yenisi gelecek.' : 'ASİ Dil\'e özel 3 soruluk günlük beyin turu. Ödül: 💎 + XP'}</p><button class="btn sm block" data-game="daily">${S.puzzle.day === Q.dayKey() && S.puzzle.solved ? 'Tekrar çöz' : 'Hemen çöz'}</button></div>
-      <p class="footer-note"><a href="../">← SPOTIQ Uygulamalar</a> · <a href="../../gizlilik.html">Gizlilik</a></p>`;
+      <p class="footer-note"><a href="../">← SPOTIQ Uygulamalar</a> · <a href="yasal/gizlilik.html">Gizlilik</a> · <a href="yasal/aydinlatma.html">KVKK</a> · <a href="yasal/kosullar.html">Koşullar</a></p>`;
   }
 
   /* ---------- Öğren (yol) ---------- */
@@ -303,6 +303,7 @@
       <h2 class="section-h">Çalışma takvimi</h2><div class="box"><div class="heat">${heat}</div><p class="small muted" style="margin-top:8px">Her kare bir gün. Koyu renk = daha çok XP. ❄ mavi = seri dondurucu kullanılan gün.</p></div>
       <h2 class="section-h">Seviye rozetleri</h2><div class="lvl-badges">${C.sections.map(sec => `<button class="lb-btn" ${S.cert[sec.id] ? `data-cert="${sec.id}"` : 'disabled'} aria-label="${sec.id} rozeti">${badgeHTML(sec.id)}</button>`).join('')}</div>
       <h2 class="section-h">Başarımlar</h2><div class="badges">${Q.ACH.map(a => { const v = a.v(), on = !!S.ach[a.id]; return `<div class="badge ${on ? '' : 'off'}"><span class="bi">${a.ic}</span><b>${a.n}</b><small>${a.d}</small>${on ? '' : `<div class="bar" style="height:8px;margin-top:6px"><i style="width:${Math.min(100, v / a.g * 100)}%"></i></div>`}</div>`; }).join('')}</div>
+      <h2 class="section-h">Hesap</h2>${Account.box()}
       <h2 class="section-h">Ayarlar</h2><div class="box settings">
         ${sw('sound', 'Ses efektleri', 'Doğru/yanlış sesleri')}
         ${sw('tts', 'Dinleme ve seslendirme', Q.ttsOK ? 'Kelimeleri sesli okut, dinleme soruları' : 'Tarayıcın desteklemiyor')}
@@ -317,14 +318,15 @@
       <h2 class="section-h">Neden bu renkler?</h2><div class="box"><p class="soft small" style="line-height:1.6">ASİ Dil'in renkleri öğrenme araştırmalarına göre seçildi: <b style="color:var(--brand)">Mavi</b> odaklanmayı ve "yaklaşma" motivasyonunu destekler (Mehta ve Zhu, 2009, <i>Science</i>). <b style="color:var(--ok)">Yeşil</b> gelişme ve ustalaşma isteğini çağrıştırır (Lichtenfeld ve ark., 2012); bu yüzden doğru cevaplar ve ilerleme yeşil. Test öncesi görülen <b>kırmızının</b> performansı düşürdüğü gösterildiği için (Elliot ve ark., 2007) hatalarda kırmızı yerine yumuşak <b style="color:var(--bad)">turuncu</b> kullanıyoruz. Ödüller için dikkat çeken <b style="color:var(--gold-d)">sarı</b>. Her renk her yerde aynı anlamı taşır; tutarlı renk kodlaması hatırlamayı kolaylaştırır.</p></div>
       <h2 class="section-h">Gizlilik ve kullanım</h2><div class="box legal"><ul>
         <li><b>Reklam yok.</b> Uygulamada reklam, sponsorlu içerik ya da yönlendirme bulunmaz.</li>
-        <li><b>Hesap ve kişisel veri yok.</b> Üyelik istenmez; ilerlemen yalnızca bu cihazdaki tarayıcıda saklanır ve hiçbir sunucuya gönderilmez. Çerez ya da izleme aracı kullanılmaz.</li>
+        <li><b>Hesap isteğe bağlı.</b> Misafir kullanımda ilerlemen yalnızca bu cihazda saklanır ve hiçbir sunucuya gönderilmez. Hesap açarsan yalnızca e-posta adresin ve ilerlemen, hizmeti sunmak için işlenir; satılmaz, reklam için kullanılmaz. Ayrıntılar: <a href="yasal/aydinlatma.html" target="_blank" rel="noopener">KVKK Aydınlatma Metni</a>.</li>
+        <li><b>Çerez ve izleme yok.</b> Çerez, analitik ya da reklam aracı kullanılmaz.</li>
         <li><b>Dış bağlantı yok.</b> Yazı tipi dahil her şey bu siteden yüklenir; ziyaretçi bilgisi üçüncü taraflara aktarılmaz.</li>
         <li><b>Mikrofon.</b> Konuşma soruları isteğe bağlıdır. Ses tanıma tarayıcının kendi hizmetiyle yapılır (Chrome'da Google sunucuları); ASİ Dil sesini kaydetmez ve saklamaz. Ayarlardan kapatabilirsin.</li>
         <li><b>İçerik.</b> Ders, hikâye, okuma, podcast ve konuşma metinleri ASİ Dil için özgün olarak yazılmıştır; karakterler kurgusaldır. Önerilen dizi, podcast ve kitaplar yalnızca isimleriyle anılır.</li>
         <li><b>Rozetler</b> oyun içi ödüllerdir; resmî bir dil belgesi ya da sertifika değildir. Seviye adları Avrupa Ortak Dil Çerçevesi'ne (CEFR) göre yalnızca yol gösterici olarak kullanılır.</li>
         <li><b>Yazı tipi:</b> Nunito, SIL Open Font License 1.1 ile lisanslıdır (<a href="fonts/OFL.txt" target="_blank" rel="noopener">lisans metni</a>).</li>
-      </ul></div>
-      <p class="footer-note">ASİ Dil · İlerlemen yalnızca bu cihazda saklanır. <a href="../../gizlilik.html">Gizlilik</a></p>`;
+      </ul><p class="small" style="margin-top:8px"><a href="yasal/gizlilik.html" target="_blank" rel="noopener">Gizlilik Politikası</a> · <a href="yasal/aydinlatma.html" target="_blank" rel="noopener">KVKK Aydınlatma Metni</a> · <a href="yasal/kosullar.html" target="_blank" rel="noopener">Kullanım Koşulları</a></p></div>
+      <p class="footer-note">ASİ Dil · İlerlemen yalnızca bu cihazda saklanır. <a href="yasal/gizlilik.html">Gizlilik</a> · <a href="yasal/aydinlatma.html">KVKK</a> · <a href="yasal/kosullar.html">Koşullar</a></p>`;
   }
   function voiceSettings() {
     const vs = Q.englishVoices(), cur = Q.currentVoice();
@@ -423,6 +425,7 @@
   function go(v) { view = v; openNode = null; render(); window.scrollTo(0, 0); try { history.replaceState(null, '', '#' + v); } catch (e) { } }
 
   document.addEventListener('click', e => {
+    const ac = e.target.closest('[data-acct]'); if (ac) { e.preventDefault(); return Account.click(ac.dataset.acct); }
     if (!$('#overlay').hidden) return;
     const lb = e.target.closest('[data-lib]'); if (lb) return Extra.click(lb);
     const t = e.target.closest('[data-voicetest],[data-rate],[data-expand],[data-jump],[data-cert],[data-go],[data-pop],[data-node],[data-act],[data-claim],[data-buy],[data-prac],[data-game],[data-sw],[data-theme],[data-data],[data-guide]');
@@ -474,9 +477,9 @@
     let step = 0; const data = { goal: 20, name: '' };
     function draw() {
       const steps = `<div class="steps">${[0, 1, 2, 3].map(i => `<i class="${i <= step ? 'on' : ''}"></i>`).join('')}</div>`;
-      if (step === 0) ov.innerHTML = `<div class="onb">${Q.mascot('happy', 170)}<h1>spotiq<span>.</span>dil</h1><p class="soft" style="font-size:1.1rem">Ücretsiz, eğlenceli ve etkili İngilizce. Günde 5 dakika ile başla!</p>
+      if (step === 0) ov.innerHTML = `<div class="onb">${Q.mascot('happy', 170)}<h1>asi<span>.</span>dil</h1><p class="soft" style="font-size:1.1rem">Ücretsiz, eğlenceli ve etkili İngilizce. Günde 5 dakika ile başla!</p>
         <ul style="text-align:left;color:var(--soft);line-height:1.9;padding-left:20px;margin:0"><li>🔥 Seri, XP, lig ve günlük görevler</li><li>🎧 Dinleme, 🎙️ konuşma ve yazma alıştırmaları</li><li>🧩 ASİ Dil'e özel: günün bulmacası & farkı bul</li><li>🃏 Aralıklı tekrar ile kelime kartları</li></ul>
-        <button class="btn block" data-n="1">Başlayalım</button></div>`;
+        <button class="btn block" data-n="1">Başlayalım</button><button class="btn ghost block" data-acct="login">Hesabım var, giriş yap</button><p class="small muted">Hesap açmak isteğe bağlıdır. Misafir olarak hiçbir kişisel verin toplanmaz. <a href="yasal/aydinlatma.html" target="_blank" rel="noopener">Aydınlatma Metni</a></p></div>`;
       if (step === 1) ov.innerHTML = `<div class="onb">${steps}${Q.mascot('think', 120)}<h1>Günlük hedefin ne olsun?</h1><div class="opts">${[[10, 'Rahat', '5 dk'], [20, 'Normal', '10 dk'], [30, 'Ciddi', '15 dk'], [50, 'Yoğun', '20 dk']].map(([x, t, m]) => `<button class="opt ${data.goal === x ? 'on' : ''}" data-g="${x}"><span>${t}</span><span class="muted">${m} / gün</span></button>`).join('')}</div><button class="btn block" data-n="2">Devam</button></div>`;
       if (step === 2) ov.innerHTML = `<div class="onb">${steps}${Q.mascot('wink', 120)}<h1>Sana nasıl seslenelim?</h1><input id="onm" maxlength="24" placeholder="Adın (isteğe bağlı)" value="${esc(data.name)}"><button class="btn block" data-n="3">Devam</button></div>`;
       if (step === 3) ov.innerHTML = `<div class="onb">${steps}${Q.mascot('think', 120)}<h1>İngilizcen ne durumda?</h1><div class="opts">
@@ -514,7 +517,14 @@
   setInterval(() => { if ($('#overlay').hidden && $('#modal').hidden) { Q.tick(); renderNav(); renderRail(); } }, 60000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden && $('#overlay').hidden && S.onboarded) render(); });
 
-  window.App = { render, noHearts, badgeHTML };
+  /* Giriş/kayıt sonrası: hesaptan ilerleme geldiyse karşılama ekranını kapat */
+  function afterAuth() {
+    S = Q.S; applyTheme();
+    const ov = $('#overlay');
+    if (!ov.hidden && ov.querySelector('.onb') && S.onboarded) { ov.onclick = null; ov.hidden = true; ov.innerHTML = ''; $('#app').hidden = false; }
+    if (ov.hidden) render();
+  }
+  window.App = { render, noHearts, badgeHTML, afterAuth };
   Q.tick();
   boot();
 })();

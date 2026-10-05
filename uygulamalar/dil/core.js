@@ -93,7 +93,7 @@
     catch (e) { S = defaults(); }
     return S;
   }
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* depolama kapalı olabilir */ } }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* depolama kapalı olabilir */ } if (window.Account) window.Account.onSave(S); }
   function reset() { S = defaults(); save(); }
 
   /* Zamanla değişenler: canlar, seri, lig */
