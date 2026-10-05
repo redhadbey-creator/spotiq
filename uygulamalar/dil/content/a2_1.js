@@ -33,15 +33,15 @@
     },
     extra: [
       ["hang out", "takılmak, vakit geçirmek", ""], ["chill out", "kafa dinlemek", "😌"], ["market stall", "pazar tezgâhı", "🛒"],
-      ["street food", "sokak yemeği", "🌮"], ["gig", "konser", "🎸"], ["exhibition", "sergi", "🖼️"],
+      ["street food", "sokak yemeği", "🌮"], ["live music", "canlı müzik", "🎸"], ["exhibition", "sergi", "🖼️"],
       ["art gallery", "sanat galerisi", "🎨"], ["picnic", "piknik", "🧺"], ["hangover", "akşamdan kalmalık", "🤕"],
       ["brunch", "geç kahvaltı, brunch", "🥞"], ["laundry", "çamaşır", "🧺"], ["housework", "ev işi", "🧹"],
-      ["nap", "şekerleme, kısa uyku", "😴"], ["bike ride", "bisiklet turu", "🚲"], ["boat trip", "tekne turu", "⛵"],
-      ["neighbourhood", "mahalle, semt", "🏘️"], ["lazy", "tembel", "🦥"], ["wonderful", "harika, şahane", ""],
-      ["terrible", "korkunç, berbat", ""], ["memory", "anı, hatıra", ""], ["invite", "davet etmek", "💌"],
+      ["sunbathe", "güneşlenmek", "☀️"], ["bike ride", "bisiklet turu", "🚲"], ["boat trip", "tekne turu", "⛵"],
+      ["flea market", "bit pazarı", "🏷️"], ["lie-in", "geç saate kadar yatma", "🛌"], ["wonderful", "harika, şahane", ""],
+      ["terrible", "korkunç, berbat", ""], ["memory", "anı, hatıra", ""], ["catch up", "hasret gidermek, sohbet etmek", "💬"],
       ["celebrate", "kutlamak", "🎉"], ["umbrella", "şemsiye", "☂️"], ["fire alarm", "yangın alarmı", "🚨"],
       ["queue", "kuyruk, sıra", ""], ["stranger", "yabancı, tanımadık kişi", ""], ["view", "manzara", "🌄"],
-      ["bridge", "köprü", "🌉"], ["selfie", "özçekim, selfie", "🤳"], ["success", "başarı", "🏆"]
+      ["riverside", "nehir kıyısı", "🏞️"], ["selfie", "özçekim, selfie", "🤳"], ["success", "başarı", "🏆"]
     ],
     lessons: [
       {
@@ -81,7 +81,7 @@
       {
         title: "Was ve were", icon: "🌧️",
         words: [
-          ["crowded", "kalabalık", "👥"], ["noisy", "gürültülü", "🔊"], ["boring", "sıkıcı", "🥱"],
+          ["crowded", "kalabalık", "👥"], ["noisy", "gürültülü", "🔊"], ["dull", "sıkıcı, renksiz", "🥱"],
           ["amazing", "muhteşem, inanılmaz", "🤩"], ["exhausted", "bitkin, çok yorgun", "😫"], ["freezing", "buz gibi, dondurucu", "🥶"],
           ["empty", "boş", ""], ["awful", "berbat", "🤢"], ["lovely", "çok güzel, hoş", "🥰"],
           ["the whole day", "bütün gün", ""]
@@ -90,7 +90,7 @@
           ["The market was crowded and noisy.", "Pazar kalabalık ve gürültülüydü.", [], ["Pazar yeri kalabalık ve gürültülüydü.", "Pazar kalabalıktı ve gürültülüydü.", "Market kalabalık ve gürültülüydü."]],
           ["The weather was freezing, but the view was amazing.", "Hava buz gibiydi ama manzara muhteşemdi.", ["It was freezing, but the view was amazing."], ["Hava buz gibiydi, ama manzara muhteşemdi.", "Hava dondurucuydu ama manzara muhteşemdi.", "Hava buz gibiydi ama manzara inanılmazdı.", "Hava çok soğuktu ama manzara muhteşemdi."]],
           ["Were you at home the whole day?", "Bütün gün evde miydin?", ["Were you at home all day?", "Were you home the whole day?"], ["Bütün gün evde miydiniz?", "Tüm gün evde miydin?", "Tüm gün evde miydiniz?", "Bütün gün boyunca evde miydin?"]],
-          ["The film wasn't boring, it was lovely.", "Film sıkıcı değildi, çok güzeldi.", ["The movie wasn't boring, it was lovely."], ["Film sıkıcı değildi, çok hoştu.", "Film sıkıcı değildi, harikaydı.", "Film sıkıcı değildi, güzeldi."]],
+          ["The film wasn't dull, it was lovely.", "Film sıkıcı değildi, çok güzeldi.", ["The movie wasn't dull, it was lovely."], ["Film sıkıcı değildi, çok hoştu.", "Film sıkıcı değildi, harikaydı.", "Film sıkıcı değildi, güzeldi."]],
           ["The streets were empty on Sunday morning.", "Pazar sabahı sokaklar boştu.", ["On Sunday morning the streets were empty."], ["Sokaklar pazar sabahı boştu.", "Pazar sabahı caddeler boştu.", "Pazar sabahı sokaklar bomboştu."]],
           ["We were exhausted, and the hostel was awful.", "Bitkindik ve hostel berbattı.", ["We were exhausted and the hostel was awful."], ["Çok yorgunduk ve hostel berbattı.", "Bitkindik, hostel de berbattı.", "Biz bitkindik ve hostel berbattı.", "Yorgunluktan ölüyorduk ve hostel berbattı."]]
         ]
@@ -98,18 +98,18 @@
       {
         title: "Did ile sorular", icon: "❓",
         words: [
-          ["have fun", "eğlenmek", "🥳"], ["take a photo", "fotoğraf çekmek", "📸"], ["wake up", "uyanmak", "⏰"],
-          ["stay up late", "geç saate kadar oturmak", "🌙"], ["sleep in", "geç kalkmak, uyuyakalmak", "😴"], ["go out", "dışarı çıkmak", "🚪"],
-          ["forget", "unutmak", ""], ["lose", "kaybetmek", ""], ["find", "bulmak", "🔍"],
+          ["have fun", "eğlenmek", "🥳"], ["take a photo", "fotoğraf çekmek", "📸"], ["get back", "dönmek, geri gelmek", "🔙"],
+          ["stay up late", "geç saate kadar oturmak", "🌙"], ["sleep in", "geç kalkmak, uyuyakalmak", "😴"], ["go dancing", "dansa gitmek", "💃"],
+          ["forget", "unutmak", ""], ["drop", "düşürmek", ""], ["search for", "aramak (bir şeyi)", "🔍"],
           ["happen", "olmak, yaşanmak", ""]
         ],
         sentences: [
           ["Did you have fun on Saturday night?", "Cumartesi gecesi eğlendin mi?", [], ["Cumartesi akşamı eğlendin mi?", "Cumartesi gecesi eğlendiniz mi?", "Cumartesi akşamı eğlendiniz mi?"]],
-          ["Did you go out with Lina?", "Lina ile dışarı çıktın mı?", [], ["Lina'yla dışarı çıktın mı?", "Lina ile dışarı çıktınız mı?", "Lina'yla dışarı çıktınız mı?", "Lina ile dışarıya çıktın mı?"]],
-          ["No, I didn't. I stayed up late and slept in.", "Hayır, çıkmadım. Geç yattım ve geç kalktım.", ["No. I stayed up late and slept in."], ["Hayır, çıkmadım. Geç saate kadar oturdum ve geç kalktım.", "Hayır. Geç yattım ve geç kalktım.", "Hayır, çıkmadım. Geç yatıp geç kalktım.", "Hayır, çıkmadım. Geç saate kadar oturdum ve uyuyakaldım."]],
-          ["What happened? Did you lose your keys again?", "Ne oldu? Anahtarlarını yine mi kaybettin?", [], ["Ne oldu? Yine anahtarlarını mı kaybettin?", "Ne oldu? Anahtarlarını gene mi kaybettin?", "Ne oldu? Anahtarlarınızı yine mi kaybettiniz?", "Ne oldu? Yine mi anahtarlarını kaybettin?"]],
-          ["I forgot my phone, but Lina found it.", "Telefonumu unuttum ama Lina onu buldu.", ["I forgot my phone but Lina found it."], ["Telefonumu unuttum ama Lina buldu.", "Telefonumu unuttum, ama Lina onu buldu.", "Telefonumu unuttum fakat Lina onu buldu."]],
-          ["What time did you wake up? Did you take a photo of the sunrise?", "Kaçta uyandın? Gün doğumunun fotoğrafını çektin mi?", [], ["Saat kaçta uyandın? Gün doğumunun fotoğrafını çektin mi?", "Kaçta uyandınız? Gün doğumunun fotoğrafını çektiniz mi?", "Saat kaçta uyandın? Gün doğumunun bir fotoğrafını çektin mi?", "Kaçta uyandın? Gün doğumunun bir fotoğrafını çektin mi?"]]
+          ["Did you go dancing with Lina?", "Lina ile dansa gittin mi?", [], ["Lina'yla dansa gittin mi?", "Lina ile dansa gittiniz mi?", "Lina'yla dansa gittiniz mi?", "Lina ile dans etmeye gittin mi?"]],
+          ["No, I didn't. I stayed up late and slept in.", "Hayır, gitmedim. Geç yattım ve geç kalktım.", ["No. I stayed up late and slept in."], ["Hayır, gitmedim. Geç saate kadar oturdum ve geç kalktım.", "Hayır. Geç yattım ve geç kalktım.", "Hayır, gitmedim. Geç yatıp geç kalktım.", "Hayır, gitmedim. Geç saate kadar oturdum ve uyuyakaldım."]],
+          ["What happened? Did you drop your keys again?", "Ne oldu? Anahtarlarını yine mi düşürdün?", [], ["Ne oldu? Yine anahtarlarını mı düşürdün?", "Ne oldu? Anahtarlarını gene mi düşürdün?", "Ne oldu? Anahtarlarınızı yine mi düşürdünüz?", "Ne oldu? Yine mi anahtarlarını düşürdün?"]],
+          ["I forgot my phone, and Lina searched for it everywhere.", "Telefonumu unuttum ve Lina onu her yerde aradı.", ["I forgot my phone and Lina searched for it everywhere."], ["Telefonumu unuttum, Lina da onu her yerde aradı.", "Telefonumu unuttum ve Lina her yerde onu aradı.", "Telefonumu unuttum ve Lina her yerde aradı."]],
+          ["What time did you get back? Did you take a photo of the sunrise?", "Kaçta döndün? Gün doğumunun fotoğrafını çektin mi?", [], ["Saat kaçta döndün? Gün doğumunun fotoğrafını çektin mi?", "Kaçta döndünüz? Gün doğumunun fotoğrafını çektiniz mi?", "Saat kaçta geri geldin? Gün doğumunun fotoğrafını çektin mi?", "Kaçta döndün? Gün doğumunun bir fotoğrafını çektin mi?"]]
         ]
       },
       {
@@ -169,45 +169,45 @@
       ["window seat", "cam kenarı koltuk", "🪟"], ["aisle seat", "koridor koltuğu", "💺"], ["jet lag", "uçuş yorgunluğu, saat farkı sersemliği", "🥱"],
       ["customs", "gümrük", "🛃"], ["duty-free", "gümrüksüz satış mağazası", "🛍️"], ["one-way ticket", "tek yön bilet", "🎫"],
       ["connecting flight", "aktarmalı uçuş", "🔁"], ["land", "iniş yapmak", "🛬"], ["take off", "kalkış yapmak, havalanmak", "🛫"],
-      ["passenger", "yolcu", "🧍"], ["destination", "varış yeri, gidilecek yer", "📍"], ["accommodation", "konaklama", "🛏️"],
+      ["seatbelt", "emniyet kemeri", "💺"], ["destination", "varış yeri, gidilecek yer", "📍"], ["accommodation", "konaklama", "🛏️"],
       ["campsite", "kamp alanı", "⛺"], ["beach", "plaj, sahil", "🏖️"], ["sunscreen", "güneş kremi", "🧴"],
-      ["guidebook", "rehber kitap", "📘"], ["landmark", "simge yapı, önemli yer", "🗽"], ["local", "yerel, yöre halkı", ""],
+      ["phrasebook", "konuşma kılavuzu", "📘"], ["ferry", "feribot", "⛴️"], ["local", "yerel, yöre halkı", ""],
       ["currency", "para birimi", "💱"], ["exchange rate", "döviz kuru", "📈"], ["lost and found", "kayıp eşya bürosu", "🔎"],
-      ["charger", "şarj aleti", "🔌"], ["toothbrush", "diş fırçası", "🪥"], ["visa", "vize", "🛂"],
+      ["charger", "şarj aleti", "🔌"], ["adapter", "priz adaptörü", "🔌"], ["visa", "vize", "🛂"],
       ["arrivals", "geliş salonu", "🛬"], ["taxi rank", "taksi durağı", "🚕"], ["sleeping bag", "uyku tulumu", "🛌"]
     ],
     lessons: [
       {
         title: "Havalimanında", icon: "✈️",
         words: [
-          ["airport", "havalimanı", "✈️"], ["flight", "uçuş", "🛫"], ["boarding pass", "biniş kartı", "🎫"],
-          ["passport", "pasaport", "🛂"], ["gate", "kapı (havalimanında)", "🚪"], ["departure", "kalkış, gidiş", "🛫"],
-          ["delay", "rötar, gecikme", "⏱️"], ["check in", "check-in yapmak, giriş yapmak", ""], ["security", "güvenlik", "👮"],
+          ["terminal", "terminal", "🛫"], ["flight", "uçuş", "🛫"], ["boarding pass", "biniş kartı", "🎫"],
+          ["passport control", "pasaport kontrolü", "🛂"], ["gate", "kapı (havalimanında)", "🚪"], ["departure", "kalkış, gidiş", "🛫"],
+          ["delayed", "rötarlı, gecikmeli", "⏱️"], ["check in", "check-in yapmak, giriş yapmak", ""], ["security", "güvenlik", "👮"],
           ["board", "(uçağa vb.) binmek", ""]
         ],
         sentences: [
           ["Our flight to Edinburgh leaves at seven.", "Edinburgh uçuşumuz yedide kalkıyor.", ["Our flight to Edinburgh leaves at seven o'clock."], ["Edinburgh uçuşumuz saat yedide kalkıyor.", "Edinburgh'a uçuşumuz yedide kalkıyor.", "Edinburgh'a uçuşumuz saat yedide kalkıyor.", "Edinburgh uçağımız yedide kalkıyor.", "Edinburgh uçağımız saat yedide kalkıyor."]],
           ["Don't forget your passport and boarding pass!", "Pasaportunu ve biniş kartını unutma!", ["Do not forget your passport and your boarding pass!"], ["Pasaportunuzu ve biniş kartınızı unutmayın!", "Pasaportunu ve biniş kartını sakın unutma!", "Pasaportunla biniş kartını unutma!"]],
           ["We checked in online last night.", "Dün gece online check-in yaptık.", ["Last night we checked in online."], ["Dün akşam online check-in yaptık.", "Dün gece internetten check-in yaptık.", "Dün akşam internetten check-in yaptık.", "Dün gece çevrimiçi check-in yaptık."]],
-          ["There was a long queue at security.", "Güvenlikte uzun bir kuyruk vardı.", ["There was a long line at security."], ["Güvenlik kontrolünde uzun bir kuyruk vardı.", "Güvenlikte uzun bir sıra vardı.", "Güvenlikte uzun kuyruk vardı."]],
-          ["Excuse me, which gate is the departure for Edinburgh?", "Affedersiniz, Edinburgh kalkışı hangi kapıdan?", ["Excuse me, which gate is the Edinburgh departure?"], ["Pardon, Edinburgh kalkışı hangi kapıdan?", "Affedersiniz, Edinburgh uçuşu hangi kapıdan kalkıyor?", "Pardon, Edinburgh uçuşu hangi kapıdan?", "Affedersiniz, Edinburgh kalkışı hangi kapıda?"]],
-          ["There was a delay, so we boarded an hour late.", "Rötar vardı, bu yüzden bir saat geç bindik.", ["There was a delay so we boarded an hour late."], ["Rötar vardı, o yüzden uçağa bir saat geç bindik.", "Rötar vardı, bu yüzden uçağa bir saat geç bindik.", "Gecikme vardı, bu yüzden bir saat geç bindik.", "Rötar vardı, o yüzden bir saat geç bindik."]]
+          ["There was a long queue at security and passport control.", "Güvenlikte ve pasaport kontrolünde uzun bir kuyruk vardı.", ["There was a long line at security and passport control."], ["Güvenlik ve pasaport kontrolünde uzun bir kuyruk vardı.", "Güvenlikte ve pasaport kontrolünde uzun bir sıra vardı.", "Güvenlikte ve pasaport kontrolünde uzun kuyruk vardı."]],
+          ["Excuse me, which terminal and gate is the departure for Edinburgh?", "Affedersiniz, Edinburgh kalkışı hangi terminal ve kapıdan?", ["Excuse me, which terminal and gate is the Edinburgh departure?"], ["Pardon, Edinburgh kalkışı hangi terminal ve kapıdan?", "Affedersiniz, Edinburgh uçuşu hangi terminal ve kapıdan kalkıyor?", "Pardon, Edinburgh uçuşu hangi terminalden ve kapıdan?", "Affedersiniz, Edinburgh kalkışı hangi terminalde ve kapıda?"]],
+          ["Our flight was delayed, so we boarded an hour late.", "Uçuşumuz rötarlıydı, bu yüzden bir saat geç bindik.", ["Our flight was delayed so we boarded an hour late."], ["Uçuşumuz rötar yaptı, bu yüzden bir saat geç bindik.", "Uçuşumuz gecikti, o yüzden uçağa bir saat geç bindik.", "Uçuşumuz rötarlıydı, o yüzden uçağa bir saat geç bindik.", "Uçağımız rötar yaptı, bu yüzden bir saat geç bindik."]]
         ]
       },
       {
         title: "Bagaj", icon: "🧳",
         words: [
-          ["suitcase", "bavul, valiz", "🧳"], ["luggage", "bagaj, eşya", "🧳"], ["baggage claim", "bagaj teslim alanı", "🛄"],
-          ["hand luggage", "el bagajı", "👜"], ["lost", "kayıp, kaybolmuş", ""], ["heavy", "ağır", "🏋️"],
+          ["overweight", "fazla kilolu (bagaj)", "⚖️"], ["luggage", "bagaj, eşya", "🧳"], ["baggage claim", "bagaj teslim alanı", "🛄"],
+          ["hand luggage", "el bagajı", "👜"], ["missing", "kayıp, ortada olmayan", "❓"], ["heavy", "ağır", "🏋️"],
           ["pack", "bavul hazırlamak, eşya koymak", "🎒"], ["carousel", "bagaj bandı", ""], ["label", "etiket", "🏷️"],
           ["form", "form", "📝"]
         ],
         sentences: [
-          ["My suitcase is very heavy because I packed too much.", "Bavulum çok ağır çünkü çok fazla eşya koydum.", ["My suitcase is really heavy because I packed too much."], ["Valizim çok ağır çünkü çok fazla eşya koydum.", "Bavulum çok ağır çünkü çok fazla şey koydum.", "Bavulum çok ağır çünkü çok eşya aldım.", "Valizim çok ağır çünkü çok fazla şey koydum."]],
+          ["My suitcase is heavy and overweight because I packed too much.", "Bavulum ağır ve fazla kilolu çünkü çok fazla eşya koydum.", ["My suitcase is heavy and overweight because I packed too much stuff."], ["Valizim ağır ve fazla kilolu çünkü çok fazla eşya koydum.", "Bavulum ağır ve kilo fazlası var çünkü çok fazla şey koydum.", "Bavulum ağır ve kilosu fazla çünkü çok eşya koydum.", "Valizim ağır ve fazla kilolu çünkü çok fazla şey koydum."]],
           ["We waited at baggage claim for forty minutes.", "Bagaj alanında kırk dakika bekledik.", ["We waited for forty minutes at baggage claim."], ["Bagaj teslim alanında kırk dakika bekledik.", "Bagaj alımında kırk dakika bekledik.", "Kırk dakika bagaj alanında bekledik."]],
           ["Luckily, my laptop was in my hand luggage.", "Neyse ki dizüstü bilgisayarım el bagajımdaydı.", ["Luckily my laptop was in my hand luggage."], ["Neyse ki laptopum el bagajımdaydı.", "Şans eseri dizüstü bilgisayarım el bagajımdaydı.", "Şans eseri laptopum el bagajımdaydı.", "Neyse ki bilgisayarım el bagajımdaydı."]],
           ["The carousel stopped, and my suitcase wasn't there.", "Bant durdu ve bavulum orada değildi.", ["The carousel stopped and my suitcase wasn't there."], ["Bagaj bandı durdu ve bavulum orada değildi.", "Bant durdu ve bavulum orada yoktu.", "Bagaj bandı durdu ve bavulum yoktu.", "Bant durdu ve valizim orada değildi."]],
-          ["I think my luggage is lost.", "Sanırım bagajım kayboldu.", [], ["Sanırım bagajım kayıp.", "Galiba bagajım kayboldu.", "Bence bagajım kayıp.", "Galiba bagajım kayıp."]],
+          ["I think my luggage is missing.", "Sanırım bagajım kayıp.", [], ["Sanırım bagajım kayboldu.", "Galiba bagajım kayboldu.", "Bence bagajım kayıp.", "Galiba bagajım kayıp.", "Sanırım bagajım ortada yok."]],
           ["Please fill in this form and check the label.", "Lütfen bu formu doldurun ve etiketi kontrol edin.", ["Please fill out this form and check the label."], ["Lütfen bu formu doldur ve etiketi kontrol et.", "Lütfen bu formu doldurup etiketi kontrol edin.", "Bu formu doldurun ve etiketi kontrol edin lütfen."]]
         ]
       },
@@ -217,7 +217,7 @@
           ["reservation", "rezervasyon", "📋"], ["single room", "tek kişilik oda", "🛏️"], ["double room", "çift kişilik oda", "🛏️"],
           ["reception", "resepsiyon", "🛎️"], ["key card", "kart anahtar, oda kartı", "💳"], ["available", "müsait, boş", ""],
           ["book", "rezervasyon yapmak, ayırtmak", ""], ["breakfast included", "kahvaltı dahil", "🍳"], ["check out", "çıkış yapmak", ""],
-          ["towel", "havlu", "🧻"]
+          ["minibar", "minibar", "🧃"]
         ],
         sentences: [
           ["Hello, I have a reservation under the name Deniz Yılmaz.", "Merhaba, Deniz Yılmaz adına bir rezervasyonum var.", ["Hello, I have a reservation under Deniz Yılmaz.", "Hi, I have a reservation under the name Deniz Yılmaz."], ["Merhaba, Deniz Yılmaz adına rezervasyonum var.", "İyi günler, Deniz Yılmaz adına bir rezervasyonum var.", "Merhaba, Deniz Yılmaz adına bir rezervasyon var."]],
@@ -225,22 +225,22 @@
           ["Sorry, there are no single rooms available, only a double room.", "Üzgünüm, boş tek kişilik oda yok, sadece çift kişilik var.", ["Sorry, we have no single rooms available, only a double room."], ["Üzgünüm, müsait tek kişilik oda yok, sadece çift kişilik oda var.", "Kusura bakmayın, boş tek kişilik oda yok, yalnızca çift kişilik var.", "Üzgünüm, boş tek kişilik oda yok, sadece bir çift kişilik oda var."]],
           ["Is breakfast included?", "Kahvaltı dahil mi?", ["Is breakfast included in the price?"], ["Kahvaltı fiyata dahil mi?", "Kahvaltı da dahil mi?"]],
           ["What time do we have to check out?", "Saat kaçta çıkış yapmamız gerekiyor?", ["What time do we need to check out?", "When do we have to check out?"], ["Kaçta çıkış yapmamız gerekiyor?", "Saat kaçta çıkış yapmalıyız?", "Kaçta çıkış yapmalıyız?", "Kaçta odadan çıkmamız gerekiyor?"]],
-          ["My key card doesn't work, and there are no towels.", "Kart anahtarım çalışmıyor ve hiç havlu yok.", ["My key card doesn't work and there are no towels."], ["Oda kartım çalışmıyor ve hiç havlu yok.", "Kart anahtarım çalışmıyor ve havlu yok.", "Oda kartım çalışmıyor ve havlu yok.", "Anahtar kartım çalışmıyor ve hiç havlu yok."]]
+          ["My key card doesn't work, and the minibar is empty.", "Kart anahtarım çalışmıyor ve minibar boş.", ["My key card doesn't work and the minibar is empty."], ["Oda kartım çalışmıyor ve minibar boş.", "Kart anahtarım çalışmıyor, minibar da boş.", "Anahtar kartım çalışmıyor ve minibar boş.", "Oda kartım çalışmıyor, minibar da boş."]]
         ]
       },
       {
         title: "Gezilecek yerler", icon: "🏰",
         words: [
-          ["castle", "kale, şato", "🏰"], ["sightseeing", "gezip görme, şehir gezisi", "📷"], ["guided tour", "rehberli tur", "🚩"],
-          ["tourist", "turist", "🧳"], ["map", "harita", "🗺️"], ["souvenir", "hediyelik eşya", "🎁"],
+          ["castle", "kale, şato", "🏰"], ["tour guide", "tur rehberi", "🧑‍🏫"], ["guided tour", "rehberli tur", "🚩"],
+          ["tourist", "turist", "🧳"], ["brochure", "broşür", "📰"], ["souvenir", "hediyelik eşya", "🎁"],
           ["old town", "eski şehir, tarihi merkez", "🏘️"], ["entrance fee", "giriş ücreti", "🎟️"], ["worth it", "değer, değmek", ""],
           ["famous", "ünlü", "⭐"]
         ],
         sentences: [
           ["Edinburgh Castle is famous, so it's always full of tourists.", "Edinburgh Kalesi ünlü, bu yüzden hep turistlerle dolu.", ["Edinburgh Castle is famous, so it is always full of tourists."], ["Edinburgh Kalesi ünlüdür, bu yüzden her zaman turistlerle doludur.", "Edinburgh Kalesi ünlü, o yüzden her zaman turistlerle dolu.", "Edinburgh Kalesi meşhur, bu yüzden hep turistlerle dolu."]],
-          ["We went sightseeing in the old town with a map.", "Haritayla eski şehri gezdik.", ["We went sightseeing in the old town with a map."], ["Elimizde haritayla eski şehri gezdik.", "Bir haritayla eski şehirde gezdik.", "Haritayla eski şehirde gezip dolaştık.", "Bir haritayla eski şehri gezdik."]],
+          ["Our tour guide showed us the old town.", "Tur rehberimiz bize eski şehri gösterdi.", ["The tour guide showed us the old town."], ["Tur rehberimiz eski şehri bize gösterdi.", "Rehberimiz bize eski şehri gösterdi.", "Tur rehberi bize eski şehri gösterdi.", "Tur rehberimiz bize eski şehri gezdirdi."]],
           ["The guided tour was long but interesting.", "Rehberli tur uzundu ama ilginçti.", [], ["Rehberli tur uzun ama ilginçti.", "Rehberli tur uzundu, ama ilginçti.", "Rehberli tur uzundu fakat ilginçti."]],
-          ["Is there an entrance fee for the castle?", "Kale için giriş ücreti var mı?", ["Is there an entrance fee to the castle?"], ["Kalenin giriş ücreti var mı?", "Kaleye giriş ücretli mi?", "Kale için bir giriş ücreti var mı?"]],
+          ["Is there an entrance fee for the castle? It isn't in the brochure.", "Kale için giriş ücreti var mı? Broşürde yazmıyor.", ["Is there an entrance fee to the castle? It isn't in the brochure."], ["Kalenin giriş ücreti var mı? Broşürde yazmıyor.", "Kaleye giriş ücretli mi? Broşürde yazmıyor.", "Kale için giriş ücreti var mı? Broşürde yok.", "Kalenin giriş ücreti var mı? Broşürde yok."]],
           ["I bought a souvenir for Can, a tiny bagpipe.", "Can'a bir hediyelik eşya aldım, minik bir gayda.", ["I bought Can a souvenir, a tiny bagpipe."], ["Can için bir hediyelik eşya aldım, minik bir gayda.", "Can'a hediyelik eşya aldım, minicik bir gayda.", "Can'a bir hediyelik eşya aldım, küçücük bir gayda."]],
           ["The view from the hill was amazing, it was worth it.", "Tepeden manzara muhteşemdi, buna değdi.", ["The view from the hill was amazing. It was worth it."], ["Tepeden manzara muhteşemdi, değdi.", "Tepeden görünen manzara muhteşemdi, buna değdi.", "Tepedeki manzara harikaydı, buna değdi.", "Tepeden manzara harikaydı, değdi."]]
         ]
@@ -249,16 +249,16 @@
         title: "Tatil planları", icon: "🗺️",
         words: [
           ["holiday", "tatil", "🏖️"], ["trip", "gezi, seyahat", "🧭"], ["abroad", "yurt dışı, yurt dışında", "🌍"],
-          ["journey", "yolculuk", "🚆"], ["return ticket", "gidiş-dönüş bilet", "🎫"], ["cancel", "iptal etmek", "❌"],
+          ["coach", "şehirlerarası otobüs", "🚌"], ["compensation", "tazminat", "💸"], ["cancel", "iptal etmek", "❌"],
           ["travel insurance", "seyahat sigortası", "📄"], ["budget", "bütçe", "💰"], ["hostel", "hostel, ucuz pansiyon", "🏨"],
           ["backpack", "sırt çantası", "🎒"]
         ],
         sentences: [
           ["This was my first trip abroad without my family.", "Bu, ailem olmadan ilk yurt dışı gezimdi.", ["It was my first trip abroad without my family."], ["Bu ailem olmadan ilk yurt dışı gezimdi.", "Bu, ailem olmadan ilk yurt dışı seyahatimdi.", "Bu ailesiz ilk yurt dışı gezimdi.", "Ailem olmadan ilk yurt dışı gezim buydu."]],
-          ["The train journey back to London took five hours.", "Londra'ya dönüş tren yolculuğu beş saat sürdü.", ["The journey back to London by train took five hours."], ["Londra'ya trenle dönüş yolculuğu beş saat sürdü.", "Londra'ya tren yolculuğumuz beş saat sürdü.", "Trenle Londra'ya dönüş beş saat sürdü."]],
+          ["The coach back to London took nine hours.", "Londra'ya dönüş otobüsü dokuz saat sürdü.", ["The coach back to London took nine hours."], ["Londra'ya otobüsle dönüş dokuz saat sürdü.", "Londra'ya dönüş otobüs yolculuğu dokuz saat sürdü.", "Londra'ya dönen otobüs dokuz saat sürdü.", "Otobüsle Londra'ya dönüş dokuz saat sürdü."]],
           ["We had a small budget, so we stayed in a hostel.", "Bütçemiz küçüktü, bu yüzden bir hostelde kaldık.", ["Our budget was small, so we stayed in a hostel."], ["Bütçemiz azdı, bu yüzden bir hostelde kaldık.", "Bütçemiz kısıtlıydı, o yüzden bir hostelde kaldık.", "Bütçemiz küçüktü, o yüzden bir hostelde kaldık.", "Bütçemiz azdı, o yüzden hostelde kaldık."]],
           ["Did you buy travel insurance before the holiday?", "Tatilden önce seyahat sigortası aldın mı?", ["Did you get travel insurance before the holiday?"], ["Tatilden önce seyahat sigortası yaptırdın mı?", "Tatilden önce seyahat sigortası aldınız mı?", "Tatilden önce seyahat sigortası yaptırdınız mı?"]],
-          ["They cancelled our flight, so we bought return tickets for the train.", "Uçuşumuzu iptal ettiler, bu yüzden gidiş-dönüş tren bileti aldık.", ["They canceled our flight, so we bought return tickets for the train."], ["Uçuşumuzu iptal ettiler, o yüzden gidiş-dönüş tren bileti aldık.", "Uçuşumuz iptal edildi, bu yüzden gidiş-dönüş tren bileti aldık.", "Uçuşumuzu iptal ettiler, biz de gidiş-dönüş tren bileti aldık."]],
+          ["They cancelled our flight, but we got compensation.", "Uçuşumuzu iptal ettiler ama tazminat aldık.", ["They canceled our flight, but we got compensation."], ["Uçuşumuz iptal edildi ama tazminat aldık.", "Uçuşumuzu iptal ettiler, ama tazminat aldık.", "Uçuşumuzu iptal ettiler ama bize tazminat ödediler."]],
           ["I carried everything in one backpack this time.", "Bu sefer her şeyi tek bir sırt çantasında taşıdım.", ["This time I carried everything in one backpack."], ["Bu kez her şeyi tek bir sırt çantasında taşıdım.", "Bu sefer her şeyi bir sırt çantasında taşıdım.", "Bu kez her şeyi bir sırt çantasında taşıdım."]]
         ]
       }
@@ -302,7 +302,7 @@
       ["bandage", "sargı bezi", "🩹"], ["blood", "kan", "🩸"], ["temperature", "vücut ısısı, ateş", "🌡️"],
       ["sore", "ağrılı, acıyan", ""], ["ache", "sızı, ağrı", ""], ["toothache", "diş ağrısı", "🦷"],
       ["earache", "kulak ağrısı", "👂"], ["backache", "sırt ağrısı", ""], ["sprain", "burkmak", ""],
-      ["broken", "kırık", "🦴"], ["bruise", "morluk, çürük", ""], ["rash", "kızarıklık, döküntü", ""],
+      ["cast", "alçı (kırık için)", "🦴"], ["bruise", "morluk, çürük", ""], ["rash", "kızarıklık, döküntü", ""],
       ["infection", "enfeksiyon", "🦠"], ["virus", "virüs", "🦠"], ["antibiotics", "antibiyotik", "💊"],
       ["vitamin", "vitamin", "🍊"], ["check-up", "kontrol, check-up", "🩺"], ["dentist", "diş hekimi", "🦷"],
       ["heart", "kalp", "❤️"], ["lungs", "akciğerler", "🫁"], ["skin", "cilt, deri", ""],
@@ -350,13 +350,13 @@
           ["GP", "aile hekimi, pratisyen hekim", "👩‍⚕️"], ["appointment", "randevu", "📅"], ["surgery", "muayenehane (İngiltere), ameliyat", "🏥"],
           ["prescription", "reçete", "📝"], ["examine", "muayene etmek", "🩺"], ["symptom", "belirti", ""],
           ["urgent", "acil", "⚠️"], ["waiting room", "bekleme salonu", "🪑"], ["register", "kaydolmak, kayıt yaptırmak", ""],
-          ["nurse", "hemşire", "👩‍⚕️"]
+          ["breathe", "nefes almak", "🌬️"]
         ],
         sentences: [
           ["In the UK, you have to register with a GP first.", "İngiltere'de önce bir aile hekimine kaydolmanız gerekiyor.", ["In the UK you have to register with a GP first."], ["İngiltere'de önce bir aile hekimine kaydolman gerekiyor.", "Birleşik Krallık'ta önce bir aile hekimine kaydolmanız gerekiyor.", "Birleşik Krallık'ta önce bir aile hekimine kaydolman gerekiyor.", "İngiltere'de önce bir aile hekimine kaydolmalısın.", "İngiltere'de önce bir aile hekimine kaydolmak zorundasın."]],
           ["I'd like to make an appointment, please.", "Randevu almak istiyorum, lütfen.", ["I would like to make an appointment, please."], ["Bir randevu almak istiyorum, lütfen.", "Randevu almak istiyorum lütfen.", "Bir randevu almak istiyorum lütfen.", "Randevu almak isterim, lütfen."]],
           ["Sorry, the next appointment is in two weeks.", "Üzgünüm, bir sonraki randevu iki hafta sonra.", ["Sorry, the next appointment is in two weeks' time."], ["Kusura bakmayın, en yakın randevu iki hafta sonra.", "Üzgünüm, sonraki randevu iki hafta sonra.", "Üzgünüm, en yakın randevu iki hafta sonra.", "Kusura bakmayın, bir sonraki randevu iki hafta sonra."]],
-          ["Two weeks? But it's urgent, the nurse said so!", "İki hafta mı? Ama acil, hemşire de öyle dedi!", ["Two weeks? But it is urgent, the nurse said so!"], ["İki hafta mı? Ama bu acil, hemşire de öyle söyledi!", "İki hafta mı? Ama acil, hemşire öyle dedi!", "İki hafta mı? Ama durum acil, hemşire de öyle dedi!"]],
+          ["Two weeks? But it's urgent, I can't breathe!", "İki hafta mı? Ama acil, nefes alamıyorum!", ["Two weeks? But it is urgent, I cannot breathe!"], ["İki hafta mı? Ama bu acil, nefes alamıyorum!", "İki hafta mı? Ama durum acil, nefes alamıyorum!", "İki hafta mı? Ama acil bir durum, nefes alamıyorum!"]],
           ["The doctor examined me and asked about my symptoms.", "Doktor beni muayene etti ve belirtilerimi sordu.", ["The doctor examined me and asked me about my symptoms."], ["Doktor beni muayene edip belirtilerimi sordu.", "Doktor beni muayene etti ve şikâyetlerimi sordu.", "Doktor beni muayene etti ve şikayetlerimi sordu."]],
           ["I sat in the waiting room at the surgery for an hour.", "Muayenehanenin bekleme salonunda bir saat oturdum.", ["I sat in the surgery waiting room for an hour."], ["Muayenehanedeki bekleme salonunda bir saat oturdum.", "Muayenehanenin bekleme salonunda bir saat bekledim.", "Muayenehanede bekleme salonunda bir saat oturdum."]]
         ]
@@ -364,13 +364,13 @@
       {
         title: "Eczanede", icon: "💊",
         words: [
-          ["pharmacy", "eczane", "🏪"], ["pharmacist", "eczacı", "🧑‍⚕️"], ["medicine", "ilaç", "💊"],
+          ["chemist's", "eczane (İngiltere)", "🏪"], ["pharmacist", "eczacı", "🧑‍⚕️"], ["medicine", "ilaç", "💊"],
           ["painkiller", "ağrı kesici", "💊"], ["tablet", "tablet, hap", "💊"], ["cough syrup", "öksürük şurubu", "🧴"],
           ["twice a day", "günde iki kez", ""], ["side effect", "yan etki", ""], ["plaster", "yara bandı", "🩹"],
           ["allergic", "alerjik, alerjisi olan", ""]
         ],
         sentences: [
-          ["I took my prescription to the pharmacy.", "Reçetemi eczaneye götürdüm.", [], ["Reçetemi eczaneye götürdüm.", "Ben reçetemi eczaneye götürdüm.", "Reçeteyi eczaneye götürdüm."]],
+          ["I took my prescription to the chemist's.", "Reçetemi eczaneye götürdüm.", ["I took my prescription to the pharmacy."], ["Ben reçetemi eczaneye götürdüm.", "Reçeteyi eczaneye götürdüm.", "Reçetemi eczaneye verdim."]],
           ["The pharmacist gave me some painkillers and cough syrup.", "Eczacı bana biraz ağrı kesici ve öksürük şurubu verdi.", ["The pharmacist gave me painkillers and cough syrup."], ["Eczacı bana ağrı kesici ve öksürük şurubu verdi.", "Eczacı bana birkaç ağrı kesici ve öksürük şurubu verdi."]],
           ["Take two tablets twice a day after meals.", "Yemeklerden sonra günde iki kez iki tablet alın.", ["Take two tablets after meals twice a day."], ["Yemekten sonra günde iki kez iki tablet alın.", "Günde iki kez yemekten sonra iki tablet al.", "Yemeklerden sonra günde iki kere iki tablet alın.", "Yemeklerden sonra günde iki kez iki hap için.", "Yemeklerden sonra günde iki kez iki tablet al."]],
           ["Are you allergic to any medicine?", "Herhangi bir ilaca alerjiniz var mı?", ["Are you allergic to any medicines?"], ["Herhangi bir ilaca alerjin var mı?", "Bir ilaca alerjiniz var mı?", "Bir ilaca alerjin var mı?"]],
@@ -382,7 +382,7 @@
         title: "Should ve shouldn't", icon: "🍵",
         words: [
           ["should", "-meli, -malı", ""], ["shouldn't", "-memeli, -mamalı", ""], ["rest", "dinlenmek", "🛌"],
-          ["stay in bed", "yatakta kalmak", "🛏️"], ["get better", "iyileşmek", ""], ["healthy", "sağlıklı", "🥗"],
+          ["stay in bed", "yatakta kalmak", "🛏️"], ["get better", "iyileşmek", ""], ["in shape", "formda", "💪"],
           ["exercise", "egzersiz yapmak, spor yapmak", "🏃"], ["advice", "tavsiye, öğüt", "💡"], ["fresh air", "temiz hava", "🌳"],
           ["plenty of", "bol, bolca", ""]
         ],
@@ -392,7 +392,7 @@
           ["You should drink plenty of water and tea.", "Bol su ve çay içmelisin.", [], ["Bol bol su ve çay içmelisin.", "Bol su ve çay içmelisiniz.", "Bolca su ve çay içmelisin."]],
           ["Should I take antibiotics to get better?", "İyileşmek için antibiyotik almalı mıyım?", ["Should I take antibiotics so I get better?"], ["İyileşmek için antibiyotik kullanmalı mıyım?", "İyileşmek için antibiyotik içmeli miyim?", "İyileşmem için antibiyotik almalı mıyım?"]],
           ["My mum's advice is always the same, eat soup!", "Annemin tavsiyesi hep aynı, çorba iç!", ["My mom's advice is always the same, eat soup!"], ["Annemin tavsiyesi her zaman aynı, çorba iç!", "Annemin tavsiyesi hep aynı, çorba ye!", "Annemin tavsiyesi her zaman aynı, çorba ye!"]],
-          ["To stay healthy, you should exercise and get fresh air.", "Sağlıklı kalmak için egzersiz yapmalı ve temiz hava almalısın.", ["You should exercise and get fresh air to stay healthy."], ["Sağlıklı kalmak için spor yapmalı ve temiz hava almalısın.", "Sağlıklı kalmak için egzersiz yapmalısın ve temiz hava almalısın.", "Sağlıklı kalmak için egzersiz yapmalı ve temiz hava almalısınız."]]
+          ["To stay in shape, you should exercise and get fresh air.", "Formda kalmak için egzersiz yapmalı ve temiz hava almalısın.", ["You should exercise and get fresh air to stay in shape."], ["Formda kalmak için spor yapmalı ve temiz hava almalısın.", "Formda kalmak için egzersiz yapmalısın ve temiz hava almalısın.", "Formda kalmak için egzersiz yapmalı ve temiz hava almalısınız.", "Fit kalmak için egzersiz yapmalı ve temiz hava almalısın."]]
         ]
       }
     ]
@@ -436,40 +436,40 @@
       ["retire", "emekli olmak", "👴"], ["employee", "çalışan", "🧑‍💼"], ["employer", "işveren", "🏢"],
       ["intern", "stajyer", "🧑‍🎓"], ["staff", "personel", "👥"], ["department", "departman, bölüm", ""],
       ["headquarters", "genel merkez", "🏢"], ["pay rise", "zam", "💰"], ["contract", "sözleşme", "📃"],
-      ["day off", "izin günü", "🏖️"], ["annual leave", "yıllık izin", "🗓️"], ["unemployed", "işsiz", ""],
+      ["sick leave", "hastalık izni", "🤒"], ["annual leave", "yıllık izin", "🗓️"], ["unemployed", "işsiz", ""],
       ["career", "kariyer", "🧗"], ["experience", "deneyim, tecrübe", ""], ["skill", "beceri, yetenek", "🛠️"],
       ["plumber", "tesisatçı", "🔧"], ["mechanic", "tamirci, araba ustası", "🔩"], ["firefighter", "itfaiyeci", "🚒"],
-      ["police officer", "polis memuru", "👮"], ["cleaner", "temizlikçi", "🧹"], ["receptionist", "resepsiyonist", "🛎️"],
+      ["builder", "inşaat ustası", "👷"], ["cleaner", "temizlikçi", "🧹"], ["receptionist", "resepsiyonist", "🛎️"],
       ["hairdresser", "kuaför", "💇"], ["compliment", "iltifat", "💬"], ["nod", "başını sallamak", "🙂"]
     ],
     lessons: [
       {
         title: "Meslekler", icon: "👩‍💻",
         words: [
-          ["engineer", "mühendis", "👷"], ["lawyer", "avukat", "⚖️"], ["accountant", "muhasebeci", "🧮"],
-          ["designer", "tasarımcı", "🎨"], ["manager", "müdür, yönetici", "👔"], ["software developer", "yazılım geliştirici", "👨‍💻"],
+          ["surgeon", "cerrah", "🩺"], ["translator", "çevirmen", "🗣️"], ["accountant", "muhasebeci", "🧮"],
+          ["designer", "tasarımcı", "🎨"], ["sales assistant", "satış danışmanı, tezgâhtar", "🛍️"], ["civil servant", "devlet memuru", "🏛️"],
           ["journalist", "gazeteci", "📰"], ["electrician", "elektrikçi", "💡"], ["architect", "mimar", "📐"],
-          ["chef", "şef, aşçı", "👩‍🍳"]
+          ["photographer", "fotoğrafçı", "📷"]
         ],
         sentences: [
-          ["Deniz is a software developer in London.", "Deniz Londra'da yazılım geliştiricidir.", ["Deniz works as a software developer in London."], ["Deniz Londra'da yazılım geliştirici.", "Deniz, Londra'da yazılım geliştirici olarak çalışıyor.", "Deniz Londra'da bir yazılım geliştirici."]],
-          ["Lina wants to be a chef, not an accountant.", "Lina muhasebeci değil, şef olmak istiyor.", [], ["Lina muhasebeci olmak değil, şef olmak istiyor.", "Lina şef olmak istiyor, muhasebeci değil.", "Lina aşçı olmak istiyor, muhasebeci değil."]],
-          ["My sister is a lawyer and she works very long hours.", "Kız kardeşim avukat ve çok uzun saatler çalışıyor.", ["My sister is a lawyer, and she works very long hours."], ["Kız kardeşim avukat ve çok uzun saatler çalışır.", "Ablam avukat ve çok uzun saatler çalışıyor.", "Kız kardeşim avukat, çok uzun saatler çalışıyor.", "Ablam avukat ve çok uzun saatler çalışır."]],
+          ["Deniz writes code, but his mum wanted him to be a surgeon.", "Deniz kod yazıyor ama annesi onun cerrah olmasını istiyordu.", ["Deniz writes code, but his mom wanted him to be a surgeon."], ["Deniz kod yazar ama annesi onun cerrah olmasını istiyordu.", "Deniz kod yazıyor ama annesi cerrah olmasını istiyordu.", "Deniz kod yazıyor, ama annesi onun cerrah olmasını isterdi."]],
+          ["Lina wants to be a chef, but now she's a sales assistant.", "Lina şef olmak istiyor ama şimdilik satış danışmanı.", ["Lina wants to be a chef, but at the moment she's a sales assistant."], ["Lina şef olmak istiyor ama şu an satış danışmanı.", "Lina aşçı olmak istiyor ama şimdilik tezgâhtar.", "Lina şef olmak istiyor ama şimdilik tezgâhtar.", "Lina şef olmak istiyor ama şu anda satış danışmanı."]],
+          ["My sister is an accountant, and my brother is a civil servant.", "Kız kardeşim muhasebeci, erkek kardeşim de devlet memuru.", ["My sister is an accountant and my brother is a civil servant."], ["Kız kardeşim muhasebeci ve erkek kardeşim devlet memuru.", "Ablam muhasebeci, ağabeyim de devlet memuru.", "Ablam muhasebeci, abim de devlet memuru.", "Kız kardeşim muhasebeci, erkek kardeşim ise devlet memuru."]],
           ["Architects design buildings and engineers make them safe.", "Mimarlar binaları tasarlar, mühendisler de onları güvenli hale getirir.", ["Architects design buildings, and engineers make them safe."], ["Mimarlar binaları tasarlar ve mühendisler onları güvenli hale getirir.", "Mimarlar bina tasarlar, mühendisler de onları güvenli yapar.", "Mimarlar binaları tasarlar, mühendisler ise onları güvenli hale getirir."]],
-          ["Our designer and our manager never agree.", "Tasarımcımız ve müdürümüz asla anlaşamaz.", ["Our designer and manager never agree."], ["Tasarımcımızla müdürümüz hiç anlaşmıyor.", "Tasarımcımız ve yöneticimiz asla anlaşmaz.", "Tasarımcımızla yöneticimiz asla anlaşamıyor.", "Tasarımcımız ve müdürümüz hiç anlaşamaz."]],
-          ["Can is a journalist in İzmir, and his dad is an electrician.", "Can İzmir'de gazeteci, babası da elektrikçi.", ["Can is a journalist in Izmir, and his dad is an electrician."], ["Can İzmir'de gazeteci ve babası elektrikçi.", "Can İzmir'de gazeteci, babası ise elektrikçi.", "Can İzmir'de bir gazeteci ve babası bir elektrikçi."]]
+          ["Our designer and our photographer never agree.", "Tasarımcımız ve fotoğrafçımız asla anlaşamaz.", ["Our designer and photographer never agree."], ["Tasarımcımızla fotoğrafçımız hiç anlaşmıyor.", "Tasarımcımız ve fotoğrafçımız asla anlaşmaz.", "Tasarımcımızla fotoğrafçımız asla anlaşamıyor.", "Tasarımcımız ve fotoğrafçımız hiç anlaşamaz."]],
+          ["Can is a journalist, his dad is an electrician and his mum is a translator.", "Can gazeteci, babası elektrikçi, annesi de çevirmen.", ["Can is a journalist, his dad is an electrician, and his mum is a translator."], ["Can gazeteci, babası elektrikçi ve annesi çevirmen.", "Can gazeteci, babası elektrikçi, annesi ise çevirmen.", "Can bir gazeteci, babası elektrikçi, annesi de çevirmen."]]
         ]
       },
       {
         title: "Ofiste", icon: "🏢",
         words: [
-          ["colleague", "iş arkadaşı, meslektaş", "🧑‍🤝‍🧑"], ["desk", "çalışma masası", "🖥️"], ["meeting room", "toplantı odası", "🚪"],
+          ["colleague", "iş arkadaşı, meslektaş", "🧑‍🤝‍🧑"], ["noticeboard", "ilan panosu", "📌"], ["meeting room", "toplantı odası", "🚪"],
           ["printer", "yazıcı", "🖨️"], ["deadline", "son teslim tarihi", "⏰"], ["boss", "patron", "🤵"],
-          ["team", "ekip, takım", "👥"], ["open-plan office", "açık ofis", "🏢"], ["break", "mola, ara", "☕"],
+          ["stressed", "stresli", "😣"], ["open-plan office", "açık ofis", "🏢"], ["break", "mola, ara", "☕"],
           ["coffee machine", "kahve makinesi", "☕"]
         ],
         sentences: [
-          ["Emma is my colleague, and her desk is next to mine.", "Emma iş arkadaşım ve masası benimkinin yanında.", ["Emma is my colleague and her desk is next to mine."], ["Emma benim iş arkadaşım ve onun masası benimkinin yanında.", "Emma iş arkadaşım, masası da benimkinin yanında.", "Emma iş arkadaşım ve masası benim masamın yanında."]],
+          ["Emma is my colleague, and her desk is next to the noticeboard.", "Emma iş arkadaşım ve masası ilan panosunun yanında.", ["Emma is my colleague and her desk is next to the noticeboard."], ["Emma benim iş arkadaşım ve onun masası ilan panosunun yanında.", "Emma iş arkadaşım, masası da ilan panosunun yanında.", "Emma iş arkadaşım ve masası panonun yanında."]],
           ["We work in an open-plan office, so it's quite noisy.", "Açık ofiste çalışıyoruz, bu yüzden oldukça gürültülü.", ["We work in an open-plan office, so it is quite noisy."], ["Açık ofiste çalışıyoruz, o yüzden epey gürültülü.", "Açık bir ofiste çalışıyoruz, bu yüzden oldukça gürültülü.", "Açık ofiste çalışıyoruz, bu yüzden epey gürültülü oluyor."]],
           ["The boss is waiting for us in the meeting room.", "Patron toplantı odasında bizi bekliyor.", ["The boss is in the meeting room waiting for us."], ["Patron bizi toplantı odasında bekliyor.", "Patron toplantı odasında bizi bekliyor."]],
           ["The printer is broken again, as usual.", "Yazıcı her zamanki gibi yine bozuk.", ["As usual, the printer is broken again."], ["Yazıcı yine bozuk, her zamanki gibi.", "Yazıcı her zamanki gibi gene bozuk.", "Her zamanki gibi yazıcı yine bozuk."]],
@@ -499,15 +499,15 @@
         words: [
           ["task", "görev, iş", "✅"], ["send an email", "e-posta göndermek", "📧"], ["attend", "katılmak (toplantıya vb.)", ""],
           ["organise", "düzenlemek, organize etmek", "🗂️"], ["present", "sunmak, sunum yapmak", "📽️"], ["prepare", "hazırlamak", ""],
-          ["client", "müşteri", "🤝"], ["schedule", "program, takvim", "📆"], ["responsible for", "-den sorumlu", ""],
-          ["overtime", "fazla mesai", "🌙"]
+          ["client", "müşteri", "🤝"], ["to-do list", "yapılacaklar listesi", "📝"], ["responsible for", "-den sorumlu", ""],
+          ["stay late", "geç saate kadar kalmak, mesaiye kalmak", "🌙"]
         ],
         sentences: [
           ["My first task every morning is to send an email to the team.", "Her sabah ilk görevim ekibe bir e-posta göndermek.", ["Every morning my first task is to send an email to the team."], ["Her sabah ilk işim ekibe e-posta göndermek.", "Her sabah ilk görevim ekibe e-posta atmak.", "Her sabah ilk işim ekibe bir e-posta atmak.", "Her sabah ilk görevim takıma bir e-posta göndermek."]],
           ["Emma is responsible for the client meetings.", "Emma müşteri toplantılarından sorumlu.", [], ["Müşteri toplantılarından Emma sorumlu.", "Emma, müşteri toplantılarından sorumludur."]],
           ["Every Monday we attend a long team meeting.", "Her pazartesi uzun bir ekip toplantısına katılırız.", ["We attend a long team meeting every Monday."], ["Her pazartesi uzun bir ekip toplantısına katılıyoruz.", "Her pazartesi uzun bir takım toplantısına katılırız.", "Her pazartesi uzun bir takım toplantısına katılıyoruz."]],
           ["This week I'm preparing a presentation, and I present on Friday.", "Bu hafta bir sunum hazırlıyorum ve cuma günü sunuyorum.", ["This week I'm preparing a presentation and I present on Friday."], ["Bu hafta sunum hazırlıyorum ve cuma günü sunacağım.", "Bu hafta bir sunum hazırlıyorum, cuma günü sunuyorum.", "Bu hafta bir sunum hazırlıyorum ve cuma sunuyorum."]],
-          ["My schedule is full, so I'm doing overtime again.", "Programım dolu, bu yüzden yine fazla mesai yapıyorum.", ["My schedule is full so I'm doing overtime again."], ["Programım dolu, o yüzden yine fazla mesai yapıyorum.", "Takvimim dolu, bu yüzden yine fazla mesai yapıyorum.", "Programım dolu, yine mesaiye kalıyorum.", "Programım dolu, bu yüzden gene fazla mesai yapıyorum."]],
+          ["My to-do list is long, so I'm staying late again.", "Yapılacaklar listem uzun, bu yüzden yine geç saate kadar kalıyorum.", ["My to-do list is long so I'm staying late again."], ["Yapılacaklar listem uzun, o yüzden yine mesaiye kalıyorum.", "Yapılacaklar listem uzun, bu yüzden yine mesaiye kalıyorum.", "Yapılacaklar listem uzun, o yüzden yine geç saate kadar kalıyorum.", "Yapılacaklar listem uzun, bu yüzden gene geç saate kadar kalıyorum."]],
           ["Who is organising the office party this year?", "Bu yıl ofis partisini kim düzenliyor?", ["Who's organising the office party this year?", "Who is organizing the office party this year?"], ["Bu sene ofis partisini kim düzenliyor?", "Bu yıl ofis partisini kim organize ediyor?", "Bu sene ofis partisini kim organize ediyor?"]]
         ]
       },
@@ -515,7 +515,7 @@
         title: "Her zaman mı, şu an mı?", icon: "🔄",
         words: [
           ["normally", "normalde", ""], ["these days", "bugünlerde, son zamanlarda", ""], ["this week", "bu hafta", "🗓️"],
-          ["rarely", "nadiren", ""], ["work from home", "evden çalışmak", "🏠"], ["commute", "işe gidip gelmek, işe yolculuk", "🚇"],
+          ["seldom", "nadiren, pek az", ""], ["work from home", "evden çalışmak", "🏠"], ["packed", "tıklım tıklım, çok kalabalık", "🚇"],
           ["temporary", "geçici", "⏳"], ["permanent", "kalıcı, sürekli", ""], ["part-time", "yarı zamanlı", "🕐"],
           ["full-time", "tam zamanlı", "🕘"]
         ],
@@ -523,9 +523,9 @@
           ["I normally take the tube, but today I'm walking.", "Normalde metroya binerim ama bugün yürüyorum.", ["Normally I take the tube, but today I'm walking."], ["Normalde metroyu kullanırım ama bugün yürüyorum.", "Genelde metroya binerim ama bugün yürüyorum.", "Normalde metroya binerim, ama bugün yürüyorum.", "Normalde metroyla giderim ama bugün yürüyorum."]],
           ["Lina works part-time, but this week she's working full-time.", "Lina yarı zamanlı çalışır ama bu hafta tam zamanlı çalışıyor.", ["Lina works part-time but this week she's working full-time."], ["Lina yarı zamanlı çalışıyor ama bu hafta tam zamanlı çalışıyor.", "Lina yarı zamanlı çalışır, ama bu hafta tam zamanlı çalışıyor.", "Lina normalde yarı zamanlı çalışır ama bu hafta tam zamanlı çalışıyor."]],
           ["These days many people work from home.", "Bugünlerde birçok kişi evden çalışıyor.", ["Many people work from home these days."], ["Bugünlerde birçok insan evden çalışıyor.", "Son zamanlarda birçok kişi evden çalışıyor.", "Bu günlerde pek çok insan evden çalışıyor.", "Bugünlerde pek çok kişi evden çalışıyor."]],
-          ["My commute takes an hour, so I read on the train.", "İşe gidişim bir saat sürüyor, bu yüzden trende okuyorum.", ["My commute is an hour, so I read on the train."], ["İşe yolculuğum bir saat sürüyor, bu yüzden trende kitap okuyorum.", "İşe gidiş bir saat sürüyor, o yüzden trende okuyorum.", "İşe gidişim bir saat sürüyor, o yüzden trende kitap okuyorum.", "İşe gitmem bir saat sürüyor, bu yüzden trende okuyorum."]],
+          ["The tube is always packed at eight, so I leave home early.", "Metro saat sekizde hep tıklım tıklım, bu yüzden evden erken çıkarım.", ["At eight the tube is always packed, so I leave home early."], ["Metro sekizde hep tıklım tıklım, bu yüzden evden erken çıkıyorum.", "Saat sekizde metro her zaman tıklım tıklım, o yüzden evden erken çıkarım.", "Metro saat sekizde hep çok kalabalık, bu yüzden evden erken çıkıyorum.", "Metro sekizde her zaman tıka basa dolu, o yüzden evden erken çıkıyorum."]],
           ["This job is temporary, but I want a permanent one.", "Bu iş geçici ama ben kalıcı bir iş istiyorum.", ["This job is temporary but I want a permanent one."], ["Bu iş geçici ama kalıcı bir iş istiyorum.", "Bu iş geçici, ama kalıcı bir iş istiyorum.", "Bu iş geçici ama ben kalıcı bir tane istiyorum."]],
-          ["Mr. Walker rarely smiles, but today he's smiling!", "Mr. Walker nadiren gülümser ama bugün gülümsüyor!", ["Mr. Walker rarely smiles but today he's smiling!"], ["Bay Walker nadiren gülümser ama bugün gülümsüyor!", "Mr. Walker nadiren güler ama bugün gülüyor!", "Bay Walker nadiren güler ama bugün gülüyor!", "Mr. Walker nadiren gülümser, ama bugün gülümsüyor!"]]
+          ["Mr. Walker seldom smiles, but today he's smiling!", "Mr. Walker nadiren gülümser ama bugün gülümsüyor!", ["Mr. Walker seldom smiles but today he's smiling!", "Mr. Walker rarely smiles, but today he's smiling!"], ["Bay Walker nadiren gülümser ama bugün gülümsüyor!", "Mr. Walker nadiren güler ama bugün gülüyor!", "Bay Walker nadiren güler ama bugün gülüyor!", "Mr. Walker nadiren gülümser, ama bugün gülümsüyor!"]]
         ]
       }
     ]
@@ -569,8 +569,8 @@
       ["pot", "tencere", "🍲"], ["chopping board", "kesme tahtası", "🪵"], ["kettle", "su ısıtıcısı, çaydanlık", "🫖"],
       ["microwave", "mikrodalga fırın", ""], ["seafood", "deniz ürünleri", "🦐"], ["saffron", "safran", ""],
       ["takeaway", "paket yemek", "🥡"], ["napkin", "peçete", "🧻"], ["sauce", "sos", "🥫"],
-      ["portion", "porsiyon", ""], ["snack", "atıştırmalık", "🍿"], ["homemade", "ev yapımı", "🏠"],
-      ["leftovers", "artan yemek", "🍱"], ["chilli", "acı biber", "🌶️"], ["lemon", "limon", "🍋"],
+      ["portion", "porsiyon", ""], ["dressing", "salata sosu", "🥗"], ["homemade", "ev yapımı", "🏠"],
+      ["leftovers", "artan yemek", "🍱"], ["chilli", "acı biber", "🌶️"], ["cinnamon", "tarçın", ""],
       ["smoke", "duman", "💨"], ["charcoal", "kömür", "⚫"], ["apron", "önlük", ""],
       ["set the table", "sofrayı kurmak", "🍽️"], ["wash up", "bulaşık yıkamak", "🧽"], ["dish", "yemek, tabak", "🥘"],
       ["meal", "öğün, yemek", ""], ["cutlery", "çatal bıçak takımı", "🍴"], ["vegan", "vegan", "🌱"]
@@ -579,9 +579,9 @@
       {
         title: "Sipariş vermek", icon: "🍽️",
         words: [
-          ["order", "sipariş vermek, sipariş", "📝"], ["waiter", "garson", "🤵"], ["starter", "başlangıç (yemek)", "🥗"],
+          ["order", "sipariş vermek, sipariş", "📝"], ["service charge", "servis ücreti", "🧾"], ["starter", "başlangıç (yemek)", "🥗"],
           ["main course", "ana yemek", "🍝"], ["dessert", "tatlı (yemek sonu)", "🍰"], ["bill", "hesap", "🧾"],
-          ["tip", "bahşiş", "💵"], ["table for two", "iki kişilik masa", "🪑"], ["vegetarian", "vejetaryen", "🥦"],
+          ["tip", "bahşiş", "💵"], ["table for two", "iki kişilik masa", "🪑"], ["contain", "içermek", ""],
           ["recommend", "tavsiye etmek, önermek", "👍"]
         ],
         sentences: [
@@ -589,8 +589,8 @@
           ["Are you ready to order?", "Sipariş vermeye hazır mısınız?", [], ["Sipariş vermeye hazır mısın?", "Siparişe hazır mısınız?", "Sipariş vermek için hazır mısınız?"]],
           ["I'd like the soup as a starter, please.", "Başlangıç olarak çorba istiyorum, lütfen.", ["I would like the soup as a starter, please.", "Can I have the soup as a starter, please?"], ["Başlangıç olarak çorbayı istiyorum lütfen.", "Başlangıç olarak çorba alayım lütfen.", "Başlangıç olarak çorbayı alayım, lütfen.", "Başlangıç olarak çorba istiyorum lütfen."]],
           ["What do you recommend for the main course?", "Ana yemek için ne tavsiye edersiniz?", ["What would you recommend for the main course?"], ["Ana yemek olarak ne önerirsiniz?", "Ana yemek için ne önerirsiniz?", "Ana yemek için ne tavsiye edersin?", "Ana yemek olarak ne tavsiye edersiniz?"]],
-          ["Is the lasagne vegetarian, or does it have meat?", "Lazanya vejetaryen mi, yoksa içinde et var mı?", ["Is the lasagna vegetarian, or does it have meat?"], ["Lazanya vejetaryen mi yoksa içinde et var mı?", "Lazanya vejetaryen mi, yoksa etli mi?", "Lazanya vejetaryen mi yoksa etli mi?"]],
-          ["No dessert, thanks. Can we have the bill, please? The waiter deserves a good tip.", "Tatlı istemiyoruz, teşekkürler. Hesabı alabilir miyiz? Garson iyi bir bahşişi hak ediyor.", ["No dessert, thank you. Can we have the bill, please? The waiter deserves a good tip."], ["Tatlı yok, teşekkürler. Hesabı alabilir miyiz? Garson iyi bir bahşişi hak ediyor.", "Tatlı istemiyoruz, sağ olun. Hesabı alabilir miyiz lütfen? Garson iyi bahşişi hak ediyor.", "Tatlı istemiyoruz, teşekkürler. Hesabı alabilir miyiz lütfen? Garson iyi bir bahşişi hak ediyor."]]
+          ["Does the lasagne contain meat or nuts?", "Lazanyada et ya da kuruyemiş var mı?", ["Does the lasagna contain meat or nuts?"], ["Lazanya et ya da kuruyemiş içeriyor mu?", "Lazanyada et veya kuruyemiş var mı?", "Lazanya et veya kuruyemiş içeriyor mu?", "Lazanyanın içinde et ya da kuruyemiş var mı?"]],
+          ["No dessert, thanks. Can we have the bill? Is service charge included, or should we leave a tip?", "Tatlı istemiyoruz, teşekkürler. Hesabı alabilir miyiz? Servis dahil mi, bahşiş mi bırakalım?", ["No dessert, thank you. Can we have the bill? Is service charge included, or should we leave a tip?"], ["Tatlı yok, teşekkürler. Hesabı alabilir miyiz? Servis ücreti dahil mi, bahşiş mi bırakalım?", "Tatlı istemiyoruz, sağ olun. Hesabı alabilir miyiz? Servis dahil mi, bahşiş bırakalım mı?", "Tatlı istemiyoruz, teşekkürler. Hesabı alabilir miyiz? Servis ücreti dahil mi, yoksa bahşiş mi bırakalım?"]]
         ]
       },
       {
@@ -599,13 +599,13 @@
           ["boil", "kaynatmak, haşlamak", "♨️"], ["fry", "kızartmak", "🍳"], ["bake", "fırında pişirmek", "🧁"],
           ["chop", "doğramak", "🔪"], ["stir", "karıştırmak", "🥄"], ["slice", "dilimlemek, dilim", "🍞"],
           ["peel", "soymak", "🥔"], ["grill", "ızgara yapmak", "🍖"], ["recipe", "tarif", "📖"],
-          ["oven", "fırın", "🔥"]
+          ["preheat", "önceden ısıtmak", "🔥"]
         ],
         sentences: [
           ["First, peel the potatoes and chop the onions.", "Önce patatesleri soy ve soğanları doğra.", ["First peel the potatoes and chop the onions."], ["İlk önce patatesleri soy ve soğanları doğra.", "Önce patatesleri soyun ve soğanları doğrayın.", "Önce patatesleri soyup soğanları doğra.", "İlk olarak patatesleri soy ve soğanları doğra."]],
           ["Boil the pasta for ten minutes.", "Makarnayı on dakika haşla.", [], ["Makarnayı on dakika kaynat.", "Makarnayı on dakika haşlayın.", "Makarnayı on dakika kaynatın.", "Makarnayı on dakika boyunca haşla."]],
           ["Lina is frying eggs and stirring the sauce.", "Lina yumurta kızartıyor ve sosu karıştırıyor.", [], ["Lina yumurtaları kızartıyor ve sosu karıştırıyor.", "Lina yumurta kızartıp sosu karıştırıyor.", "Lina yumurta pişiriyor ve sosu karıştırıyor."]],
-          ["Bake the cake in the oven for forty minutes.", "Keki fırında kırk dakika pişir.", ["Bake the cake for forty minutes in the oven."], ["Keki kırk dakika fırında pişir.", "Keki fırında kırk dakika pişirin.", "Keki kırk dakika fırında pişirin.", "Pastayı fırında kırk dakika pişir."]],
+          ["Preheat the oven and bake the cake for forty minutes.", "Fırını önceden ısıt ve keki kırk dakika pişir.", ["Preheat the oven, then bake the cake for forty minutes."], ["Fırını önceden ısıtın ve keki kırk dakika pişirin.", "Fırını önceden ısıtıp keki kırk dakika pişir.", "Fırını önceden ısıt, sonra keki kırk dakika pişir.", "Fırını önceden ısıt ve keki kırk dakika fırında pişir."]],
           ["This recipe is from my grandmother.", "Bu tarif büyükannemden.", ["This is my grandmother's recipe."], ["Bu tarif anneannemden.", "Bu tarif babaannemden.", "Bu tarif ninemden.", "Bu, büyükannemin tarifi."]],
           ["Slice the tomatoes and grill the fish.", "Domatesleri dilimle ve balığı ızgara yap.", [], ["Domatesleri dilimleyin ve balığı ızgara yapın.", "Domatesleri dilimle, balığı ızgarada pişir.", "Domatesleri dilimleyip balığı ızgara yap.", "Domatesleri dilimle ve balığı ızgarada pişir."]]
         ]
@@ -613,30 +613,30 @@
       {
         title: "Some ve any", icon: "🧂",
         words: [
-          ["flour", "un", "🌾"], ["butter", "tereyağı", "🧈"], ["rice", "pirinç, pilav", "🍚"],
-          ["salt", "tuz", "🧂"], ["pepper", "karabiber", ""], ["garlic", "sarımsak", "🧄"],
-          ["mushroom", "mantar", "🍄"], ["olive oil", "zeytinyağı", "🫒"], ["a loaf of bread", "bir somun ekmek", "🍞"],
+          ["flour", "un", "🌾"], ["yeast", "maya", ""], ["vinegar", "sirke", "🍶"],
+          ["spinach", "ıspanak", "🥬"], ["lentils", "mercimek", "🫘"], ["cumin", "kimyon", ""],
+          ["parsley", "maydanoz", "🌿"], ["sunflower oil", "ayçiçek yağı", "🌻"], ["a loaf of bread", "bir somun ekmek", "🍞"],
           ["a slice of", "bir dilim", ""]
         ],
         sentences: [
-          ["We need some flour and some butter.", "Biraz una ve biraz tereyağına ihtiyacımız var.", ["We need some butter and some flour."], ["Biraz un ve biraz tereyağı lazım.", "Biraz un ve tereyağı lazım.", "Biraz un ve biraz tereyağı gerekiyor.", "Biraz una ve tereyağına ihtiyacımız var."]],
-          ["There isn't any salt in this soup!", "Bu çorbada hiç tuz yok!", ["There is no salt in this soup!"], ["Bu çorbada tuz yok!", "Bu çorbanın hiç tuzu yok!", "Bu çorbanın tuzu yok!"]],
+          ["We need some flour and some yeast.", "Biraz una ve biraz mayaya ihtiyacımız var.", ["We need some yeast and some flour."], ["Biraz un ve biraz maya lazım.", "Biraz un ve maya lazım.", "Biraz un ve biraz maya gerekiyor.", "Biraz una ve mayaya ihtiyacımız var."]],
+          ["There isn't any vinegar in this salad!", "Bu salatada hiç sirke yok!", ["There is no vinegar in this salad!"], ["Bu salatada sirke yok!", "Bu salatanın hiç sirkesi yok!", "Bu salatanın sirkesi yok!"]],
           ["Can I have a slice of cake?", "Bir dilim kek alabilir miyim?", ["Could I have a slice of cake?"], ["Bir dilim pasta alabilir miyim?", "Bir dilim kek alabilir miyim lütfen?", "Bir dilim kek yiyebilir miyim?"]],
-          ["Add some garlic, mushrooms and black pepper.", "Biraz sarımsak, mantar ve karabiber ekle.", ["Add some garlic, some mushrooms and black pepper."], ["Biraz sarımsak, mantar ve karabiber ekleyin.", "Biraz sarımsak, mantar ve biraz karabiber ekle.", "Sarımsak, mantar ve karabiber ekle."]],
-          ["Lina bought a loaf of bread and some olive oil.", "Lina bir somun ekmek ve biraz zeytinyağı aldı.", [], ["Lina bir somun ekmekle biraz zeytinyağı aldı.", "Lina bir somun ekmek ve zeytinyağı aldı.", "Lina bir somun ekmek ile biraz zeytinyağı aldı."]],
-          ["Is there any rice left?", "Hiç pirinç kaldı mı?", [], ["Pirinç kaldı mı?", "Biraz pirinç kaldı mı?", "Hiç pilav kaldı mı?", "Pilav kaldı mı?"]]
+          ["Add some cumin, spinach and parsley.", "Biraz kimyon, ıspanak ve maydanoz ekle.", ["Add some cumin, some spinach and some parsley."], ["Biraz kimyon, ıspanak ve maydanoz ekleyin.", "Biraz kimyon, ıspanak ve biraz maydanoz ekle.", "Kimyon, ıspanak ve maydanoz ekle."]],
+          ["Lina bought a loaf of bread and some sunflower oil.", "Lina bir somun ekmek ve biraz ayçiçek yağı aldı.", [], ["Lina bir somun ekmekle biraz ayçiçek yağı aldı.", "Lina bir somun ekmek ve ayçiçek yağı aldı.", "Lina bir somun ekmek ile biraz ayçiçek yağı aldı."]],
+          ["Are there any lentils left?", "Hiç mercimek kaldı mı?", ["Have we got any lentils left?"], ["Mercimek kaldı mı?", "Biraz mercimek kaldı mı?", "Hiç mercimeğimiz kaldı mı?"]]
         ]
       },
       {
         title: "Much, many, a lot of", icon: "🥕",
         words: [
-          ["how much", "ne kadar", "❔"], ["how many", "kaç tane", "🔢"], ["a lot of", "çok, bir sürü", ""],
+          ["half a kilo", "yarım kilo", "⚖️"], ["how many", "kaç tane", "🔢"], ["a lot of", "çok, bir sürü", ""],
           ["a few", "birkaç", ""], ["a little", "biraz, az", "🤏"], ["too much", "çok fazla (sayılamayan)", ""],
           ["too many", "çok fazla (sayılabilen)", ""], ["enough", "yeterli, yeterince", ""], ["teaspoon", "çay kaşığı", "🥄"],
           ["ingredient", "malzeme", "🧺"]
         ],
         sentences: [
-          ["How much sugar do we need?", "Ne kadar şekere ihtiyacımız var?", [], ["Ne kadar şeker lazım?", "Ne kadar şeker gerekiyor?", "Ne kadar şekere ihtiyacımız var?", "Bize ne kadar şeker lazım?"]],
+          ["How much sugar do we need? Half a kilo?", "Ne kadar şekere ihtiyacımız var? Yarım kilo mu?", [], ["Ne kadar şeker lazım? Yarım kilo mu?", "Ne kadar şeker gerekiyor? Yarım kilo mu?", "Bize ne kadar şeker lazım? Yarım kilo mu?"]],
           ["How many eggs are there in the fridge?", "Buzdolabında kaç yumurta var?", ["How many eggs are in the fridge?"], ["Buzdolabında kaç tane yumurta var?", "Dolapta kaç yumurta var?", "Buzdolabında kaç tane yumurta kaldı?"]],
           ["There are a few tomatoes, but there isn't enough cheese.", "Birkaç domates var ama yeterince peynir yok.", ["There are a few tomatoes but there isn't enough cheese."], ["Birkaç domates var ama yeterli peynir yok.", "Birkaç domates var, ama yeterince peynir yok.", "Birkaç tane domates var ama yeterince peynir yok."]],
           ["Just a little salt, one teaspoon.", "Sadece biraz tuz, bir çay kaşığı.", ["Only a little salt, one teaspoon."], ["Sadece azıcık tuz, bir çay kaşığı.", "Yalnızca biraz tuz, bir çay kaşığı.", "Sadece biraz tuz, bir çay kaşığı kadar."]],
@@ -647,18 +647,18 @@
       {
         title: "Tat ve koku", icon: "😋",
         words: [
-          ["delicious", "lezzetli, nefis", "😋"], ["spicy", "acı, baharatlı", "🌶️"], ["salty", "tuzlu", "🧂"],
-          ["sour", "ekşi", "🍋"], ["bitter", "acı (tat), buruk", "☕"], ["raw", "çiğ", "🥩"],
+          ["tasty", "lezzetli", "😋"], ["bland", "tatsız, yavan", "😐"], ["greasy", "yağlı (yemek)", "🍟"],
+          ["crispy", "çıtır", "🥓"], ["juicy", "sulu, suyu bol", "🍑"], ["raw", "çiğ", "🥩"],
           ["burnt", "yanık, yanmış", "🔥"], ["smell", "kokmak, koku", "👃"], ["taste", "tadı olmak, tatmak", "👅"],
-          ["disgusting", "iğrenç", "🤮"]
+          ["overcooked", "fazla pişmiş", "🍖"]
         ],
         sentences: [
-          ["The paella smells delicious!", "Paella nefis kokuyor!", [], ["Paella harika kokuyor!", "Paella çok güzel kokuyor!", "Paella lezzetli kokuyor!", "Paellanın kokusu nefis!"]],
+          ["The paella smells really tasty!", "Paella çok lezzetli kokuyor!", ["The paella smells very tasty!"], ["Paella harika kokuyor!", "Paella çok güzel kokuyor!", "Paella nefis kokuyor!", "Paellanın kokusu çok lezzetli!"]],
           ["The chicken is still raw inside.", "Tavuğun içi hâlâ çiğ.", ["The chicken is still raw in the middle."], ["Tavuğun içi hala çiğ.", "Tavuk içi hâlâ çiğ.", "Tavuk içi hala çiğ.", "Tavuk içeride hâlâ çiğ."]],
-          ["This sauce tastes too salty and a bit sour.", "Bu sosun tadı fazla tuzlu ve biraz ekşi.", ["This sauce is too salty and a bit sour."], ["Bu sos çok tuzlu ve biraz ekşi.", "Bu sosun tadı çok tuzlu ve biraz ekşi.", "Bu sos fazla tuzlu ve biraz ekşi."]],
-          ["Turkish coffee is bitter, but I love it.", "Türk kahvesi acıdır ama ona bayılırım.", ["Turkish coffee is bitter but I love it."], ["Türk kahvesi acı ama bayılıyorum.", "Türk kahvesi acı ama çok seviyorum.", "Türk kahvesi acıdır ama çok severim.", "Türk kahvesi acı ama onu çok seviyorum."]],
+          ["This sauce tastes bland, it needs more salt.", "Bu sosun tadı yavan, daha fazla tuz lazım.", ["This sauce is bland, it needs more salt."], ["Bu sos tatsız, daha fazla tuz lazım.", "Bu sosun tadı yavan, daha çok tuz gerekiyor.", "Bu sos yavan, biraz daha tuz lazım.", "Bu sosun tadı tatsız, daha fazla tuza ihtiyacı var."]],
+          ["The chips are crispy but a bit greasy.", "Patates kızartması çıtır ama biraz yağlı.", ["The chips are crispy, but a bit greasy."], ["Patates kızartmaları çıtır ama biraz yağlı.", "Kızartmalar çıtır ama biraz yağlı.", "Patates kızartması çıtır, ama biraz yağlı."]],
           ["The rice is burnt, and the kitchen smells awful.", "Pilav yanmış ve mutfak berbat kokuyor.", ["The rice is burnt and the kitchen smells awful."], ["Pirinç yanık ve mutfak berbat kokuyor.", "Pilav yanık ve mutfak çok kötü kokuyor.", "Pilav yanmış ve mutfak çok kötü kokuyor.", "Pirinç yanmış ve mutfak berbat kokuyor."]],
-          ["Honestly, it isn't disgusting, it's just very spicy.", "Açıkçası iğrenç değil, sadece çok acı.", ["Honestly, it's not disgusting, it's just very spicy."], ["Açıkçası, iğrenç değil, sadece çok acı.", "Dürüst olmak gerekirse iğrenç değil, sadece çok acı.", "Açıkçası iğrenç değil, sadece çok baharatlı.", "Açıkçası iğrenç değil, yalnızca çok acı."]]
+          ["It isn't disgusting, it's just overcooked and not very juicy.", "İğrenç değil, sadece fazla pişmiş ve pek sulu değil.", ["It's not disgusting, it's just overcooked and not very juicy."], ["İğrenç değil, yalnızca fazla pişmiş ve pek sulu değil.", "İğrenç sayılmaz, sadece fazla pişmiş ve pek sulu değil.", "İğrenç değil, sadece fazla pişmiş ve çok sulu değil."]]
         ]
       }
     ]
