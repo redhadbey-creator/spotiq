@@ -81,8 +81,11 @@
     else if (Q.S.owner) clearLocal();                                         // hesaptan başka yerde çıkılmış
     if (window.App) App.afterAuth();
   });
-  else if (current) { if (Q.S.owner && Q.S.owner !== idOf(current)) adopt(null, idOf(current)); }
-  else if (Q.S.owner) clearLocal();
+  else {
+    const s0 = Q.S || Q.load();                                                 // uygulama verisi henüz yüklenmediyse yükle
+    if (current) { if (s0.owner && s0.owner !== idOf(current)) adopt(null, idOf(current)); }
+    else if (s0.owner) clearLocal();
+  }
   /* Sayfa kapanırken bekleyen kaydı hemen gönder */
   window.addEventListener('pagehide', () => { if (current && saveT) { clearTimeout(saveT); saveT = null; Promise.resolve(B.saveProgress(Q.S)).catch(() => { }); } });
 
