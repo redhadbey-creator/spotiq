@@ -77,8 +77,8 @@
     return `<div class="sec-card ${done ? 'done' : ''} ${ahead ? 'ahead' : ''}">
       <div class="sec-top"><span class="sec-ic">${sec.icon}</span><div style="flex:1;min-width:0"><span class="cefr">${sec.id}</span><h2>${esc(sec.name)}</h2><p>${esc(sec.desc)}</p><p class="small muted">${sec.units.length} ünite · ${words} kelime ve ifade</p></div></div>
       <div class="bar ok" style="margin:12px 0"><i style="width:${pct}%"></i></div>
-      ${sec.id === 'C1' && !done ? `<p class="small muted" style="margin:-4px 0 10px">🎓 C1 sertifikası için üniteler + ${Q.C1_WORDS.toLocaleString('tr-TR')} kelime gerekir (şu an ${Q.vocab().n.toLocaleString('tr-TR')}). Kütüphanedeki desteler bunu tamamlar.</p>` : ''}
-      <div class="sec-btns">${done ? `<button class="btn ok sm" data-cert="${sec.id}">🎓 Sertifikayı gör</button>` : ''}
+      ${sec.id === 'C1' && !done ? `<p class="small muted" style="margin:-4px 0 10px">🏅 C1 rozeti için üniteler + ${Q.C1_WORDS.toLocaleString('tr-TR')} kelime gerekir (şu an ${Q.vocab().n.toLocaleString('tr-TR')}). Kütüphanedeki desteler bunu tamamlar.</p>` : ''}
+      <div class="sec-btns">${done ? `<button class="btn ok sm" data-cert="${sec.id}">🏅 Rozeti gör</button>` : ''}
         ${!ahead ? `<button class="btn ghost sm" data-expand="${si}">${open ? 'Üniteleri gizle' : (done ? 'Üniteleri göster' : 'Üniteleri göster')}</button>` : ''}
         ${ahead && !done ? `<button class="btn sm" data-jump="${si}">⏩ ${sec.id}'e atla</button>` : ''}</div></div>`;
   }
@@ -148,20 +148,19 @@
       m.querySelector('[data-a=ok]').onclick = c;
     });
   }
-  function certHTML(id) {
+  /* Seviye rozeti: oyun içi ödül (resmî belge değil) */
+  function badgeHTML(id, big) {
     const sec = C.sections.find(x => x.id === id);
-    const d = S.cert[id] ? Q.parseDay(S.cert[id]).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
-    return `<div class="cert"><div class="cert-in"><div class="cert-logo">${Q.mascot('happy', 56)}<b>ASİ Dil</b></div><p class="cert-k">BAŞARI SERTİFİKASI</p><h2>${esc(S.name || 'Öğrenci')}</h2><p>İngilizce <b>${sec.id} · ${esc(sec.name)}</b> seviyesinin tüm ünitelerini başarıyla tamamlamıştır.</p><div class="cert-big">${sec.id}</div><p class="small muted">${d}</p></div></div>`;
+    const got = !!S.cert[id];
+    return `<div class="lvl-badge ${got ? '' : 'off'} ${big ? 'big' : ''}"><div class="lb-medal"><span class="lb-ic">${sec.icon}</span><span class="lb-id">${sec.id}</span></div><b>${esc(sec.name)}</b><small>${got ? 'Rozet kazanıldı' : 'Henüz kilitli'}</small></div>`;
   }
-  function showCert(id) {
-    Q.modal(`${certHTML(id)}<button class="btn block" data-a="print">🖨️ Yazdır / PDF</button><button class="btn ghost block" data-a="ok">Kapat</button>`, (m, c) => {
-      m.querySelector('[data-a=ok]').onclick = c;
-      m.querySelector('[data-a=print]').onclick = () => { document.body.classList.add('printing'); window.print(); setTimeout(() => document.body.classList.remove('printing'), 500); };
-    });
+  function showBadge(id) {
+    const sec = C.sections.find(x => x.id === id);
+    Q.modal(`${badgeHTML(id, true)}<p>${esc(sec.name)} seviyesinin bütün ünitelerini bitirdin. Bu rozet profilinde duruyor.</p><button class="btn block" data-a="ok">Harika!</button>`, (m, c) => { m.querySelector('[data-a=ok]').onclick = c; });
   }
   function jumpAsk(si) {
     const sec = C.sections[si];
-    Q.modal(`<div class="em">${sec.icon}</div><h2>${sec.id} seviyesine atla</h2><p>${C.sections[si - 1].id} seviyesinden 15 soruluk bir testle ${sec.id} öncesindeki her şeyi bildiğini kanıtla. 3 hata hakkın var. Geçersen önceki seviyeler tamamlanmış sayılır ve sertifikaları açılır.</p>
+    Q.modal(`<div class="em">${sec.icon}</div><h2>${sec.id} seviyesine atla</h2><p>${C.sections[si - 1].id} seviyesinden 15 soruluk bir testle ${sec.id} öncesindeki her şeyi bildiğini kanıtla. 3 hata hakkın var. Geçersen önceki seviyeler tamamlanmış sayılır ve rozetleri açılır.</p>
       <button class="btn block" data-a="go">Teste başla</button><button class="btn ghost block" data-a="no">Vazgeç</button>`, (m, c) => {
       m.querySelector('[data-a=no]').onclick = c;
       m.querySelector('[data-a=go]').onclick = () => { c(); runJump(si - 1, si, false); };
@@ -307,7 +306,7 @@
       </div>
       <h2 class="section-h">Bu hafta</h2><div class="box"><div class="week-bars">${bars}</div></div>
       <h2 class="section-h">Çalışma takvimi</h2><div class="box"><div class="heat">${heat}</div><p class="small muted" style="margin-top:8px">Her kare bir gün. Koyu renk = daha çok XP. ❄ mavi = seri dondurucu kullanılan gün.</p></div>
-      <h2 class="section-h">Sertifikalar</h2><div class="badges">${C.sections.map(sec => `<button class="badge ${S.cert[sec.id] ? '' : 'off'}" ${S.cert[sec.id] ? `data-cert="${sec.id}"` : 'disabled'}><span class="bi">${sec.icon}</span><b>${sec.id}</b><small>${esc(sec.name)}</small></button>`).join('')}</div>
+      <h2 class="section-h">Seviye rozetleri</h2><div class="lvl-badges">${C.sections.map(sec => `<button class="lb-btn" ${S.cert[sec.id] ? `data-cert="${sec.id}"` : 'disabled'} aria-label="${sec.id} rozeti">${badgeHTML(sec.id)}</button>`).join('')}</div>
       <h2 class="section-h">Başarımlar</h2><div class="badges">${Q.ACH.map(a => { const v = a.v(), on = !!S.ach[a.id]; return `<div class="badge ${on ? '' : 'off'}"><span class="bi">${a.ic}</span><b>${a.n}</b><small>${a.d}</small>${on ? '' : `<div class="bar" style="height:8px;margin-top:6px"><i style="width:${Math.min(100, v / a.g * 100)}%"></i></div>`}</div>`; }).join('')}</div>
       <h2 class="section-h">Ayarlar</h2><div class="box settings">
         ${sw('sound', 'Ses efektleri', 'Doğru/yanlış sesleri')}
@@ -429,7 +428,7 @@
     if (d.rate) { S.settings.rate = +d.rate; Q.save(); Q.speak('This is my speaking speed.'); return render(); }
     if (d.expand !== undefined) { const si = +d.expand, cs = Q.currentSection(); if (si === cs) expanded = expanded === -1 - si ? null : -1 - si; else expanded = expanded === si ? null : si; openNode = null; return render(); }
     if (d.jump !== undefined) return jumpAsk(+d.jump);
-    if (d.cert) return showCert(d.cert);
+    if (d.cert) return showBadge(d.cert);
     if (d.go) return go(d.go);
     if (d.pop) return pop(d.pop);
     if (d.guide !== undefined) return guide(+d.guide);
@@ -475,7 +474,7 @@
         <ul style="text-align:left;color:var(--soft);line-height:1.9;padding-left:20px;margin:0"><li>🔥 Seri, XP, lig ve günlük görevler</li><li>🎧 Dinleme, 🎙️ konuşma ve yazma alıştırmaları</li><li>🧩 ASİ Dil'e özel: günün bulmacası & farkı bul</li><li>🃏 Aralıklı tekrar ile kelime kartları</li></ul>
         <button class="btn block" data-n="1">Başlayalım</button></div>`;
       if (step === 1) ov.innerHTML = `<div class="onb">${steps}${Q.mascot('think', 120)}<h1>Günlük hedefin ne olsun?</h1><div class="opts">${[[10, 'Rahat', '5 dk'], [20, 'Normal', '10 dk'], [30, 'Ciddi', '15 dk'], [50, 'Yoğun', '20 dk']].map(([x, t, m]) => `<button class="opt ${data.goal === x ? 'on' : ''}" data-g="${x}"><span>${t}</span><span class="muted">${m} / gün</span></button>`).join('')}</div><button class="btn block" data-n="2">Devam</button></div>`;
-      if (step === 2) ov.innerHTML = `<div class="onb">${steps}${Q.mascot('wink', 120)}<h1>Sana nasıl seslenelim?</h1><input id="onm" maxlength="24" placeholder="Adın (sertifikanda yazacak)" value="${esc(data.name)}"><button class="btn block" data-n="3">Devam</button></div>`;
+      if (step === 2) ov.innerHTML = `<div class="onb">${steps}${Q.mascot('wink', 120)}<h1>Sana nasıl seslenelim?</h1><input id="onm" maxlength="24" placeholder="Adın (isteğe bağlı)" value="${esc(data.name)}"><button class="btn block" data-n="3">Devam</button></div>`;
       if (step === 3) ov.innerHTML = `<div class="onb">${steps}${Q.mascot('think', 120)}<h1>İngilizcen ne durumda?</h1><div class="opts">
         <button class="opt" data-lv="zero"><span>🌱 Sıfırdan başlıyorum</span><span class="muted">A1</span></button>
         <button class="opt" data-lv="test"><span>🧭 Biraz biliyorum, seviyemi bul</span><span class="muted">Test</span></button></div>
@@ -511,7 +510,7 @@
   setInterval(() => { if ($('#overlay').hidden && $('#modal').hidden) { Q.tick(); renderNav(); renderRail(); } }, 60000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden && $('#overlay').hidden && S.onboarded) render(); });
 
-  window.App = { render, noHearts, certHTML };
+  window.App = { render, noHearts, badgeHTML };
   Q.tick();
   boot();
 })();

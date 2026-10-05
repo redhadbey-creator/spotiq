@@ -261,12 +261,7 @@
     { id: 'lg', ic: '👑', n: 'Yükselen', d: 'Dedektif ligine çık', v: () => S.league.tier, g: 3 },
     { id: 'story1', ic: '📖', n: 'Kitap Kurdu', d: 'İlk hikâyeni oku', v: () => S.stats.stories, g: 1 },
     { id: 'story10', ic: '📚', n: 'Hikâye Avcısı', d: '10 hikâye oku', v: () => S.stats.stories, g: 10 },
-    { id: 'wd1k', ic: '🗝️', n: 'Kelime Ustası', d: '1000 kelime öğren', v: () => Object.keys(S.words).length, g: 1000 },
-    { id: 'cA1', ic: '🌱', n: 'A1 Sertifikası', d: 'A1 seviyesini bitir', v: () => S.cert.A1 ? 1 : 0, g: 1 },
-    { id: 'cA2', ic: '🌿', n: 'A2 Sertifikası', d: 'A2 seviyesini bitir', v: () => S.cert.A2 ? 1 : 0, g: 1 },
-    { id: 'cB1', ic: '🌳', n: 'B1 Sertifikası', d: 'B1 seviyesini bitir', v: () => S.cert.B1 ? 1 : 0, g: 1 },
-    { id: 'cB2', ic: '🏔️', n: 'B2 Sertifikası', d: 'B2 seviyesini bitir', v: () => S.cert.B2 ? 1 : 0, g: 1 },
-    { id: 'cC1', ic: '🚀', n: 'C1 Sertifikası', d: 'C1 seviyesini bitir', v: () => S.cert.C1 ? 1 : 0, g: 1 }
+    { id: 'wd1k', ic: '🗝️', n: 'Kelime Ustası', d: '1000 kelime öğren', v: () => Object.keys(S.words).length, g: 1000 },,,,
   ];
   function checkAchievements() {
     ACH.forEach(a => { if (!S.ach[a.id] && a.v() >= a.g) { S.ach[a.id] = dayKey(); notice(a.ic + ' Başarım açıldı: ' + a.n); } });
@@ -276,7 +271,7 @@
   function nodeDone(n) { const p = S.progress[n.id] || 0; return n.type === 'lesson' ? p >= LEVELS : p >= 1; }
   function sectionDone(si) { return NODES.every(n => n.section !== si || nodeDone(n)); }
   function currentSection() { const i = currentIndex(); return i >= NODES.length ? C.sections.length - 1 : NODES[i].section; }
-  /* Bölüm tamamlandıysa sertifikayı kaydeder; yeni sertifika varsa seviye kimliğini döner */
+  /* Bölüm tamamlandıysa seviye rozetini kaydeder; yeni rozet varsa seviye kimliğini döner */
   function checkCerts() {
     let fresh = null;
     C.sections.forEach((sec, si) => { if (!S.cert[sec.id] && sectionDone(si) && (sec.id !== 'C1' || Object.keys(S.words).length >= C1_WORDS)) { S.cert[sec.id] = dayKey(); fresh = sec.id; } });

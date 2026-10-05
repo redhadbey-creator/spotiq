@@ -65,7 +65,7 @@
   function vocabMeter() {
     const v = Q.vocab(), S = Q.S;
     const marks = Q.VOCAB_STEPS.map(([t, l]) => `<span style="left:${Math.min(100, t / v.goal * 100)}%">${l}</span>`).join('');
-    const c1Need = !S.cert.C1 && v.n < Q.C1_WORDS ? `<p class="small muted">C1 sertifikası için ${Q.C1_WORDS.toLocaleString('tr-TR')} kelime gerekiyor. ${(Q.C1_WORDS - v.n).toLocaleString('tr-TR')} kaldı.</p>` : '';
+    const c1Need = !S.cert.C1 && v.n < Q.C1_WORDS ? `<p class="small muted">C1 rozeti için ${Q.C1_WORDS.toLocaleString('tr-TR')} kelime gerekiyor. ${(Q.C1_WORDS - v.n).toLocaleString('tr-TR')} kaldı.</p>` : '';
     return `<div class="box vmeter"><div class="vm-top"><div><b>Kelime hazinen</b><p class="soft small">CEFR araştırmalarına göre tahmini seviyen</p></div><div class="vm-n"><b>${v.n.toLocaleString('tr-TR')}</b><span>${esc(v.lvl)}</span></div></div>
       <div class="bar ok vm-bar"><i style="width:${Math.min(100, v.n / v.goal * 100)}%"></i></div><div class="vm-marks">${marks}</div>${c1Need}</div>`;
   }

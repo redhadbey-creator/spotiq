@@ -540,7 +540,7 @@
   function certScreen(id) {
     Q.sfx('fire'); Q.confetti(140);
     const sec = C.sections.find(x => x.id === id);
-    $('#overlay').innerHTML = `<div class="finish">${App.certHTML(id)}<p class="soft">${sec.icon} ${esc(sec.name)} seviyesini tamamladın! Sertifikan Profil sayfanda duruyor.</p><button class="btn block" data-a="go">Harika!</button></div>`;
+    $('#overlay').innerHTML = `<div class="finish"><h1>Yeni seviye rozeti!</h1>${App.badgeHTML(id, true)}<p class="soft">${esc(sec.name)} seviyesini bitirdin. Rozetin profilinde duruyor.</p><button class="btn block" data-a="go">Harika!</button></div>`;
     $('#overlay [data-a=go]').onclick = done;
   }
   function streakScreen() {
