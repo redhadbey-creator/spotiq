@@ -321,6 +321,7 @@
   function listenMic() {
     const ex = st.ex; const mic = $('#mic'); const heard = $('#heard');
     if (st.rec) { try { st.rec.stop(); } catch (e) { } return; }
+    if (!Q.S.settings.micOk) return Q.micConsent(listenMic);
     let rec; try { rec = new Q.SR(); } catch (e) { heard.textContent = 'Mikrofon kullanılamıyor.'; return; }
     rec.lang = 'en-US'; rec.interimResults = true; rec.maxAlternatives = 3;
     st.rec = rec; mic.classList.add('rec'); heard.textContent = 'Dinliyorum…';

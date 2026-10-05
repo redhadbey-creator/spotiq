@@ -47,7 +47,7 @@
     'Altyazıyı Türkçe değil İngilizce aç. Önce altyazılı, sonra altyazısız izle.',
     'Gölge okuma: Bir cümleyi dinle, durdur, aynı tonla tekrar et. Günde 5 dakika telaffuzu hızla düzeltir.',
     'Bilmediğin her kelimeye bakma. Bir sahnede yalnızca 3-5 kelimeyi not al.',
-    'Gerçek konuşma için dil değişim uygulamaları (Tandem, HelloTalk) ya da online öğretmen platformları (italki, Preply) kullanabilirsin.',
+    'Gerçek konuşma için İngilizce konuşan bir arkadaş, bir dil değişim partneri ya da bir öğretmen bul. Haftada 15 dakika bile fark yaratır.',
     'Telefonunun ve sosyal medyanın dilini İngilizce yap. Her gün bedava pratik.'
   ];
   const TASKS = [
@@ -254,6 +254,7 @@
     }
     function mic(btn) {
       if (rec) { try { rec.stop(); } catch (e) { } return; }
+      if (!Q.S.settings.micOk) return Q.micConsent(() => mic(btn));
       try { rec = new Q.SR(); } catch (e) { return Q.toast('Mikrofon kullanılamıyor.'); }
       rec.lang = 'en-US'; rec.interimResults = true;
       btn.classList.add('rec');

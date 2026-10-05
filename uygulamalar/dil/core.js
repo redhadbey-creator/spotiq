@@ -454,6 +454,14 @@
     document.body.appendChild(box);
     setTimeout(() => box.remove(), 3800);
   }
+  /* Mikrofon ilk kez kullanılmadan önce açık bilgilendirme ve onay */
+  function micConsent(cb) {
+    modal(`<div class="em">🎙️</div><h2>Mikrofon kullanımı</h2><p>Konuşma soruları için tarayıcının ses tanıma hizmeti kullanılır. Chrome'da sesin metne çevrilmek üzere Google'ın sunucularına gönderilir. ASİ Dil sesini kaydetmez ve saklamaz.</p><p class="small">İstemezsen mikrofonu kullanmadan yazarak devam edebilir ya da konuşma sorularını Ayarlar'dan kapatabilirsin.</p>
+      <button class="btn block" data-a="yes">Anladım, mikrofonu kullan</button><button class="btn ghost block" data-a="no">Vazgeç</button>`, (m, c) => {
+      m.querySelector('[data-a=no]').onclick = c;
+      m.querySelector('[data-a=yes]').onclick = () => { S.settings.micOk = true; save(); c(); cb(); };
+    });
+  }
   function fmtTime(ms) { const s = Math.ceil(ms / 1000); const m = Math.floor(s / 60); return m >= 60 ? Math.floor(m / 60) + ' sa ' + (m % 60) + ' dk' : m + ':' + pad(s % 60); }
 
   window.Q = {
@@ -463,6 +471,6 @@
     heartsUnlimited, nextHeartIn, loseHeart, addXP, todayXP, extendStreak, streakActiveToday,
     TIERS, leagueBoard, weekFrac, ensureQuests, questInfo, bump, questsReady, ACH, checkAchievements,
     nodeDone, currentIndex, sectionDone, currentSection, checkCerts, completeSection, learnWords, unlockedSentences,
-    norm, judge, lev, sfx, speak, englishVoices, pickVoice, currentVoice: () => voice, ttsOK, SR, canListen, canSpeak, mascot, toast, modal, confetti, fmtTime
+    norm, judge, lev, sfx, speak, englishVoices, pickVoice, currentVoice: () => voice, ttsOK, SR, canListen, canSpeak, mascot, toast, modal, confetti, fmtTime, micConsent
   };
 })();

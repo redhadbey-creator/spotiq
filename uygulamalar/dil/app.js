@@ -64,7 +64,6 @@
   }
 
   /* ---------- Öğren (yol) ---------- */
-  const OFFS = [0, 52, 78, 52, 0, -52, -78, -52];
   const NODE_ICON = { chest: '🎁', story: '📖', vocab: '🔤', test: '🏆' };
   let expanded = null;
   function nodeState(n, i, ci) { if (Q.nodeDone(n)) return 'done'; if (i === ci) return 'current'; return i < ci ? 'done' : 'locked'; }
@@ -98,28 +97,25 @@
     html += `<p class="footer-note">Seviyeler Avrupa Ortak Dil Çerçevesi'ne (CEFR) göre düzenlendi.</p>`;
     return html;
   }
+  /* Metro haritası: her ünite bir hat, her adım bir istasyon */
+  const KIND = { lesson: 'Ders', chest: 'Ödül durağı', story: 'Hikâye', vocab: 'Kelime paketi', test: 'Aktarma durağı' };
   function unitHTML(ui, ci) {
     const u = C.units[ui], col = UNIT_COLORS[u.color];
     const unitNodes = NODES.map((n, i) => ({ n, i })).filter(x => x.n.unit === ui);
-    let html = `<section class="unit" style="--uc:${col[0]};--ucd:${col[1]}"><div class="unit-head c-${u.color}"><div><p>${esc(u.cefr)} · ÜNİTE ${ui + 1}</p><h2>${esc(u.title)}</h2><p>${esc(u.desc)}</p></div><button class="btn sm" data-guide="${ui}">📖 Rehber</button></div><div class="path">`;
-    unitNodes.forEach(({ n, i }, k) => {
+    let html = `<section class="unit metro" style="--uc:${col[0]};--ucd:${col[1]}"><div class="line-sign c-${u.color}"><span class="line-no" aria-hidden="true">${ui + 1}</span><div class="ls-t"><p>${esc(u.cefr)} · HAT ${ui + 1}</p><h2>${esc(u.title)}</h2><p>${esc(u.desc)}</p></div><button class="btn sm" data-guide="${ui}">📖 Rehber</button></div><ol class="stations">`;
+    unitNodes.forEach(({ n, i }) => {
       const s = nodeState(n, i, ci);
-      const off = OFFS[k % OFFS.length];
       const lv = S.progress[n.id] || 0;
-      const special = n.type === 'chest' || n.type === 'test';
-      let inner = n.type === 'chest' ? (s === 'done' ? '📭' : '🎁') : n.type === 'lesson' ? (s === 'done' ? '⭐' : n.icon) : NODE_ICON[n.type];
-      let ring = '';
-      if (n.type === 'lesson' && s === 'current' && lv > 0) {
-        const r = 44, c = 2 * Math.PI * r;
-        ring = `<svg class="ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="${r}" stroke="var(--line)"/><circle cx="50" cy="50" r="${r}" stroke="var(--uc)" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - lv / Q.LEVELS)}" transform="rotate(-90 50 50)"/></svg>`;
-      }
-      const cls = ['node', special ? n.type : '', n.type === 'story' || n.type === 'vocab' ? 'alt' : '', s === 'locked' ? 'locked' : '', s === 'done' && !special ? 'done' : ''].join(' ');
-      html += `<div class="node-wrap ${openNode === i ? 'open' : ''}" style="transform:translateX(${off}px)">${s === 'current' ? `<div class="start-bubble">${lv ? 'DEVAM' : 'BAŞLA'}</div>` : ''}
-        <button class="${cls}" data-node="${i}" aria-label="${esc(n.title || 'Sandık')}">${ring}${inner}</button>
-        ${openNode === i ? popHTML(n, s) : ''}</div>`;
-      if (k === 2) html += `<div style="position:relative;align-self:stretch;height:0"><div class="path-mascot" style="left:2%;top:-200px">${Q.mascot(ui % 2 ? 'wink' : 'happy', 110)}</div></div>`;
+      const icon = n.type === 'lesson' ? n.icon : n.type === 'chest' && s === 'done' ? '📭' : NODE_ICON[n.type];
+      const title = n.type === 'chest' ? 'Hazine sandığı' : n.type === 'test' ? 'Ünite testi' : n.title;
+      const sub = KIND[n.type] + (n.type === 'lesson' ? ` · ${Math.min(lv, Q.LEVELS)}/${Q.LEVELS}` : '');
+      const dots = n.type === 'lesson' ? `<span class="lv-dots" aria-hidden="true">${Array.from({ length: Q.LEVELS }, (_, x) => `<i class="${x < lv ? 'on' : ''}"></i>`).join('')}</span>` : '';
+      html += `<li class="station ${s} t-${n.type} ${openNode === i ? 'open' : ''}"><button class="st-row" data-node="${i}" aria-label="${esc(title)}, ${esc(KIND[n.type])}${s === 'locked' ? ', kilitli' : ''}">
+        <span class="st-mark" aria-hidden="true">${s === 'done' ? '✓' : ''}</span><span class="st-ic" aria-hidden="true">${icon}</span>
+        <span class="st-txt"><b>${esc(title)}</b><small>${sub}</small></span>${s === 'current' ? `<span class="here">${lv ? 'Devam' : 'Buradasın'}</span>` : dots}</button>
+        ${openNode === i ? popHTML(n, s) : ''}</li>`;
     });
-    return html + '</div></section>';
+    return html + '</ol></section>';
   }
   function popHTML(n, s) {
     if (s === 'locked') return `<div class="pop locked"><h3>${esc(n.title || 'Sandık')}</h3><p>Bunu açmak için önceki tüm adımları tamamla!</p><button class="btn" disabled style="background:var(--lock);color:var(--muted)">Kilitli</button></div>`;
@@ -218,7 +214,6 @@
         <button class="tile" data-game="diff"><span class="big bg-coral">👁️</span><div><h3>Farkı Bul</h3><p>İki resim arasındaki farkları süre bitmeden bul. Dikkatini keskinleştir!</p></div><span class="tag">Sv. ${S.stats.diffBest || 0}</span></button>
         <button class="tile" data-game="math"><span class="big bg-gold">🧮</span><div><h3>Hızlı Matematik</h3><p>60 saniyede kafadan işlem yarışı</p></div><span class="tag">🏅 ${S.stats.mathBest}</span></button>
         <button class="tile" data-game="rush"><span class="big bg-plum">⚡</span><div><h3>Kelime Hız Turu</h3><p>İngilizce kelimelerin anlamını hızlıca bul, kombo yap</p></div><span class="tag">🏅 ${S.stats.rushBest}</span></button>
-        <a class="tile" href="https://www.youtube.com/@spotiq_bulmaca" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><span class="big bg-navy">▶️</span><div><h3>Video bulmacalar</h3><p>Daha fazlası için SPOTIQ YouTube kanalı</p></div></a>
       </div>`;
   }
 
@@ -320,6 +315,15 @@
         <div class="set"><div><b>Sıfırla</b><p class="small muted">Tüm ilerlemeyi siler</p></div><button class="btn bad sm" data-data="reset">Sıfırla</button></div>
       </div>
       <h2 class="section-h">Neden bu renkler?</h2><div class="box"><p class="soft small" style="line-height:1.6">ASİ Dil'in renkleri öğrenme araştırmalarına göre seçildi: <b style="color:var(--brand)">Mavi</b> odaklanmayı ve "yaklaşma" motivasyonunu destekler (Mehta ve Zhu, 2009, <i>Science</i>). <b style="color:var(--ok)">Yeşil</b> gelişme ve ustalaşma isteğini çağrıştırır (Lichtenfeld ve ark., 2012); bu yüzden doğru cevaplar ve ilerleme yeşil. Test öncesi görülen <b>kırmızının</b> performansı düşürdüğü gösterildiği için (Elliot ve ark., 2007) hatalarda kırmızı yerine yumuşak <b style="color:var(--bad)">turuncu</b> kullanıyoruz. Ödüller için dikkat çeken <b style="color:var(--gold-d)">sarı</b>. Her renk her yerde aynı anlamı taşır; tutarlı renk kodlaması hatırlamayı kolaylaştırır.</p></div>
+      <h2 class="section-h">Gizlilik ve kullanım</h2><div class="box legal"><ul>
+        <li><b>Reklam yok.</b> Uygulamada reklam, sponsorlu içerik ya da yönlendirme bulunmaz.</li>
+        <li><b>Hesap ve kişisel veri yok.</b> Üyelik istenmez; ilerlemen yalnızca bu cihazdaki tarayıcıda saklanır ve hiçbir sunucuya gönderilmez. Çerez ya da izleme aracı kullanılmaz.</li>
+        <li><b>Dış bağlantı yok.</b> Yazı tipi dahil her şey bu siteden yüklenir; ziyaretçi bilgisi üçüncü taraflara aktarılmaz.</li>
+        <li><b>Mikrofon.</b> Konuşma soruları isteğe bağlıdır. Ses tanıma tarayıcının kendi hizmetiyle yapılır (Chrome'da Google sunucuları); ASİ Dil sesini kaydetmez ve saklamaz. Ayarlardan kapatabilirsin.</li>
+        <li><b>İçerik.</b> Ders, hikâye, okuma, podcast ve konuşma metinleri ASİ Dil için özgün olarak yazılmıştır; karakterler kurgusaldır. Önerilen dizi, podcast ve kitaplar yalnızca isimleriyle anılır.</li>
+        <li><b>Rozetler</b> oyun içi ödüllerdir; resmî bir dil belgesi ya da sertifika değildir. Seviye adları Avrupa Ortak Dil Çerçevesi'ne (CEFR) göre yalnızca yol gösterici olarak kullanılır.</li>
+        <li><b>Yazı tipi:</b> Nunito, SIL Open Font License 1.1 ile lisanslıdır (<a href="fonts/OFL.txt" target="_blank" rel="noopener">lisans metni</a>).</li>
+      </ul></div>
       <p class="footer-note">ASİ Dil · İlerlemen yalnızca bu cihazda saklanır. <a href="../../gizlilik.html">Gizlilik</a></p>`;
   }
   function voiceSettings() {
@@ -412,7 +416,7 @@
     v.innerHTML = { learn: renderLearn, library: Extra.render, practice: renderPractice, puzzles: renderPuzzles, league: renderLeague, quests: renderQuests, shop: renderShop, profile: renderProfile }[view]();
     if (view === 'learn' && openNode === null && !render.scrolled) {
       render.scrolled = true;
-      const cur = $('.start-bubble');
+      const cur = $('.station.current');
       if (cur) setTimeout(() => cur.scrollIntoView({ block: 'center', inline: 'nearest' }), 30);
     }
   }
