@@ -521,3 +521,7 @@ main{padding:24px 24px 120px;outline:none}
 .acct-ic{font-size:1.8rem;flex:none}
 .acct-mail{display:block;overflow-wrap:anywhere}
 .acct-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+.pw-rules{list-style:none;margin:-2px 0 8px;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;font-size:.8rem;font-weight:800;color:var(--muted);text-align:left}
+.pw-rules li:before{content:'○ ';}
+.pw-rules li.ok{color:var(--ok)}.pw-rules li.ok:before{content:'✓ '}

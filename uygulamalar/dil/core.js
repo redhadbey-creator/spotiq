@@ -400,29 +400,32 @@
   const canListen = () => ttsOK && S.settings.tts;
   const canSpeak = () => !!SR && S.settings.speak;
 
-  /* ---------- Maskot: Asi (büyüteç) ---------- */
+  /* ---------- Maskot: Asi (üçgen) ---------- */
   function mascot(mood = 'happy', size = 120, extra = '') {
+    /* ASİ Dil maskotu: yuvarlatılmış köşeli, iki gözlü mavi üçgen (özgün çizim) */
     const eye = {
-      happy: '<path d="M38 50 Q50 36 62 50" stroke="#1d1b16" stroke-width="6" fill="none" stroke-linecap="round"/>',
-      wow: '<circle cx="50" cy="48" r="15" fill="#1d1b16"/><circle cx="55" cy="42" r="5" fill="#fff"/><circle cx="45" cy="53" r="2.5" fill="#fff"/>',
-      think: '<circle cx="54" cy="46" r="11" fill="#1d1b16"/><circle cx="58" cy="42" r="4" fill="#fff"/><path d="M38 33 L60 30" stroke="#1d1b16" stroke-width="4" stroke-linecap="round"/>',
-      sad: '<circle cx="50" cy="52" r="11" fill="#1d1b16"/><circle cx="54" cy="48" r="4" fill="#fff"/><path d="M36 38 L60 33" stroke="#1d1b16" stroke-width="4" stroke-linecap="round"/><path d="M66 58 q3 7 0 10 q-3-3 0-10z" fill="#5fb6ef"/>',
-      wink: '<circle cx="50" cy="48" r="12" fill="#1d1b16"/><circle cx="54" cy="44" r="4" fill="#fff"/>'
+      happy: '<path d="M38 66 Q45 57 52 66" stroke="#14213d" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M68 66 Q75 57 82 66" stroke="#14213d" stroke-width="5" fill="none" stroke-linecap="round"/>',
+      wow: '<circle cx="45" cy="64" r="8" fill="#14213d"/><circle cx="75" cy="64" r="8" fill="#14213d"/><circle cx="48" cy="61" r="3" fill="#fff"/><circle cx="78" cy="61" r="3" fill="#fff"/>',
+      think: '<circle cx="47" cy="63" r="5.5" fill="#14213d"/><circle cx="77" cy="63" r="5.5" fill="#14213d"/><circle cx="49" cy="61" r="2" fill="#fff"/><circle cx="79" cy="61" r="2" fill="#fff"/><path d="M68 52 L86 49" stroke="#14213d" stroke-width="4" stroke-linecap="round"/>',
+      sad: '<circle cx="45" cy="66" r="5.5" fill="#14213d"/><circle cx="75" cy="66" r="5.5" fill="#14213d"/><path d="M36 56 L52 60" stroke="#14213d" stroke-width="4" stroke-linecap="round"/><path d="M84 56 L68 60" stroke="#14213d" stroke-width="4" stroke-linecap="round"/><path d="M87 72 q3 7 0 10 q-3-3 0-10z" fill="#9ed3ff"/>',
+      wink: '<circle cx="45" cy="64" r="6" fill="#14213d"/><circle cx="47" cy="62" r="2" fill="#fff"/><path d="M68 66 Q75 57 82 66" stroke="#14213d" stroke-width="5" fill="none" stroke-linecap="round"/>'
     }[mood] || '';
-    const mouth = mood === 'sad' ? '<path d="M42 72 Q50 66 58 72" stroke="#1d1b16" stroke-width="4" fill="none" stroke-linecap="round"/>'
-      : mood === 'wow' ? '<ellipse cx="50" cy="72" rx="5" ry="6" fill="#1d1b16"/>'
-        : '<path d="M40 66 Q50 78 60 66" stroke="#1d1b16" stroke-width="4" fill="#f59ab0" stroke-linecap="round"/>';
+    const mouth = mood === 'sad' ? '<path d="M52 86 Q60 80 68 86" stroke="#14213d" stroke-width="4" fill="none" stroke-linecap="round"/>'
+      : mood === 'wow' ? '<ellipse cx="60" cy="84" rx="5" ry="6" fill="#14213d"/>'
+        : '<path d="M50 80 Q60 92 70 80 Z" fill="#f59ab0" stroke="#14213d" stroke-width="3.5" stroke-linejoin="round"/>';
     return `<svg class="mascot ${extra}" width="${size}" height="${size}" viewBox="0 0 120 120" aria-hidden="true">
-      <ellipse cx="60" cy="114" rx="34" ry="4" fill="rgba(0,0,0,.08)"/>
-      <g transform="rotate(42 86 86)"><rect x="78" y="78" width="16" height="40" rx="8" fill="#1f4fae"/><rect x="78" y="78" width="16" height="10" rx="4" fill="#f5b100"/></g>
-      <circle cx="50" cy="52" r="40" fill="#fff" stroke="#2f6fde" stroke-width="10"/>
-      <path d="M22 40 A30 30 0 0 1 40 20" stroke="#cfe7ff" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="60" cy="114" rx="36" ry="4" fill="rgba(0,0,0,.08)"/>
+      <path d="M60 14 L106 98 L14 98 Z" fill="#2f6fde" stroke="#2f6fde" stroke-width="14" stroke-linejoin="round"/>
+      <path d="M60 30 L92 90 L28 90 Z" fill="#4c86ea" stroke="#4c86ea" stroke-width="10" stroke-linejoin="round" opacity=".55"/>
+      <path d="M54 26 Q44 44 38 58" stroke="#cfe0ff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".8"/>
+      <ellipse cx="44" cy="106" rx="9" ry="5" fill="#1f4fae"/><ellipse cx="76" cy="106" rx="9" ry="5" fill="#1f4fae"/>
+      <circle cx="60" cy="13" r="5" fill="#f5b100"/>
       ${eye}
-      <circle cx="30" cy="64" r="5" fill="#f9b4a6"/><circle cx="70" cy="64" r="5" fill="#f9b4a6"/>
+      <ellipse cx="34" cy="78" rx="5" ry="3.5" fill="#f9b4c6"/><ellipse cx="86" cy="78" rx="5" ry="3.5" fill="#f9b4c6"/>
       ${mouth}
-      <path d="M12 70 q-10 6 -6 16" stroke="#2f6fde" stroke-width="6" fill="none" stroke-linecap="round"/>
     </svg>`;
   }
+
 
   /* ---------- Arayüz yardımcıları ---------- */
   let toastT;
@@ -431,6 +434,7 @@
   function modal(html, onBind) {
     const m = $('#modal');
     m.innerHTML = '<div class="modal" role="dialog" aria-modal="true">' + html + '</div>';
+    delete m.dataset.lock;
     m.hidden = false;
     const close = () => { m.hidden = true; m.innerHTML = ''; };
     m.onclick = e => { if (e.target === m) close(); };
