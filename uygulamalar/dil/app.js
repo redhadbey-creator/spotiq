@@ -1,4 +1,4 @@
-/* SPOTIQ Dil — ana uygulama: menü, ekranlar, karşılama */
+/* ASİ Dil — ana uygulama: menü, ekranlar, karşılama */
 (function () {
   'use strict';
   const { $, $$, esc, NODES, C, UNIT_COLORS } = Q;
@@ -9,6 +9,7 @@
   const NAV = [
     { id: 'learn', ic: '🏠', t: 'Öğren' },
     { id: 'practice', ic: '🏋️', t: 'Pratik' },
+    { id: 'library', ic: '📚', t: 'Kütüphane' },
     { id: 'puzzles', ic: '🧩', t: 'Bulmaca' },
     { id: 'league', ic: '🏆', t: 'Lig' },
     { id: 'quests', ic: '🎯', t: 'Görevler' },
@@ -34,7 +35,7 @@
   }
   function renderNav() {
     const ready = Q.questsReady();
-    $('#nav').innerHTML = `<a class="logo" href="../" title="SPOTIQ Uygulamalar">${Q.mascot('happy', 40)}<span>spotiq<small>DİL</small></span></a>` +
+    $('#nav').innerHTML = `<a class="logo" href="../" title="SPOTIQ Uygulamalar">${Q.mascot('happy', 40)}<span>asi<small>DİL</small></span></a>` +
       NAV.map(n => `<button class="nav-btn ${view === n.id ? 'on' : ''}" data-go="${n.id}" aria-label="${n.t}"><span class="ic">${n.ic}</span><span>${n.t}</span>${n.id === 'quests' && ready ? '<i class="dot"></i>' : ''}</button>`).join('');
     $('#topbar').innerHTML = `<div class="stats-row" style="width:100%">${statsHTML()}</div>`;
   }
@@ -54,11 +55,11 @@
     const dbl = S.doubleUntil > Date.now();
     $('#rail').innerHTML = `<div class="stats-row">${statsHTML()}</div>
       ${dbl ? `<div class="box" style="border-color:var(--gold)"><b>⚡ Çift XP aktif</b><p class="soft small">${Q.fmtTime(S.doubleUntil - Date.now())} kaldı</p></div>` : ''}
-      <div class="box"><h3>Seviye yolculuğun <a data-go="learn">Yol</a></h3><div class="journey sm">${C.sections.map((sec, si) => `<span class="${S.cert[sec.id] ? 'done' : si === Q.currentSection() ? 'cur' : ''}">${sec.id}</span>`).join('<i></i>')}</div><p class="soft small">${Object.keys(S.words).length} / ${Q.ALL_WORDS.length} kelime öğrenildi</p><div class="bar ok" style="margin-top:6px"><i style="width:${Object.keys(S.words).length / Q.ALL_WORDS.length * 100}%"></i></div></div>
+      <div class="box"><h3>Seviye yolculuğun <a data-go="learn">Yol</a></h3><div class="journey sm">${C.sections.map((sec, si) => `<span class="${S.cert[sec.id] ? 'done' : si === Q.currentSection() ? 'cur' : ''}">${sec.id}</span>`).join('<i></i>')}</div><p class="soft small">Kelime hazinen: <b>${Q.vocab().n.toLocaleString('tr-TR')}</b> · tahmini ${Q.vocab().lvl} · hedef 5.500</p><div class="bar ok" style="margin-top:6px"><i style="width:${Math.min(100, Q.vocab().n / 5500 * 100)}%"></i></div><button class="btn ghost sm block" style="margin-top:10px" data-go="library">📚 Kütüphaneye git</button></div>
       <div class="box"><h3>${tier.i} ${tier.n} Ligi <a data-go="league">Ligi gör</a></h3><p class="soft">${S.league.xp ? `Bu hafta <b>${me}.</b> sıradasın · ${S.league.xp} XP` : 'Bu hafta yarışmaya katılmak için bir ders bitir!'}</p></div>
       <div class="box"><h3>Günlük hedef <a data-pop="goal">Düzenle</a></h3><div style="display:flex;gap:14px;align-items:center">${goalRing()}<div style="flex:1"><b>${Math.min(Q.todayXP(), S.dailyGoal)} / ${S.dailyGoal} XP</b><div class="bar" style="margin-top:8px"><i style="width:${Math.min(100, Q.todayXP() / S.dailyGoal * 100)}%"></i></div></div></div></div>
       <div class="box"><h3>Günlük görevler <a data-go="quests">Tümü</a></h3>${questsHTML(3)}</div>
-      <div class="box" style="background:var(--brand-l);border-color:var(--brand)"><h3>🧩 Günün bulmacası</h3><p class="soft small" style="margin-bottom:10px">${S.puzzle.day === Q.dayKey() && S.puzzle.solved ? 'Bugünkünü çözdün! Yarın yenisi gelecek.' : 'SPOTIQ\'e özel 3 soruluk günlük beyin turu. Ödül: 💎 + XP'}</p><button class="btn sm block" data-game="daily">${S.puzzle.day === Q.dayKey() && S.puzzle.solved ? 'Tekrar çöz' : 'Hemen çöz'}</button></div>
+      <div class="box" style="background:var(--brand-l);border-color:var(--brand)"><h3>🧩 Günün bulmacası</h3><p class="soft small" style="margin-bottom:10px">${S.puzzle.day === Q.dayKey() && S.puzzle.solved ? 'Bugünkünü çözdün! Yarın yenisi gelecek.' : 'ASİ Dil\'e özel 3 soruluk günlük beyin turu. Ödül: 💎 + XP'}</p><button class="btn sm block" data-game="daily">${S.puzzle.day === Q.dayKey() && S.puzzle.solved ? 'Tekrar çöz' : 'Hemen çöz'}</button></div>
       <p class="footer-note"><a href="../">← SPOTIQ Uygulamalar</a> · <a href="../../gizlilik.html">Gizlilik</a></p>`;
   }
 
@@ -76,6 +77,7 @@
     return `<div class="sec-card ${done ? 'done' : ''} ${ahead ? 'ahead' : ''}">
       <div class="sec-top"><span class="sec-ic">${sec.icon}</span><div style="flex:1;min-width:0"><span class="cefr">${sec.id}</span><h2>${esc(sec.name)}</h2><p>${esc(sec.desc)}</p><p class="small muted">${sec.units.length} ünite · ${words} kelime ve ifade</p></div></div>
       <div class="bar ok" style="margin:12px 0"><i style="width:${pct}%"></i></div>
+      ${sec.id === 'C1' && !done ? `<p class="small muted" style="margin:-4px 0 10px">🎓 C1 sertifikası için üniteler + ${Q.C1_WORDS.toLocaleString('tr-TR')} kelime gerekir (şu an ${Q.vocab().n.toLocaleString('tr-TR')}). Kütüphanedeki desteler bunu tamamlar.</p>` : ''}
       <div class="sec-btns">${done ? `<button class="btn ok sm" data-cert="${sec.id}">🎓 Sertifikayı gör</button>` : ''}
         ${!ahead ? `<button class="btn ghost sm" data-expand="${si}">${open ? 'Üniteleri gizle' : (done ? 'Üniteleri göster' : 'Üniteleri göster')}</button>` : ''}
         ${ahead && !done ? `<button class="btn sm" data-jump="${si}">⏩ ${sec.id}'e atla</button>` : ''}</div></div>`;
@@ -149,7 +151,7 @@
   function certHTML(id) {
     const sec = C.sections.find(x => x.id === id);
     const d = S.cert[id] ? Q.parseDay(S.cert[id]).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
-    return `<div class="cert"><div class="cert-in"><div class="cert-logo">${Q.mascot('happy', 56)}<b>SPOTIQ Dil</b></div><p class="cert-k">BAŞARI SERTİFİKASI</p><h2>${esc(S.name || 'Öğrenci')}</h2><p>İngilizce <b>${sec.id} · ${esc(sec.name)}</b> seviyesinin tüm ünitelerini başarıyla tamamlamıştır.</p><div class="cert-big">${sec.id}</div><p class="small muted">${d}</p></div></div>`;
+    return `<div class="cert"><div class="cert-in"><div class="cert-logo">${Q.mascot('happy', 56)}<b>ASİ Dil</b></div><p class="cert-k">BAŞARI SERTİFİKASI</p><h2>${esc(S.name || 'Öğrenci')}</h2><p>İngilizce <b>${sec.id} · ${esc(sec.name)}</b> seviyesinin tüm ünitelerini başarıyla tamamlamıştır.</p><div class="cert-big">${sec.id}</div><p class="small muted">${d}</p></div></div>`;
   }
   function showCert(id) {
     Q.modal(`${certHTML(id)}<button class="btn block" data-a="print">🖨️ Yazdır / PDF</button><button class="btn ghost block" data-a="ok">Kapat</button>`, (m, c) => {
@@ -211,10 +213,10 @@
   /* ---------- Bulmaca ---------- */
   function renderPuzzles() {
     const solved = S.puzzle.day === Q.dayKey() && S.puzzle.solved;
-    return `<h1 class="page-title">SPOTIQ Bulmaca</h1><p class="page-sub">Yalnızca SPOTIQ'te: beynini çalıştıran mini oyunlar. Hepsi XP ve görev ilerlemesi kazandırır.</p>
+    return `<h1 class="page-title">ASİ Bulmaca</h1><p class="page-sub">Yalnızca ASİ Dil'de: beynini çalıştıran mini oyunlar. Hepsi XP ve görev ilerlemesi kazandırır.</p>
       <div class="daily-hero">${Q.mascot('wink', 90)}<div><h2>Günün Bulmacası</h2><p>${solved ? `Bugün ${S.puzzle.score || 0}/3 yaptın · Bulmaca serisi: 🧩 ${S.puzzle.streak}` : 'Görsel matematik, sayı dizisi ve kelime bulmacası. Her gün yeni!'}</p><button class="btn sm" data-game="daily">${solved ? 'Tekrar çöz' : 'Çözmeye başla'}</button></div></div>
       <div class="grid two">
-        <button class="tile" data-game="diff"><span class="big bg-coral">👁️</span><div><h3>Farkı Bul</h3><p>İki resim arasındaki farkları süre bitmeden bul. SPOTIQ klasiği!</p></div><span class="tag">Sv. ${S.stats.diffBest || 0}</span></button>
+        <button class="tile" data-game="diff"><span class="big bg-coral">👁️</span><div><h3>Farkı Bul</h3><p>İki resim arasındaki farkları süre bitmeden bul. Dikkatini keskinleştir!</p></div><span class="tag">Sv. ${S.stats.diffBest || 0}</span></button>
         <button class="tile" data-game="math"><span class="big bg-gold">🧮</span><div><h3>Hızlı Matematik</h3><p>60 saniyede kafadan işlem yarışı</p></div><span class="tag">🏅 ${S.stats.mathBest}</span></button>
         <button class="tile" data-game="rush"><span class="big bg-plum">⚡</span><div><h3>Kelime Hız Turu</h3><p>İngilizce kelimelerin anlamını hızlıca bul, kombo yap</p></div><span class="tag">🏅 ${S.stats.rushBest}</span></button>
         <a class="tile" href="https://www.youtube.com/@spotiq_bulmaca" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><span class="big bg-navy">▶️</span><div><h3>Video bulmacalar</h3><p>Daha fazlası için SPOTIQ YouTube kanalı</p></div></a>
@@ -300,7 +302,7 @@
         <div class="stat"><span class="si">⚡</span><div><b>${S.xp}</b><span>Toplam XP</span></div></div>
         <div class="stat"><span class="si">${Q.TIERS[S.league.tier].i}</span><div><b>${Q.TIERS[S.league.tier].n}</b><span>Mevcut lig</span></div></div>
         <div class="stat"><span class="si">📘</span><div><b>${lessonsDone} / ${total}</b><span>Tamamlanan ders</span></div></div>
-        <div class="stat"><span class="si">🔤</span><div><b>${Object.keys(S.words).length}</b><span>Öğrenilen kelime</span></div></div>
+        <div class="stat"><span class="si">🔤</span><div><b>${Q.vocab().n.toLocaleString('tr-TR')}</b><span>Kelime · tahmini ${Q.vocab().lvl}</span></div></div>
         <div class="stat"><span class="si">💯</span><div><b>${S.stats.perfect}</b><span>Hatasız ders</span></div></div>
       </div>
       <h2 class="section-h">Bu hafta</h2><div class="box"><div class="week-bars">${bars}</div></div>
@@ -318,8 +320,8 @@
         <div class="set"><div><b>İlerlemeni yedekle</b><p class="small muted">Başka bir cihaza taşımak için dosya olarak indir</p></div><div class="seg"><button data-data="export">İndir</button><button data-data="import">Yükle</button></div></div>
         <div class="set"><div><b>Sıfırla</b><p class="small muted">Tüm ilerlemeyi siler</p></div><button class="btn bad sm" data-data="reset">Sıfırla</button></div>
       </div>
-      <h2 class="section-h">Neden bu renkler?</h2><div class="box"><p class="soft small" style="line-height:1.6">SPOTIQ Dil'in renkleri öğrenme araştırmalarına göre seçildi: <b style="color:var(--brand)">Mavi</b> odaklanmayı ve "yaklaşma" motivasyonunu destekler (Mehta ve Zhu, 2009, <i>Science</i>). <b style="color:var(--ok)">Yeşil</b> gelişme ve ustalaşma isteğini çağrıştırır (Lichtenfeld ve ark., 2012); bu yüzden doğru cevaplar ve ilerleme yeşil. Test öncesi görülen <b>kırmızının</b> performansı düşürdüğü gösterildiği için (Elliot ve ark., 2007) hatalarda kırmızı yerine yumuşak <b style="color:var(--bad)">turuncu</b> kullanıyoruz. Ödüller için dikkat çeken <b style="color:var(--gold-d)">sarı</b>. Her renk her yerde aynı anlamı taşır; tutarlı renk kodlaması hatırlamayı kolaylaştırır.</p></div>
-      <p class="footer-note">SPOTIQ Dil · İlerlemen yalnızca bu cihazda saklanır. <a href="../../gizlilik.html">Gizlilik</a></p>`;
+      <h2 class="section-h">Neden bu renkler?</h2><div class="box"><p class="soft small" style="line-height:1.6">ASİ Dil'in renkleri öğrenme araştırmalarına göre seçildi: <b style="color:var(--brand)">Mavi</b> odaklanmayı ve "yaklaşma" motivasyonunu destekler (Mehta ve Zhu, 2009, <i>Science</i>). <b style="color:var(--ok)">Yeşil</b> gelişme ve ustalaşma isteğini çağrıştırır (Lichtenfeld ve ark., 2012); bu yüzden doğru cevaplar ve ilerleme yeşil. Test öncesi görülen <b>kırmızının</b> performansı düşürdüğü gösterildiği için (Elliot ve ark., 2007) hatalarda kırmızı yerine yumuşak <b style="color:var(--bad)">turuncu</b> kullanıyoruz. Ödüller için dikkat çeken <b style="color:var(--gold-d)">sarı</b>. Her renk her yerde aynı anlamı taşır; tutarlı renk kodlaması hatırlamayı kolaylaştırır.</p></div>
+      <p class="footer-note">ASİ Dil · İlerlemen yalnızca bu cihazda saklanır. <a href="../../gizlilik.html">Gizlilik</a></p>`;
   }
   function voiceSettings() {
     const vs = Q.englishVoices(), cur = Q.currentVoice();
@@ -363,7 +365,7 @@
   function dataAction(k) {
     if (k === 'export') {
       const blob = new Blob([JSON.stringify(S, null, 1)], { type: 'application/json' });
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'spotiq-dil-yedek-' + Q.dayKey() + '.json'; a.click();
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'asi-dil-yedek-' + Q.dayKey() + '.json'; a.click();
       setTimeout(() => URL.revokeObjectURL(a.href), 2000);
     } else if (k === 'import') {
       const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'application/json,.json';
@@ -408,7 +410,7 @@
     Q.tick();
     renderNav(); renderRail();
     const v = $('#view');
-    v.innerHTML = { learn: renderLearn, practice: renderPractice, puzzles: renderPuzzles, league: renderLeague, quests: renderQuests, shop: renderShop, profile: renderProfile }[view]();
+    v.innerHTML = { learn: renderLearn, library: Extra.render, practice: renderPractice, puzzles: renderPuzzles, league: renderLeague, quests: renderQuests, shop: renderShop, profile: renderProfile }[view]();
     if (view === 'learn' && openNode === null && !render.scrolled) {
       render.scrolled = true;
       const cur = $('.start-bubble');
@@ -419,6 +421,7 @@
 
   document.addEventListener('click', e => {
     if (!$('#overlay').hidden) return;
+    const lb = e.target.closest('[data-lib]'); if (lb) return Extra.click(lb);
     const t = e.target.closest('[data-voicetest],[data-rate],[data-expand],[data-jump],[data-cert],[data-go],[data-pop],[data-node],[data-act],[data-claim],[data-buy],[data-prac],[data-game],[data-sw],[data-theme],[data-data],[data-guide]');
     if (!t) { if (openNode !== null && !e.target.closest('.pop')) { openNode = null; render(); } return; }
     const d = t.dataset;
@@ -469,7 +472,7 @@
     function draw() {
       const steps = `<div class="steps">${[0, 1, 2, 3].map(i => `<i class="${i <= step ? 'on' : ''}"></i>`).join('')}</div>`;
       if (step === 0) ov.innerHTML = `<div class="onb">${Q.mascot('happy', 170)}<h1>spotiq<span>.</span>dil</h1><p class="soft" style="font-size:1.1rem">Ücretsiz, eğlenceli ve etkili İngilizce. Günde 5 dakika ile başla!</p>
-        <ul style="text-align:left;color:var(--soft);line-height:1.9;padding-left:20px;margin:0"><li>🔥 Seri, XP, lig ve günlük görevler</li><li>🎧 Dinleme, 🎙️ konuşma ve yazma alıştırmaları</li><li>🧩 SPOTIQ'e özel: günün bulmacası & farkı bul</li><li>🃏 Aralıklı tekrar ile kelime kartları</li></ul>
+        <ul style="text-align:left;color:var(--soft);line-height:1.9;padding-left:20px;margin:0"><li>🔥 Seri, XP, lig ve günlük görevler</li><li>🎧 Dinleme, 🎙️ konuşma ve yazma alıştırmaları</li><li>🧩 ASİ Dil'e özel: günün bulmacası & farkı bul</li><li>🃏 Aralıklı tekrar ile kelime kartları</li></ul>
         <button class="btn block" data-n="1">Başlayalım</button></div>`;
       if (step === 1) ov.innerHTML = `<div class="onb">${steps}${Q.mascot('think', 120)}<h1>Günlük hedefin ne olsun?</h1><div class="opts">${[[10, 'Rahat', '5 dk'], [20, 'Normal', '10 dk'], [30, 'Ciddi', '15 dk'], [50, 'Yoğun', '20 dk']].map(([x, t, m]) => `<button class="opt ${data.goal === x ? 'on' : ''}" data-g="${x}"><span>${t}</span><span class="muted">${m} / gün</span></button>`).join('')}</div><button class="btn block" data-n="2">Devam</button></div>`;
       if (step === 2) ov.innerHTML = `<div class="onb">${steps}${Q.mascot('wink', 120)}<h1>Sana nasıl seslenelim?</h1><input id="onm" maxlength="24" placeholder="Adın (sertifikanda yazacak)" value="${esc(data.name)}"><button class="btn block" data-n="3">Devam</button></div>`;

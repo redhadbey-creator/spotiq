@@ -1,4 +1,4 @@
-/* SPOTIQ Dil — SPOTIQ'e özel oyunlar: günün bulmacası, farkı bul, hız turları, kelime kartları */
+/* ASİ Dil — ASİ Dil'e özel oyunlar: günün bulmacası, farkı bul, hız turları, kelime kartları */
 (function () {
   'use strict';
   const { $, $$, esc, rng, rand, pick, shuffle, sample, ALL_WORDS } = Q;
@@ -17,7 +17,7 @@
     if (!silent) { App.render(); Q.flushNotices(); }
   }
   function onKeys(fn) { if (keyH) document.removeEventListener('keydown', keyH); keyH = fn; document.addEventListener('keydown', fn); }
-  function learnedWords() { const ids = Object.keys(Q.S.words); const w = ALL_WORDS.filter(x => ids.includes(x.id)); return w.length >= 8 ? w : ALL_WORDS.slice(0, Math.max(12, w.length)); }
+  function learnedWords() { const w = Object.keys(Q.S.words).map(id => Q.wordById[id]).filter(Boolean); return w.length >= 8 ? w : ALL_WORDS.slice(0, Math.max(12, w.length)); }
   function endScreen(icon, title, lines, onAgain) {
     const gw = $('#gw');
     Q.sfx('done'); Q.confetti(50);
@@ -110,7 +110,7 @@
         S.stats.puzzles++; Q.bump('puzzle'); Q.checkAchievements(); Q.save();
         lines += `<div class="cards"><div class="fcard" style="--c:var(--gold)"><b>XP</b><div>⚡ ${xp}</div></div><div class="fcard" style="--c:var(--plum)"><b>Mücevher</b><div>💎 ${gems}</div></div><div class="fcard" style="--c:var(--brand)"><b>Bulmaca serisi</b><div>🧩 ${S.puzzle.streak}</div></div></div><p class="soft">Yarın yeni bulmaca seni bekliyor!</p>`;
       } else lines += '<p class="soft">Bugünün ödülünü zaten aldın. Yarın yeni bulmaca!</p>';
-      endScreen(Q.mascot(score === 3 ? 'wow' : 'happy', 140), score === 3 ? 'SPOTIQ dedektifi!' : 'Bulmaca bitti!', lines);
+      endScreen(Q.mascot(score === 3 ? 'wow' : 'happy', 140), score === 3 ? 'Bulmaca dedektifi!' : 'Bulmaca bitti!', lines);
     }
     q();
   }
@@ -339,7 +339,7 @@
   function wordList() {
     const S = Q.S;
     const ids = Object.keys(S.words);
-    const list = ALL_WORDS.filter(w => ids.includes(w.id));
+    const list = ids.map(id => Q.wordById[id]).filter(Boolean);
     open('📚 Kelimelerim', `<span class="pill">${list.length} kelime</span>`);
     $('#gw').innerHTML = list.length ? `<div class="box wordlist">${list.map(w => {
       const b = S.words[w.id].box;

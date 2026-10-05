@@ -1,4 +1,4 @@
-/* SPOTIQ Dil — kurs derleyici (Türkçe konuşanlar için İngilizce, A1 → C1)
+/* ASİ Dil — kurs derleyici (Türkçe konuşanlar için İngilizce, A1 → C1)
    İçerik content/*.js dosyalarında: window.COURSE_PARTS[anahtar] = [ünite, ...]
    Ünite: { title, desc, cefr, guide:[{h,p,ex}], story:{title,icon,lines,questions}, extra:[[en,tr,emoji]], lessons:[{title,icon,words,sentences}] } */
 (function () {

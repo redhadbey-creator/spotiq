@@ -1,4 +1,4 @@
-/* SPOTIQ Dil — çekirdek: durum, yardımcılar, ses, konuşma, maskot, ödüller */
+/* ASİ Dil — çekirdek: durum, yardımcılar, ses, konuşma, maskot, ödüller */
 (function () {
   'use strict';
   const $ = (s, r = document) => r.querySelector(s);
@@ -48,10 +48,24 @@
     }
     NODES.push({ type: 'test', id: 'u' + ui + 't', unit: ui, title: u.title + ' · Ünite Testi', icon: '🏆' });
   });
-  const wordById = Object.fromEntries(ALL_WORDS.map(w => [w.id, w]));
+  /* Kelime kütüphanesi (ileri seviye desteler): ana kursta olmayan kelimeler eklenir */
+  const LIB = window.LIBRARY || [];
+  const LIB_WORDS = [];
+  const courseEn = new Set(ALL_WORDS.map(w => w.en.toLowerCase()));
+  LIB.forEach(d => {
+    d.items = [];
+    (d.words || []).forEach((w, i) => {
+      const k = w[0].toLowerCase();
+      if (courseEn.has(k)) return;
+      courseEn.add(k);
+      const o = { en: w[0], tr: w[1], em: w[2] || '', ex: w[3], exTr: w[4], lesson: d.id, unit: -1, id: d.id + 'w' + i, lib: true, deck: d.id };
+      LIB_WORDS.push(o); d.items.push(o);
+    });
+  });
+  const wordById = Object.fromEntries(ALL_WORDS.concat(LIB_WORDS).map(w => [w.id, w]));
   const sentById = Object.fromEntries(ALL_SENTS.map(s => [s.id, s]));
   const wordByEn = {};
-  ALL_WORDS.forEach(w => { const k = w.en.toLowerCase(); if (!wordByEn[k]) wordByEn[k] = w; });
+  ALL_WORDS.concat(LIB_WORDS).forEach(w => { const k = w.en.toLowerCase(); if (!wordByEn[k]) wordByEn[k] = w; });
   NODES.forEach(n => { n.section = C.units[n.unit].section || 0; });
 
   /* ---------- Durum ---------- */
@@ -66,7 +80,7 @@
       doubleUntil: 0, unlimitedUntil: 0,
       progress: {}, history: {}, mistakes: {}, words: {},
       quests: null, ach: {}, goalDay: null,
-      cert: {}, stats: { stories: 0, lessons: 0, perfect: 0, maxCombo: 0, puzzles: 0, games: 0, diffs: 0, cards: 0, tests: 0, mathBest: 0, rushBest: 0, diffBest: 0, night: 0, early: 0 },
+      cert: {}, reads: {}, pods: {}, roles: {}, rw: { week: '', done: {} }, stats: { reads: 0, pods: 0, roles: 0, stories: 0, lessons: 0, perfect: 0, maxCombo: 0, puzzles: 0, games: 0, diffs: 0, cards: 0, tests: 0, mathBest: 0, rushBest: 0, diffBest: 0, night: 0, early: 0 },
       league: { tier: 0, week: weekKey(), xp: 0 }, leagueResult: null,
       puzzle: { day: null, solved: false, streak: 0, lastSolved: null },
       settings: { voice: '', rate: 0.95, sound: true, tts: true, speak: true, hearts: true, theme: 'auto', motivate: true }
@@ -240,7 +254,7 @@
     { id: 'wd100', ic: '🧠', n: 'Sözlük', d: '100 kelime öğren', v: () => Object.keys(S.words).length, g: 100 },
     { id: 'unit1', ic: '🏆', n: 'Ünite Fatihi', d: 'Bir ünite testini geç', v: () => S.stats.tests, g: 1 },
     { id: 'pz1', ic: '🧩', n: 'Bulmacacı', d: 'Günün bulmacasını çöz', v: () => S.stats.puzzles, g: 1 },
-    { id: 'pz10', ic: '🔎', n: 'SPOTIQ Dedektifi', d: '10 günlük bulmaca', v: () => S.stats.puzzles, g: 10 },
+    { id: 'pz10', ic: '🔎', n: 'ASİ Dedektifi', d: '10 günlük bulmaca', v: () => S.stats.puzzles, g: 10 },
     { id: 'df', ic: '👁️', n: 'Keskin Göz', d: 'Farkı Bul\'da 25 fark', v: () => S.stats.diffs, g: 25 },
     { id: 'night', ic: '🌙', n: 'Gece Kuşu', d: 'Gece 23\'ten sonra ders', v: () => S.stats.night, g: 1 },
     { id: 'early', ic: '🌅', n: 'Erkenci', d: 'Sabah 7\'den önce ders', v: () => S.stats.early, g: 1 },
@@ -265,7 +279,7 @@
   /* Bölüm tamamlandıysa sertifikayı kaydeder; yeni sertifika varsa seviye kimliğini döner */
   function checkCerts() {
     let fresh = null;
-    C.sections.forEach((sec, si) => { if (!S.cert[sec.id] && sectionDone(si)) { S.cert[sec.id] = dayKey(); fresh = sec.id; } });
+    C.sections.forEach((sec, si) => { if (!S.cert[sec.id] && sectionDone(si) && (sec.id !== 'C1' || Object.keys(S.words).length >= C1_WORDS)) { S.cert[sec.id] = dayKey(); fresh = sec.id; } });
     if (fresh) { checkAchievements(); save(); }
     return fresh;
   }
@@ -274,6 +288,15 @@
     save();
   }
   function currentIndex() { const i = NODES.findIndex(n => !nodeDone(n)); return i === -1 ? NODES.length : i; }
+  function learnIds(ids) { ids.forEach(id => { if (!S.words[id]) S.words[id] = { box: 0, due: dayKey(), seen: 0, ok: 0 }; }); }
+  /* Kelime hazinesi ve tahmini CEFR seviyesi (CEFR kelime araştırmalarındaki yaklaşık eşikler) */
+  const C1_WORDS = 5000;
+  const VOCAB_STEPS = [[0, 'A1'], [700, 'A2'], [1500, 'B1'], [2700, 'B2'], [4000, 'C1'], [5500, 'C1+']];
+  function vocab() {
+    const n = Object.keys(S.words).length;
+    let lvl = 'A1'; VOCAB_STEPS.forEach(([t, l]) => { if (n >= t) lvl = l; });
+    return { n, lvl, total: ALL_WORDS.length + LIB_WORDS.length, goal: 5500 };
+  }
   function learnWords(lessonId) {
     ALL_WORDS.filter(w => w.lesson === lessonId).forEach(w => { if (!S.words[w.id]) S.words[w.id] = { box: 0, due: dayKey(), seen: 0, ok: 0 }; });
   }
@@ -382,7 +405,7 @@
   const canListen = () => ttsOK && S.settings.tts;
   const canSpeak = () => !!SR && S.settings.speak;
 
-  /* ---------- Maskot: Spoti (büyüteç) ---------- */
+  /* ---------- Maskot: Asi (büyüteç) ---------- */
   function mascot(mood = 'happy', size = 120, extra = '') {
     const eye = {
       happy: '<path d="M38 50 Q50 36 62 50" stroke="#1d1b16" stroke-width="6" fill="none" stroke-linecap="round"/>',
@@ -440,7 +463,7 @@
 
   window.Q = {
     $, $$, esc, dayKey, parseDay, diffDays, addDays, weekKey, DAYS_TR, hash, rng, rand, pick, shuffle, sample,
-    C, LEVELS, UNIT_COLORS, NODES, ALL_WORDS, ALL_SENTS, wordById, sentById, wordByEn,
+    C, LEVELS, UNIT_COLORS, NODES, ALL_WORDS, LIB, LIB_WORDS, learnIds, vocab, C1_WORDS, VOCAB_STEPS, ALL_SENTS, wordById, sentById, wordByEn,
     get S() { return S; }, load, save, reset, tick, notice, flushNotices, MAX_HEARTS, HEART_MS,
     heartsUnlimited, nextHeartIn, loseHeart, addXP, todayXP, extendStreak, streakActiveToday,
     TIERS, leagueBoard, weekFrac, ensureQuests, questInfo, bump, questsReady, ACH, checkAchievements,

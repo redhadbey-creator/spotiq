@@ -1,4 +1,4 @@
-/* SPOTIQ Dil — ders motoru */
+/* ASİ Dil — ders motoru */
 (function () {
   'use strict';
   const { $, $$, esc, shuffle, sample, pick, ALL_WORDS, ALL_SENTS, NODES, C, wordByEn, sentById, wordById } = Q;
@@ -59,6 +59,17 @@
     const raw = s.en.split(/\s+/);
     return mk('fill', { sent: s, blank: i, parts: raw, answer: w.en, options: opts, word: w, key: 's:' + s.id });
   }
+  /* Kütüphane kelimesi için örnek cümlede boşluk doldurma */
+  function exDeckFill(w, pool) {
+    if (!w.ex) return null;
+    const i = w.ex.toLowerCase().indexOf(w.en.toLowerCase());
+    if (i < 0) return null;
+    const before = w.ex.slice(0, i).trim(), after = w.ex.slice(i + w.en.length).trim();
+    const parts = [before, w.en, after].filter((p, k) => k === 1 || p);
+    const blank = before ? 1 : 0;
+    const opts = shuffle([w.en].concat(sample(uniqBy(pool.filter(x => x.en !== w.en), 'en'), 3).map(x => x.en)));
+    return mk('fill', { sent: { en: w.ex, tr: w.exTr, id: w.id }, blank, parts, answer: w.en, options: opts, word: w, key: 'w:' + w.id });
+  }
   function adapt(list, spool) {
     return list.filter(Boolean).map(e => {
       if ((e.type === 'listen' || e.type === 'listenType') && !Q.canListen()) return e.type === 'listen' ? exBank(e.sent, 'en', spool) : exType(e.sent);
@@ -104,6 +115,15 @@
       out.push(exMatch(W.slice(14, 19)), exMatch(W.slice(19, 24)));
       W.slice(24, 27).forEach(w => out.push(exPick(w, pool)));
       out.push(exMatch(W.slice(25, 30).length >= 3 ? W.slice(25, 30) : W.slice(0, 5)));
+    } else if (opts.mode === 'deck') {
+      const W = shuffle(opts.words);
+      const pool = (Q.LIB.find(d => d.id === opts.deck) || { items: W }).items;
+      W.slice(0, 4).forEach(w => { const e = exPick(w, pool); e.isNew = true; out.push(e); });
+      out.push(exMatch(W.slice(0, 5)));
+      W.slice(4).forEach(w => out.push(exDeckFill(w, pool) || exPickTr(w, pool)));
+      out.push(exMatch(W.slice(5, 10).length >= 3 ? W.slice(5, 10) : W.slice(0, 5)));
+      W.slice(0, 4).forEach(w => out.push(exDeckFill(w, pool) || exPickTr(w, pool)));
+      return out.filter(Boolean);
     } else if (opts.mode === 'jump') {
       const sec = opts.section;
       const SS = shuffle(ALL_SENTS.filter(s => C.units[s.unit].section === sec));
@@ -282,7 +302,7 @@
     if (b.classList.contains('gone')) return;
     const side = b.dataset.side;
     const prev = $(`#lb .choice.sel`);
-    if (side === 'L') { const w = ALL_WORDS.find(x => x.id === b.dataset.id); Q.speak(w.en); }
+    if (side === 'L') { const w = Q.wordById[b.dataset.id]; if (w) Q.speak(w.en); }
     if (!prev || prev === b) { $$('#lb .choice.sel').forEach(x => x.classList.remove('sel')); if (prev !== b) b.classList.add('sel'); Q.sfx('tap'); return; }
     if (prev.dataset.side === side) { prev.classList.remove('sel'); b.classList.add('sel'); Q.sfx('tap'); return; }
     if (prev.dataset.id === b.dataset.id) {
@@ -489,13 +509,14 @@
     const answered = st.firstTry + st.wrong;
     const acc = answered ? Math.round(st.firstTry / answered * 100) : 100;
     const perfect = st.wrong === 0;
-    let base = o.mode === 'test' ? 25 : o.mode === 'jump' ? 40 : o.mode === 'lesson' || o.mode === 'vocab' ? 10 : 8;
+    let base = o.mode === 'test' ? 25 : o.mode === 'jump' ? 40 : o.mode === 'lesson' || o.mode === 'vocab' || o.mode === 'deck' ? 10 : 8;
     let bonus = Math.min(5, Math.floor(st.maxCombo / 5)) + (perfect && (o.mode === 'lesson' || o.mode === 'test') ? 5 : 0);
     const xp = Q.addXP(base + bonus);
     S.stats.lessons++; if (perfect) S.stats.perfect++; S.stats.maxCombo = Math.max(S.stats.maxCombo, st.maxCombo);
     Q.bump('lessons'); if (perfect) Q.bump('perfect');
     let reward = '';
     if (o.mode === 'lesson') { S.progress[o.node.id] = Math.min(Q.LEVELS, (S.progress[o.node.id] || 0) + (o.review ? 0 : 1)); Q.learnWords(o.node.id); }
+    if (o.mode === 'deck') { Q.learnIds(o.words.map(w => w.id)); reward = `<p class="soft">📚 ${o.words.length} yeni kelime kelime kartlarına eklendi · Kelime hazinen: ${Q.vocab().n}</p>`; }
     if (o.mode === 'vocab') { S.progress[o.node.id] = 1; Q.learnWords(o.node.id); }
     if (o.mode === 'jump') { for (let k = 0; k <= o.section; k++) Q.completeSection(k); reward = `<p class="soft">🚀 ${C.sections[o.section].id} seviyesini atladın! Tüm kelimeleri kelime kartlarına eklendi.</p>`; }
     if (o.mode === 'test') { if (!S.progress[o.node.id]) { S.stats.tests++; S.gems += 50; reward = '<p class="soft">🏆 Ünite tamamlandı! +50 💎</p>'; } S.progress[o.node.id] = 1; C.units[o.node.unit].lessons.forEach(l => Q.learnWords(l.id)); Q.learnWords('u' + o.node.unit + 'x'); }
@@ -540,15 +561,17 @@
   function done() { const cb = st && st.opts.onDone; close(); if (cb) cb(); Q.flushNotices(); }
 
   /* ---------- Hikâye oynatıcı ---------- */
-  const CAST = { 'Deniz': '🧑‍💻', 'Lina': '👩‍🍳', 'Emma': '👩‍💼', 'Mr. Walker': '👨‍💼', 'Can': '🧔', 'Priya': '👩🏽‍💼', 'Anlatıcı': '📖', 'Narrator': '📖' };
+  const CAST = { 'Maya': '🎙️', 'Tom': '🎧', 'Deniz': '🧑‍💻', 'Lina': '👩‍🍳', 'Emma': '👩‍💼', 'Mr. Walker': '👨‍💼', 'Can': '🧔', 'Priya': '👩🏽‍💼', 'Anlatıcı': '📖', 'Narrator': '📖' };
   function story(node) {
-    const u = C.units[node.unit], sto = u.story;
+    const u = node.custom ? null : C.units[node.unit], sto = node.custom ? node.sto : u.story;
+    const sub = node.custom ? node.sub : esc(u.title) + ' · ' + esc(u.cefr);
+    let hideText = !!node.hideText;
     const ov = $('#overlay'); ov.hidden = false; document.body.style.overflow = 'hidden';
     let i = 0, qi = 0, right = 0, wrongs = 0, showTr = false;
     const qs = sto.questions.slice().sort((a, b) => a.after - b.after);
     const t0 = Date.now();
     ov.innerHTML = `<div class="les-top"><button class="x" data-s="x" aria-label="Kapat">✕</button><div class="bar"><i id="sbar" style="width:0%"></i></div><button class="btn ghost sm" data-s="tr">TR</button></div>
-      <div class="les-body story"><div class="story-head"><span class="sicon">${sto.icon || '📖'}</span><h2>${esc(sto.title)}</h2><p class="muted">${esc(u.title)} · ${esc(u.cefr)}</p></div><div id="sl"></div></div>
+      <div class="les-body story"><div class="story-head"><span class="sicon">${sto.icon || '📖'}</span><h2>${esc(sto.title)}</h2><p class="muted">${sub}</p>${node.hideText ? '<p class="small muted">🎧 Önce dinle: metin bulanık. Görmek için yazıya dokun.</p>' : ''}</div><div id="sl"></div></div>
       <div class="les-foot" id="sf"><div class="in"><span></span><button class="btn" data-s="next">Devam</button></div></div>`;
     const sl = $('#sl');
     const total = sto.lines.length + qs.length;
@@ -557,7 +580,7 @@
       const [who, en, tr] = sto.lines[i];
       const av = CAST[who] || '🙂';
       const narr = /Anlatıcı|Narrator/.test(who);
-      sl.insertAdjacentHTML('beforeend', `<div class="sline ${narr ? 'narr' : ''}"><span class="sav" title="${esc(who)}">${av}</span><div class="sbub">${narr ? '' : `<b>${esc(who)}</b>`}<p>${hinted(en, 'en')}</p><p class="str-tr" ${showTr ? '' : 'hidden'}>${esc(tr)}</p></div>${Q.canListen() ? `<button class="play sm-play" data-say="${esc(en)}" aria-label="Dinle">🔊</button>` : ''}</div>`);
+      sl.insertAdjacentHTML('beforeend', `<div class="sline ${narr ? 'narr' : ''}"><span class="sav" title="${esc(who)}">${av}</span><div class="sbub">${narr ? '' : `<b>${esc(who)}</b>`}<p class="${hideText ? 'blurred' : ''}">${hinted(en, 'en')}</p><p class="str-tr" ${showTr ? '' : 'hidden'}>${esc(tr)}</p></div>${Q.canListen() ? `<button class="play sm-play" data-say="${esc(en)}" aria-label="Dinle">🔊</button>` : ''}</div>`);
       Q.speak(en);
       i++; bar();
       sl.lastElementChild.scrollIntoView({ block: 'end', behavior: 'smooth' });
@@ -587,9 +610,13 @@
     }
     function finishStory() {
       const S = Q.S;
-      const first = !S.progress[node.id];
-      S.progress[node.id] = 1; S.stats.stories++;
-      const xp = Q.addXP(first ? 15 : 8);
+      let xp;
+      if (node.custom) xp = node.onFinish(right, qs.length);
+      else {
+        const first = !S.progress[node.id];
+        S.progress[node.id] = 1; S.stats.stories++;
+        xp = Q.addXP(first ? 15 : 8);
+      }
       const extended = Q.extendStreak();
       Q.bump('lessons'); Q.checkAchievements(); const cert = Q.checkCerts(); Q.save();
       Q.sfx('done'); Q.confetti();
@@ -603,7 +630,8 @@
       ov.querySelector('[data-a=go]').onclick = () => extended ? streakScreen() : afterStreak();
     }
     ov.onclick = e => {
-      const b = e.target.closest('[data-s],[data-say]'); if (!b) { if (e.target.closest('.sline .sbub')) return; return; }
+      const bl = e.target.closest('.blurred'); if (bl) { bl.classList.remove('blurred'); return; }
+      const b = e.target.closest('[data-s],[data-say]'); if (!b) return;
       if (b.dataset.say) return Q.speak(b.dataset.say);
       const k = b.dataset.s;
       if (k === 'x') { ov.onclick = null; st = null; return close(); }
